@@ -1,26 +1,33 @@
 module.exports = {
-    "env": {
-        "browser": true,
-        "commonjs": true,
-        "es2021": true
+  env: {
+    browser: true,
+    commonjs: true,
+    es2021: true,
+  },
+  extends: "eslint:recommended",
+  overrides: [
+    {
+      env: {
+        node: true,
+      },
+      files: [".eslintrc.{js,cjs}"],
+      parserOptions: {
+        sourceType: "script",
+      },
     },
-    "extends": "eslint:recommended",
-    "overrides": [
-        {
-            "env": {
-                "node": true
-            },
-            "files": [
-                ".eslintrc.{js,cjs}"
-            ],
-            "parserOptions": {
-                "sourceType": "script"
-            }
-        }
+  ],
+  parserOptions: {
+    ecmaVersion: "latest",
+  },
+  rules: {
+    "max-lines-per-function": [
+      "error",
+      {
+        max: 30,
+        skipBlankLines: true,
+        skipComments: true,
+      },
     ],
-    "parserOptions": {
-        "ecmaVersion": "latest"
-    },
-    "rules": {
-    }
-}
+  },
+  ignorePatterns: ["**/*.test.js", "**/*.spec.js"],
+};
