@@ -4,18 +4,21 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "start": "nodemon server.js",
         "test": "jest"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
         "bcrypt": "^5.1.1",
+        "body-parser": "^1.20.2",
+        "cookie-parser": "^1.4.6",
         "cors": "*",
-        "express": "*",
+        "express": "^4.19.2",
         "express-session": "*",
         "jest": "^29.7.0",
-        "jsonwebtoken": "*",
-        "mongoose": "*",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.3.0",
         "mysql": "*"
     },
     "devDependencies": {
