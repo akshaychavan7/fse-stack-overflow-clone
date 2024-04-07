@@ -23,17 +23,15 @@ const addQuestionComment = async (req, res) => {
             commented_by: preprocessing(comment.commented_by),
             comment_date_time: preprocessing(comment.comment_date_time),
         })
-        res.status(200);
         await Question.findOneAndUpdate(
             { _id: qid },
             { $push: { comments: { $each: [newcomment._id], $position: 0 } } },
             { new: true }
         );
-        res.json(newcomment);
+        res.status(200).json(newcomment);
     }
     catch (err) {
-        res.status(500);
-        res.json({ 'error': `Comment could not be added for the question: ${err}` });
+        res.status(500).json({ 'error': `Comment could not be added for the question: ${err}` });
     }
 };
 
@@ -53,12 +51,10 @@ const addAnswerComment = async (req, res) => {
             { $push: { comments: { $each: [newcomment._id], $position: 0 } } },
             { new: true }
         );
-        res.status(200);
-        res.json(newcomment);
+        res.status(200).json(newcomment);
     }
     catch (err) {
-        res.status(500);
-        res.json({ 'error': `Comment could not be added for the answer: ${err}` });
+        res.status(500).json({ 'error': `Comment could not be added for the answer: ${err}` });
     }
 };
 
