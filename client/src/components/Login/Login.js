@@ -16,6 +16,7 @@ import Background from "../../assets/images/bg2.jpg";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import login from "../../services/loginService";
 import { useNavigate } from "react-router-dom";
+import useIsAuthenticated from "../../hooks/useIsAuthenticated";
 function Copyright(props) {
   return (
     <Typography
@@ -29,8 +30,8 @@ function Copyright(props) {
         Akshay Chavan
       </Link>
       {" & "}
-      <Link color="inherit" href="https://www.linkedin.com/in/vedantrishidas/">
-        Vedant Rishi Das
+      <Link color="inherit" href="https://www.linkedin.com/in/shawnchen2338/">
+        Shiu Yun Chen
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -41,8 +42,14 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function Login() {
+  useIsAuthenticated();
   let navigate = useNavigate();
-  const { setIsAuthenticated } = React.useContext(ApplicationContext);
+  const applicationCtx = React.useContext(ApplicationContext);
+
+  // if user is already logged in then redirect to home page
+  if (applicationCtx.isAuthenticated) {
+    navigate("/home");
+  }
 
   const handleSubmit = async (event) => {
     try {
@@ -54,9 +61,14 @@ export default function Login() {
       };
       const response = await login(payload);
       if (response.status === 200) {
-        setIsAuthenticated(true);
+        applicationCtx.dispatch({
+          type: "SET_IS_AUTHENTICATED",
+          payload: true,
+        });
+        navigate("/home");
+      } else {
+        alert.showAlert("Invalid credentials", "error");
       }
-      navigate("/home");
     } catch (error) {
       console.error(`Error while calling login API: ${error}`);
     }
