@@ -2,6 +2,7 @@ const express = require("express");
 const Question = require("../models/questions");
 const Answer = require("../models/answers");
 const Comment = require("../models/comments");
+const { authorization } = require("../server");
 const User = require("../models/users");
 
 const {
@@ -31,7 +32,7 @@ const addQuestionComment = async (req, res) => {
         res.status(200).json(newcomment);
     }
     catch (err) {
-        res.status(500).json({ 'error': `Comment could not be added for the question: ${err}` });
+        res.status(500).json({ error: `Comment could not be added for the question: ${err}` });
     }
 };
 
@@ -54,7 +55,7 @@ const addAnswerComment = async (req, res) => {
         res.status(200).json(newcomment);
     }
     catch (err) {
-        res.status(500).json({ 'error': `Comment could not be added for the answer: ${err}` });
+        res.status(500).json({ error: `Comment could not be added for the answer: ${err}` });
     }
 };
 
@@ -63,49 +64,78 @@ const upvoteComment = async (req, res) => {
     try {
         let cid = preprocessing(req.body.cid);
         let uid = preprocessing(req.body.uid);
-        let user = User.findOne({ _id: uid });
+        let user = await User.findOne({ _id: uid });
         if (!user) {
-            res.status(404).json({ 'error': `Unauthorized access: Unidentified userid.` });
+            res.status(401).json({ error: `Unauthorized access: Unidentified userid.` });
         }
         let comment = await Comment.findOne({ _id: cid });
         if (!comment) {
-            res.status(404).json({ 'error': `Unauthorized access: Unidentified commentid.` });
+            res.status(404).json({ error: `Unavailable resource: Unidentified commentid.` });
         }
         // If the user id is in the upvote list, remove that and update count else upvote.
         const checkUserUpvote = comment.upvoted_by.includes(uid);
         if (checkUserUpvote) {
             removeUpvote(cid, uid);
-            res.status(200).json({'msg': "Removed previous upvote of user", 'upvote': false});
+            res.status(200).json({ message: "Removed previous upvote of user", 'upvote': false });
         }
         else {
             addUpvote(cid, uid);
-            res.status(200).json({'msg': "Upvoted for the user", 'upvote': true});
+            res.status(200).json({ message: "Upvoted for the user", 'upvote': true });
         }
     }
     catch (err) {
-        res.status(500).json({ 'error': `Answer could not be upvoted at this time: ${err}` });
+        res.status(500).json({ error: `Answer could not be upvoted at this time: ${err}` });
     }
 }
 
 // To get vote count of comment.
 const getVoteCountComment = async (req, res) => {
     try {
-      let cid = preprocessing(req.params.commentId);
-      let comment = await Comment.findOne({ _id: cid });
-      if (!comment) {
-        res.status(404).json({ 'error': `Unauthorized access: Unidentified commentid.` });
-      }
-      res.status(200).json({"vote_count": comment.vote_count});
+        let cid = preprocessing(req.params.commentId);
+        let comment = await Comment.findOne({ _id: cid });
+        if (!comment) {
+            res.status(404).json({ error: `Unavailable resource: Unidentified commentid.` });
+        }
+        res.status(200).json({ vote_count: comment.vote_count });
     }
     catch (err) {
-      res.status(500).json({ 'error': `Cannot fetch vote count of comment: ${err}` });
+        res.status(500).json({ error: `Cannot fetch vote count of comment: ${err}` });
     }
-  }
+}
+
+
+// To flag or unflag a comment
+// Note: requires structural change for delete.
+const flagComment = async (req, res) => {
+    try {
+        let uid = preprocessing(req.body.uid);
+        let user = await User.findOne({ _id: uid });
+        if (!user) {
+            res.status(401).json({ error: `Unauthorized access: Unidentified userid.` });
+        }
+        let comment = await Comment.findOne({ _id: preprocessing(req.body.cid) })
+        if (!comment) {
+            res.status(404).json({ error: `Unavailable resource: Unidentified commentid.` });
+        }
+        comment.flag = !comment.flag;
+        await comment.save();
+        if (!comment.flag) {
+            res.status(200).json({ message: "Unflagged comment from review." });
+        }
+        else {
+            res.status(200).json({ message: "Flagged comment for review." });
+        }
+    }
+    catch (err) {
+        res.status(500).json({ error: `Cannot fetch flagged comment: ${err}` });
+    }
+}
 
 // add appropriate HTTP verbs and their endpoints to the router.
 router.post("/addQuestionComment", addQuestionComment);
 router.post("/addAnswerComment", addAnswerComment);
 router.post("/upvoteComment", upvoteComment);
 router.get("/getVoteCountComment/:commentId", getVoteCountComment)
+router.post("/flagComment", flagComment);
 
 module.exports = router;
