@@ -31,8 +31,8 @@ function Copyright(props) {
         Akshay Chavan
       </Link>
       {" & "}
-      <Link color="inherit" href="https://www.linkedin.com/in/shawnchen2338/">
-        Shiu Yun Chen
+      <Link color="inherit" href="https://www.linkedin.com/in/vedantrishidas/">
+        Vedant Rishi Das
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
