@@ -316,6 +316,8 @@ const init = async () => {
 init().catch((err) => {
   console.log("ERROR: " + err);
   if (db) db.close();
+  console.log("ERROR: " + err);
+  if (db) db.close();
 });
 
 console.log("processing ...");

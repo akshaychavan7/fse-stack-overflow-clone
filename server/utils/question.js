@@ -43,11 +43,9 @@ const addTag = async (tname) => {
       const newTag = new Tag({ name: tname });
       return (await newTag.save())._id;
     }
+  } catch (err) {
+    return Error("Could not add tag. ");
   }
-  catch (err) {
-    return Error("Could not add tag. ")
-  }
-
 };
 
 const sortByActiveOrder = (qList) => {
@@ -130,68 +128,76 @@ const removeDownvote = async (qid, uid) => {
   await Question.bulkWrite([
     {
       updateOne: {
-        "filter": { _id: qid },
-        "update": { $pull: { downvoted_by: { $eq: uid } } }
-      }
+        filter: { _id: qid },
+        update: { $pull: { downvoted_by: { $eq: uid } } },
+      },
     },
     {
       updateOne: {
-        "filter": { _id: qid },
-        "update": { $inc: { vote_count: 1 } }
-      }
-    }
-  ])
-}
+        filter: { _id: qid },
+        update: { $inc: { vote_count: 1 } },
+      },
+    },
+  ]);
+};
 
 const removeUpvote = async (qid, uid) => {
   await Question.bulkWrite([
     {
       updateOne: {
-        "filter": { _id: qid },
-        "update": { $pull: { upvoted_by: { $eq: uid } } }
-      }
+        filter: { _id: qid },
+        update: { $pull: { upvoted_by: { $eq: uid } } },
+      },
     },
     {
       updateOne: {
-        "filter": { _id: qid },
-        "update": { $inc: { vote_count: -1 } }
-      }
-    }
-  ])
-}
+        filter: { _id: qid },
+        update: { $inc: { vote_count: -1 } },
+      },
+    },
+  ]);
+};
 
 const addDownvote = async (qid, uid) => {
   await Question.bulkWrite([
     {
       updateOne: {
-        "filter": { _id: qid },
-        "update": { $push: { downvoted_by: { $each: [uid], $position: 0 } } }
-      }
+        filter: { _id: qid },
+        update: { $push: { downvoted_by: { $each: [uid], $position: 0 } } },
+      },
     },
     {
       updateOne: {
-        "filter": { _id: qid },
-        "update": { $inc: { vote_count: -1 } }
-      }
-    }
-  ])
-}
+        filter: { _id: qid },
+        update: { $inc: { vote_count: -1 } },
+      },
+    },
+  ]);
+};
 
 const addUpvote = async (qid, uid) => {
   await Question.bulkWrite([
     {
       updateOne: {
-        "filter": { _id: qid },
-        "update": { $push: { upvoted_by: { $each: [uid], $position: 0 } } }
-      }
+        filter: { _id: qid },
+        update: { $push: { upvoted_by: { $each: [uid], $position: 0 } } },
+      },
     },
     {
       updateOne: {
-        "filter": { _id: qid },
-        "update": { $inc: { vote_count: 1 } }
-      }
-    }
-  ])
-}
+        filter: { _id: qid },
+        update: { $inc: { vote_count: 1 } },
+      },
+    },
+  ]);
+};
 
-module.exports = { addTag, getQuestionsByOrder, filterQuestionsBySearch, removeDownvote, removeUpvote, addDownvote, addUpvote };
+module.exports = {
+  addTag,
+  getQuestionsByOrder,
+  filterQuestionsBySearch,
+  removeDownvote,
+  removeUpvote,
+  addDownvote,
+  addUpvote,
+};
