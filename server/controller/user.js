@@ -1,5 +1,8 @@
 const express = require("express");
 const User = require("../models/users");
+const Question = require("../models/questions");
+const Answer = require("../models/answers");
+const Comment = require("../models/comments");
 
 const { preprocessing } = require("../utils/textpreprocess")
 
@@ -47,9 +50,75 @@ const otherUserDetails = async (req, res) => {
     }
 }
 
+const getQuestionsByUser = async (uid) => {
+    try {
+        let questions = await Question.
+        find({asked_by: preprocessing(uid)})
+        .populate('asked_by')
+        .populate('tags')
+        .populate('answers')
+        .populate('comments')
+        .populate('upvoted_by')
+        .populate('downvoted_by')
+        .exec();
+
+        return questions;
+    }
+    catch(err) {
+        return Error(`Error in extracting questions: ${err}`);
+    }
+}
+
+const getAnswersByUser = async (uid) => {
+    try {
+        let answers = await Answer.
+        find({ans_by: preprocessing(uid)})
+        .populate('ans_by')
+        .populate('comments')
+        .populate('upvoted_by')
+        .populate('downvoted_by')
+        .exec();
+        
+        return answers;
+    }
+    catch(err) {
+        return Error(`Error in extracting answers: ${err}`);
+    }
+}
+
+
+const getCommentsByUser = async (uid) => {
+    try {
+        let comments = await Comment.
+        find({commented_by: preprocessing(uid)})
+        .populate('commented_by')
+        .populate('upvoted_by')
+        .exec();
+        
+        return comments;
+    }
+    catch(err) {
+        return Error(`Error in extracting comments: ${err}`);
+    }
+}
+
+const getUserPosts = async (req, res) => {
+    try {
+        let uid = preprocessing(req.userId);
+        let questions = await getQuestionsByUser(uid);
+        let answers = await getAnswersByUser(uid);
+        let comments = await getCommentsByUser(uid);
+
+        res.status(200).send({questions: questions, answers: answers, comments: comments});
+    }
+    catch(err) {
+        res.status(500).send(`Error in fetching user contributed posts: ${err}`)
+    }
+}
 // have to make route to update user details.
 
 router.get('/ownUserDetails', authorization, ownUserDetails);
 router.get('/otherUserDetails/:username', otherUserDetails);
+router.get('/getUserPosts', authorization, getUserPosts);
 
 module.exports = router;
