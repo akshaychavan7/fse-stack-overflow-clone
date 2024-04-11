@@ -1,6 +1,7 @@
 const express = require("express");
 const Question = require("../models/questions");
 const User = require("../models/users");
+const authorization = require("../middleware/authorization");
 const {
   addTag,
   getQuestionsByOrder,
@@ -48,6 +49,7 @@ const getQuestionById = async (req, res) => {
 };
 
 // To add Question to database
+// Note: Convert it to taking asked_by directly from token
 const addQuestion = async (req, res) => {
   try {
     let tags = await Promise.all(
@@ -72,7 +74,7 @@ const addQuestion = async (req, res) => {
 const upvoteQuestion = async (req, res) => {
   try {
     let qid = preprocessing(req.body.qid);
-    let uid = preprocessing(req.body.uid);
+    let uid = preprocessing(req.userId);
     let user = await User.findOne({ _id: uid });
     if (!user) {
       res
@@ -112,7 +114,7 @@ const upvoteQuestion = async (req, res) => {
 const downvoteQuestion = async (req, res) => {
   try {
     let qid = preprocessing(req.body.qid);
-    let uid = preprocessing(req.body.uid);
+    let uid = preprocessing(req.userId);
     let user = await User.findOne({ _id: uid });
     if (!user) {
       res
@@ -174,7 +176,8 @@ const getVoteCountQuestion = async (req, res) => {
 // To flag or unflag a question.
 const flagQuestion = async (req, res) => {
   try {
-    let uid = preprocessing(req.body.uid);
+    // let uid = preprocessing(req.body.uid);
+    let uid = preprocessing(req.userId);
     let user = await User.findOne({ _id: uid });
     if (!user) {
       res
@@ -204,9 +207,9 @@ const flagQuestion = async (req, res) => {
 router.get("/getQuestion", getQuestionsByFilter);
 router.get("/getQuestionById/:questionId", getQuestionById);
 router.post("/addQuestion", addQuestion);
-router.post("/upvoteQuestion", upvoteQuestion);
-router.post("/downvoteQuestion", downvoteQuestion);
+router.post("/upvoteQuestion", authorization, upvoteQuestion);
+router.post("/downvoteQuestion", authorization, downvoteQuestion);
 router.get("/getVoteCountQuestion/:questionId", getVoteCountQuestion);
-router.post("/flagQuestion", flagQuestion);
+router.post("/flagQuestion", authorization, flagQuestion);
 
 module.exports = router;

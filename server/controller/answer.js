@@ -2,6 +2,7 @@ const express = require("express");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
 const User = require("../models/users");
+const authorization = require("../middleware/authorization");
 const { preprocessing } = require("../utils/textpreprocess");
 
 const {
@@ -41,7 +42,7 @@ const addAnswer = async (req, res) => {
 const upvoteAnswer = async (req, res) => {
   try {
     let aid = preprocessing(req.body.aid);
-    let uid = preprocessing(req.body.uid);
+    let uid = preprocessing(req.userId);
     let user = await User.findOne({ _id: uid });
     if (!user) {
       res
@@ -81,7 +82,7 @@ const upvoteAnswer = async (req, res) => {
 const downvoteAnswer = async (req, res) => {
   try {
     let aid = preprocessing(req.body.aid);
-    let uid = preprocessing(req.body.uid);
+    let uid = preprocessing(req.userId);
     let user = await User.findOne({ _id: uid });
     if (!user) {
       res
@@ -138,7 +139,7 @@ const getVoteCountAnswer = async (req, res) => {
 // To flag or unflag an answer.
 const flagAnswer = async (req, res) => {
   try {
-    let uid = preprocessing(req.body.uid);
+    let uid = preprocessing(req.userId);
     let user = await User.findOne({ _id: uid });
     if (!user) {
       res
@@ -165,9 +166,9 @@ const flagAnswer = async (req, res) => {
 
 // add appropriate HTTP verbs and their endpoints to the router.
 router.post("/addAnswer", addAnswer);
-router.post("/upvoteAnswer", upvoteAnswer);
-router.post("/downvoteAnswer", downvoteAnswer);
-router.get("/getVoteCountAnswer/:answerId", getVoteCountAnswer);
-router.post("/flagAnswer", flagAnswer);
+router.post("/upvoteAnswer", authorization, upvoteAnswer);
+router.post("/downvoteAnswer", authorization, downvoteAnswer)
+router.get("/getVoteCountAnswer/:answerId", getVoteCountAnswer)
+router.post("/flagAnswer", authorization, flagAnswer);
 
 module.exports = router;

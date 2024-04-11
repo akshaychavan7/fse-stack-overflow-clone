@@ -9,30 +9,31 @@ const Comment = require("../models/comments");
 
 const { preprocessing } = require("../utils/textpreprocess")
 
-const { authorization } = require("../server");
+const authorization = require("../middleware/authorization");
 const { route } = require("./question");
 
 
-// Function to check if mod.
-const checkMod = async (uid) => {
-    try {
-        let user = await User.findOne({ _id: uid });
-        if (!user) {
-            return false;
-        }
-        return !(user.userRole.localeCompare("moderator"));
-    }
-    catch (err) {
-        return false;
-    }
-}
+// // Function to check if mod.
+// const checkMod = async (uid) => {
+//     try {
+//         let user = await User.findOne({ _id: uid });
+//         if (!user) {
+//             return false;
+//         }
+//         return !(user.userRole.localeCompare("moderator"));
+//     }
+//     catch (err) {
+//         return false;
+//     }
+// }
 // Note: Find a better try catch maybe? Have to check again.
 
 // View flagged questions.
 const viewFlaggedQuestions = async (req, res) => {
     try {
-        let modid = preprocessing(req.body.uid);
-        if (await checkMod(modid)) {
+        // let modid = preprocessing(req.userId);
+        let role = preprocessing(req.userRole);
+        if (role == "moderator") {
             let questions = await Question.find({ flag: true }).sort({ ask_date_time: -1 });
             res.status(200).json({ flaggedQuestions: questions });
 
@@ -50,8 +51,9 @@ const viewFlaggedQuestions = async (req, res) => {
 // View flagged answers.
 const viewFlaggedAnswers = async (req, res) => {
     try {
-        let modid = preprocessing(req.body.uid);
-        if (await checkMod(modid)) {
+        // let modid = preprocessing(req.body.uid);
+        let role = preprocessing(req.userRole);
+        if (role == "moderator") {
             let answers = await Answer.find({ flag: true }).sort({ ans_date_time: -1 });
             res.status(200).json({ flaggedAnswers: answers });
         }
@@ -67,8 +69,9 @@ const viewFlaggedAnswers = async (req, res) => {
 // View flagged comments.
 const viewFlaggedComments = async (req, res) => {
     try {
-        let modid = preprocessing(req.body.uid);
-        if (await checkMod(modid)) {
+        // let modid = preprocessing(req.body.uid);
+        let role = preprocessing(req.userRole);
+        if (role == "moderator") {
             let comments = await Comment.find({ flag: true }).sort({ comment_date_time: -1 });
             res.status(200).json({ flaggedComments: comments });
         }
@@ -84,12 +87,13 @@ const viewFlaggedComments = async (req, res) => {
 // Delete flagged question.
 const deleteFlaggedQuestion = async (req, res) => {
     try {
-        let modid = preprocessing(req.body.uid);
+        // let modid = preprocessing(req.body.uid);
+        let role = preprocessing(req.userRole);
         let qid = preprocessing(req.body.qid);
         if(qid == "") {
             res.status(422).json({error: "Bad input received. Cannot receive empty qid."});
         }
-        if (await checkMod(modid)) {
+        if (role == "moderator") {
             let question = await Question.findOne({_id: qid});
             for(let answer in question['answers']) {
                 await Answer.deleteOne({_id: question['answers'][answer]});
@@ -113,13 +117,14 @@ const deleteFlaggedQuestion = async (req, res) => {
 // Delete flagged answer.
 const deleteFlaggedAnswer = async (req, res) => {
     try {
-        let modid = preprocessing(req.body.uid);
+        // let modid = preprocessing(req.body.uid);
+        let role = preprocessing(req.userRole);
         let qid = preprocessing(req.body.qid);
         let aid = preprocessing(req.body.aid);
         if(qid == "" || aid == "") {
             res.status(422).json({error: "Bad input received. Cannot receive empty qid/aid."});
         }
-        if (await checkMod(modid)) {
+        if (role == "moderator") {
             await Question.updateOne(
                 {_id: qid},
                 { $pull: { answers: {$eq: aid} } },
@@ -145,7 +150,8 @@ const deleteFlaggedAnswer = async (req, res) => {
 // Delete flagged comment.
 const deleteFlaggedComment = async (req, res) => {
     try {
-        let modid = preprocessing(req.body.uid);
+        // let modid = preprocessing(req.body.uid);
+        let role = preprocessing(req.userRole);
         let qid = preprocessing(req.body.qid);
         let aid = preprocessing(req.body.aid);
         let cid = preprocessing(req.body.cid);
@@ -158,7 +164,7 @@ const deleteFlaggedComment = async (req, res) => {
         if(cid == "") {
             res.status(422).json({error: "Bad input received. Cannot receive both empty cid."});
         }
-        if (await checkMod(modid)) {
+        if (role == "moderator") {
             if(qid != "") {
                 await Question.updateOne(
                     {_id: qid},
@@ -189,11 +195,11 @@ const deleteFlaggedComment = async (req, res) => {
 
 // add appropriate HTTP verbs and their endpoints to the router
 
-router.post('/viewFlaggedQuestions', viewFlaggedQuestions);
-router.post('/viewFlaggedAnswers', viewFlaggedAnswers);
-router.post('/viewFlaggedComments', viewFlaggedComments);
-router.post('/deleteFlaggedQuestion', deleteFlaggedQuestion);
-router.post('/deleteFlaggedAnswer', deleteFlaggedAnswer);
-router.post('/deleteFlaggedComment', deleteFlaggedComment);
+router.get('/viewFlaggedQuestions', authorization, viewFlaggedQuestions);
+router.get('/viewFlaggedAnswers', authorization, viewFlaggedAnswers);
+router.get('/viewFlaggedComments', authorization, viewFlaggedComments);
+router.post('/deleteFlaggedQuestion', authorization, deleteFlaggedQuestion);
+router.post('/deleteFlaggedAnswer', authorization, deleteFlaggedAnswer);
+router.post('/deleteFlaggedComment', authorization, deleteFlaggedComment);
 
 module.exports = router;
