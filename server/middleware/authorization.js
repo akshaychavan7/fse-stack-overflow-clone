@@ -10,7 +10,8 @@ const authorization = (req, res, next) => {
   }
   try {
     const data = jwt.verify(token, SECRET_KEY);
-    req.userId = data.id;
+    req.userId = data.userId;
+    req.username = data.username;
     req.userRole = data.role;
     return next();
   } catch (e) {
