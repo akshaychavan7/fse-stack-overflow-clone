@@ -2,14 +2,27 @@ import "./index.css";
 import QuestionHeader from "./header";
 import Question from "./question";
 
+import { getQuestionsByFilter } from "../../../services/questionService";
+import { useEffect, useState } from "react";
+
 const QuestionPage = ({
   title_text = "All Questions",
-  qlist = [],
-  getTagById,
+  order,
+  search,
   setQuestionOrder,
+  clickTag,
   handleAnswer,
   handleNewQuestion,
 }) => {
+  const [qlist, setQlist] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      let res = await getQuestionsByFilter(order, search);
+      setQlist(res || []);
+    };
+
+    fetchData().catch((e) => console.log(e));
+  }, [order, search]);
   return (
     <>
       <QuestionHeader
@@ -18,25 +31,19 @@ const QuestionPage = ({
         setQuestionOrder={setQuestionOrder}
         handleNewQuestion={handleNewQuestion}
       />
-      <table className="questions_table">
-        <tbody id="question_list" className="question_list">
-          {qlist.map((q, idx) => (
-            <Question
-              q={q}
-              key={idx}
-              getTagById={getTagById}
-              handleAnswer={handleAnswer}
-            />
-          ))}
-        </tbody>
-      </table>
-      {!qlist.length && (
-        <div
-          className="bold_title right_padding"
-          onClick={() => handleNewQuestion}
-        >
-          No Questions Found
-        </div>
+      <div id="question_list" className="question_list">
+        {qlist.map((q, idx) => (
+          <Question
+            q={q}
+            key={idx}
+            clickTag={clickTag}
+            handleAnswer={handleAnswer}
+          />
+        ))}
+        {qlist.length === 0 && <h2 className="center">No questions found</h2>}
+      </div>
+      {title_text === "Search Results" && !qlist.length && (
+        <div className="bold_title right_padding">No Questions Found</div>
       )}
     </>
   );
