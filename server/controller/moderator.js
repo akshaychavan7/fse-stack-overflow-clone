@@ -11,6 +11,7 @@ const { preprocessing } = require("../utils/textpreprocess")
 
 const authorization = require("../middleware/authorization");
 const { route } = require("./question");
+const comment = require("../models/schema/comment");
 
 
 // // Function to check if mod.
@@ -119,14 +120,15 @@ const deleteFlaggedAnswer = async (req, res) => {
     try {
         // let modid = preprocessing(req.body.uid);
         let role = preprocessing(req.userRole);
-        let qid = preprocessing(req.body.qid);
+        // let qid = preprocessing(req.body.qid);
         let aid = preprocessing(req.body.aid);
-        if(qid == "" || aid == "") {
-            res.status(422).json({error: "Bad input received. Cannot receive empty qid/aid."});
+        if(aid == "") {
+            res.status(422).json({error: "Bad input received. Cannot receive empty aid."});
         }
         if (role == "moderator") {
+            let question = await Question.findOne({answers: aid});
             await Question.updateOne(
-                {_id: qid},
+                {_id: question['_id'].toString()},
                 { $pull: { answers: {$eq: aid} } },
                 {new: true}
             );
@@ -152,29 +154,31 @@ const deleteFlaggedComment = async (req, res) => {
     try {
         // let modid = preprocessing(req.body.uid);
         let role = preprocessing(req.userRole);
-        let qid = preprocessing(req.body.qid);
-        let aid = preprocessing(req.body.aid);
+        // let qid = preprocessing(req.body.qid);
+        // let aid = preprocessing(req.body.aid);
         let cid = preprocessing(req.body.cid);
-        if(qid != ""  && aid != "") {
-            res.status(422).json({error: "Bad input received. Cannot receive both qid and aid."});
-        }
-        if(qid == "" && aid == "") {
-            res.status(422).json({error: "Bad input received. Cannot receive both empty qid and aid."});
-        }
+        // if(qid != ""  && aid != "") {
+        //     res.status(422).json({error: "Bad input received. Cannot receive both qid and aid."});
+        // }
+        // if(qid == "" && aid == "") {
+        //     res.status(422).json({error: "Bad input received. Cannot receive both empty qid and aid."});
+        // }
         if(cid == "") {
             res.status(422).json({error: "Bad input received. Cannot receive both empty cid."});
         }
         if (role == "moderator") {
-            if(qid != "") {
+            let question = await Question.findOne({comments: cid});
+            let answer = await Answer.findOne({comments: cid});
+            if(question) {
                 await Question.updateOne(
-                    {_id: qid},
+                    {_id: question['_id'].toString()},
                     { $pull: { comments: {$eq: cid} } },
                     {new: true}
                 );
             }
-            else if(aid != "") {
+            else if(answer) {
                 await Answer.updateOne(
-                    {_id: aid},
+                    {_id: answer['_id'].toString()},
                     { $pull: { comments: {$eq: cid} } },
                     {new: true}
                 );

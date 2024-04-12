@@ -192,6 +192,10 @@ const addUpvote = async (qid, uid) => {
   ]);
 };
 
+const getTop10Questions = async () => {
+  return await Question.find().sort({views: -1}).limit(10).exec();
+}
+
 module.exports = {
   addTag,
   getQuestionsByOrder,
@@ -200,4 +204,5 @@ module.exports = {
   removeUpvote,
   addDownvote,
   addUpvote,
+  getTop10Questions,
 };

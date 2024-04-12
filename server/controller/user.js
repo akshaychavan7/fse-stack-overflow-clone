@@ -23,7 +23,8 @@ const ownUserDetails = async (req, res) => {
             lastname: user['lastname'],
             joiningDate: user['joiningDate'],
             profilePic: user['profilePic'],
-            userRole: user['userRole']
+            userRole: user['userRole'],
+            reputation: user['reputation']
         }
         res.status(200).json({ userDetails: udetails });
     }
@@ -41,7 +42,8 @@ const otherUserDetails = async (req, res) => {
             lastname: user['lastname'],
             joiningDate: user['joiningDate'],
             profilePic: user['profilePic'],
-            userRole: user['userRole']
+            userRole: user['userRole'],
+            reputation: user['reputation']
         }
         res.status(200).json({ userDetails: udetails });
     }

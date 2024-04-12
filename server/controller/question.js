@@ -10,9 +10,12 @@ const {
   removeUpvote,
   addDownvote,
   addUpvote,
+  getTop10Questions,
 } = require("../utils/question");
 
 const { preprocessing } = require("../utils/textpreprocess");
+
+const { updateReputation } = require("../utils/user");
 
 const router = express.Router();
 
@@ -96,11 +99,13 @@ const upvoteQuestion = async (req, res) => {
     const checkUserUpvote = question.upvoted_by.includes(uid);
     if (checkUserUpvote) {
       removeUpvote(qid, uid);
+      await updateReputation(false, question['asked_by'].toString());
       res
         .status(200)
         .json({ message: "Removed previous upvote of user", upvote: false });
     } else {
       addUpvote(qid, uid);
+      await updateReputation(true, question['asked_by'].toString());
       res.status(200).json({ message: "Upvoted for the user", upvote: true });
     }
   } catch (err) {
@@ -202,6 +207,17 @@ const flagQuestion = async (req, res) => {
   }
 };
 
+const getTrendingQuestions = async (req, res) => {
+  try {
+    let questions = await getTop10Questions();
+    res.status(200).json({questions: questions});
+  }
+  catch (err) {
+    res.status(500).json({ error: `Cannot fetch treding questions: ${err}` });
+  }
+  
+}
+
 // add appropriate HTTP verbs and their endpoints to the router
 
 router.get("/getQuestion", getQuestionsByFilter);
@@ -211,5 +227,6 @@ router.post("/upvoteQuestion", authorization, upvoteQuestion);
 router.post("/downvoteQuestion", authorization, downvoteQuestion);
 router.get("/getVoteCountQuestion/:questionId", getVoteCountQuestion);
 router.post("/flagQuestion", authorization, flagQuestion);
+router.get("/getTrendingQuestions", getTrendingQuestions);
 
 module.exports = router;

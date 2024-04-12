@@ -12,6 +12,8 @@ const {
   addUpvote,
 } = require("../utils/answer");
 
+const { updateReputation } = require("../utils/user");
+
 const router = express.Router();
 
 // Adding answer
@@ -64,11 +66,13 @@ const upvoteAnswer = async (req, res) => {
     const checkUserUpvote = answer.upvoted_by.includes(uid);
     if (checkUserUpvote) {
       removeUpvote(aid, uid);
+      await updateReputation(false, answer['ans_by'].toString());
       res
         .status(200)
         .json({ message: "Removed previous upvote of user", upvote: false });
     } else {
       addUpvote(aid, uid);
+      await updateReputation(true, answer['ans_by'].toString());
       res.status(200).json({ message: "Upvoted for the user", upvote: true });
     }
   } catch (err) {
