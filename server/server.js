@@ -6,7 +6,6 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const authorization = require("./middleware/authorization"); // custom middleware defined for user authorization
 
 const { MONGO_URL, port, CLIENT_URL } = require("./config");
 
@@ -47,7 +46,9 @@ const tagController = require("./controller/tag");
 const answerController = require("./controller/answer");
 const commentController = require("./controller/comment");
 const loginController = require("./controller/login");
+const userController = require("./controller/user");
 const modController = require("./controller/moderator");
+const authorization = require("./middleware/authorization");
 
 app.use("/question", questionController);
 app.use("/tag", tagController);
@@ -56,6 +57,7 @@ app.use("/comment", commentController);
 app.use("/login", loginController);
 app.use("/register", loginController);
 app.use("/moderator", modController);
+app.use("/user", userController);
 
 let server = app.listen(port, () => {
   console.log(`Server starts at http://localhost:${port}`);
@@ -86,4 +88,4 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-module.exports = { server, authorization };
+module.exports = { server };
