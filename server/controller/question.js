@@ -1,6 +1,7 @@
 const express = require("express");
 const Question = require("../models/questions");
 const User = require("../models/users");
+const authorization = require("../middleware/authorization");
 const {
   addTag,
   getQuestionsByOrder,
@@ -35,10 +36,29 @@ const getQuestionsByFilter = async (req, res) => {
 const getQuestionById = async (req, res) => {
   try {
     let question = await Question.findOneAndUpdate(
-      { _id: preprocessing(req.params.questionId) },
+      { _id: req.params.questionId },
       { $inc: { views: 1 } },
       { new: true }
-    ).populate("answers");
+    )
+      .populate({
+        path: "answers",
+        populate: {
+          path: "ans_by",
+          select: "username firstname lastname profilePic",
+        },
+      })
+      .populate({
+        path: "answers",
+        populate: {
+          path: "comments",
+          populate: {
+            path: "commented_by",
+            select: "username firstname lastname profilePic",
+          },
+        },
+      })
+      .populate("asked_by")
+      .populate("comments");
     res.status(200);
     res.json(question);
   } catch (err) {
@@ -134,12 +154,10 @@ const downvoteQuestion = async (req, res) => {
     const checkUserDownvote = question.downvoted_by.includes(uid);
     if (checkUserDownvote) {
       removeDownvote(qid, uid);
-      res
-        .status(200)
-        .json({
-          message: "Removed previous downvote of user",
-          downvote: false,
-        });
+      res.status(200).json({
+        message: "Removed previous downvote of user",
+        downvote: false,
+      });
     } else {
       addDownvote(qid, uid);
       res
@@ -201,12 +219,16 @@ const flagQuestion = async (req, res) => {
 
 // add appropriate HTTP verbs and their endpoints to the router
 
-router.get("/getQuestion", getQuestionsByFilter);
-router.get("/getQuestionById/:questionId", getQuestionById);
-router.post("/addQuestion", addQuestion);
-router.post("/upvoteQuestion", upvoteQuestion);
-router.post("/downvoteQuestion", downvoteQuestion);
-router.get("/getVoteCountQuestion/:questionId", getVoteCountQuestion);
-router.post("/flagQuestion", flagQuestion);
+router.get("/getQuestion", authorization, getQuestionsByFilter);
+router.get("/getQuestionById/:questionId", authorization, getQuestionById);
+router.post("/addQuestion", authorization, addQuestion);
+router.post("/upvoteQuestion", authorization, upvoteQuestion);
+router.post("/downvoteQuestion", authorization, downvoteQuestion);
+router.get(
+  "/getVoteCountQuestion/:questionId",
+  authorization,
+  getVoteCountQuestion
+);
+router.post("/flagQuestion", authorization, flagQuestion);
 
 module.exports = router;
