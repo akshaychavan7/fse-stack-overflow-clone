@@ -1,5 +1,6 @@
 const Tag = require("../models/tags");
 const Question = require("../models/questions");
+const question = require("../models/schema/question");
 
 const parseTags = (search) => {
   return (search.match(/\[([^\]]+)\]/g) || []).map((word) => word.slice(1, -1));
@@ -196,6 +197,51 @@ const getTop10Questions = async () => {
   return await Question.find().sort({views: -1}).limit(10).exec();
 }
 
+const showQuesUpDown = (uid, question) => {
+  question.upvote = false;
+  question.downvote = false;
+  let ques_upvoteBy = question['upvoted_by'].map(objectId => objectId.toString());
+  let ques_downvoteBy = question['downvoted_by'].map(objectId => objectId.toString());
+  if(ques_upvoteBy.includes(uid)) {
+    question.upvote = true;
+  }
+  else if(ques_downvoteBy.includes(uid)) {
+    question.downvote = true;
+  }
+  question['answers'] = showAnsUpDown(uid, question['answers']);
+  question['comments'] = showCommentUpDown(uid, question['comments']);
+  return question;
+}
+
+const showAnsUpDown = (uid, answers) => {
+  for(let answer in answers) {
+    answers[answer].upvote = false;
+    answers[answer].downvote = false;
+    let ans_upvoteBy = answers[answer]['upvoted_by'].map(objectId => objectId.toString());
+    let ans_downvoteBy = answers[answer]['downvoted_by'].map(objectId => objectId.toString());
+    if(ans_upvoteBy.includes(uid)) {
+      answers[answer].upvote = true;
+    }
+    else if(ans_downvoteBy.includes(uid)) {
+      answers[answer].downvote = true;
+    }
+    answers[answer]['comments'] = showCommentUpDown(uid, answers[answer]['comments']);
+  }
+  return answers;
+}
+
+const showCommentUpDown = (uid, comments) => {
+  for(let comment in comments) {
+    comments[comment].upvote = false;
+    comments[comment].downvote = false;
+    let com_upvoteBy = comments[comment]['upvoted_by'].map(objectId => objectId.toString());
+    if(com_upvoteBy.includes(uid)) {
+      comments[comment].upvote = true;
+    }
+  }
+  return comments;
+}
+
 module.exports = {
   addTag,
   getQuestionsByOrder,
@@ -205,4 +251,5 @@ module.exports = {
   addDownvote,
   addUpvote,
   getTop10Questions,
+  showQuesUpDown,
 };

@@ -122,23 +122,23 @@ const downvoteAnswer = async (req, res) => {
   }
 };
 
-// To get vote count of answer.
-const getVoteCountAnswer = async (req, res) => {
-  try {
-    let aid = preprocessing(req.params.answerId);
-    let answer = await Answer.findOne({ _id: aid });
-    if (!answer) {
-      res
-        .status(404)
-        .json({ error: `Unavailable resource: Unidentified answerid.` });
-    }
-    res.status(200).json({ vote_count: answer.vote_count });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: `Cannot fetch vote count of answer: ${err}` });
-  }
-};
+// // To get vote count of answer.
+// const getVoteCountAnswer = async (req, res) => {
+//   try {
+//     let aid = preprocessing(req.params.answerId);
+//     let answer = await Answer.findOne({ _id: aid });
+//     if (!answer) {
+//       res
+//         .status(404)
+//         .json({ error: `Unavailable resource: Unidentified answerid.` });
+//     }
+//     res.status(200).json({ vote_count: answer.vote_count });
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ error: `Cannot fetch vote count of answer: ${err}` });
+//   }
+// };
 
 // To flag or unflag an answer.
 const flagAnswer = async (req, res) => {
@@ -169,10 +169,10 @@ const flagAnswer = async (req, res) => {
 };
 
 // add appropriate HTTP verbs and their endpoints to the router.
-router.post("/addAnswer", addAnswer);
+router.post("/addAnswer", authorization, addAnswer);
 router.post("/upvoteAnswer", authorization, upvoteAnswer);
 router.post("/downvoteAnswer", authorization, downvoteAnswer)
-router.get("/getVoteCountAnswer/:answerId", getVoteCountAnswer)
+// router.get("/getVoteCountAnswer/:answerId", authorization, getVoteCountAnswer)
 router.post("/flagAnswer", authorization, flagAnswer);
 
 module.exports = router;
