@@ -16,6 +16,7 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
     };
     fetchData().catch((e) => console.log(e));
   }, []);
+
   return (
     <>
       <AnswerHeader

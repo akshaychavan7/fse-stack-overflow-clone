@@ -10,9 +10,15 @@ const {
   removeUpvote,
   addDownvote,
   addUpvote,
+  getTop10Questions,
+  showQuesUpDown,
 } = require("../utils/question");
 
+const { showAnsUpDown } = require("../utils/answer");
+
 const { preprocessing } = require("../utils/textpreprocess");
+
+const { updateReputation } = require("../utils/user");
 
 const router = express.Router();
 
@@ -47,27 +53,56 @@ const getQuestionById = async (req, res) => {
           select: "username firstname lastname profilePic",
         },
       })
-      .populate({
-        path: "answers",
-        populate: {
-          path: "comments",
-          populate: {
-            path: "commented_by",
-            select: "username firstname lastname profilePic",
-          },
-        },
-      })
-      .populate("asked_by")
-      .populate("comments");
-    res.status(200);
-    res.json(question);
+      .populate({ path: "answers", populate: { path: "comments" } })
+      .populate({ path: "asked_by", select: "-password" })
+      .populate("tags")
+      .populate("comments")
+      .exec();
+    let jsonQuestion = question.toJSON();
+    jsonQuestion = showQuesUpDown(req.userId, jsonQuestion);
+    res.status(200).json(jsonQuestion);
   } catch (err) {
     res.status(500);
-    res.json({});
+    res.json({ error: "Something went wrong", details: err.message });
   }
 };
 
+// const getQuestionById = async (req, res) => {
+//   try {
+//     let question = await Question.findOneAndUpdate(
+//       { _id: req.params.questionId },
+//       { $inc: { views: 1 } },
+//       { new: true }
+//     )
+//       .populate({
+//         path: "answers",
+//         populate: {
+//           path: "ans_by",
+//           select: "username firstname lastname profilePic",
+//         },
+//       })
+//       .populate({
+//         path: "answers",
+//         populate: {
+//           path: "comments",
+//           populate: {
+//             path: "commented_by",
+//             select: "username firstname lastname profilePic",
+//           },
+//         },
+//       })
+//       .populate("asked_by")
+//       .populate("comments");
+//     res.status(200);
+//     res.json(question);
+//   } catch (err) {
+//     res.status(500);
+//     res.json({});
+//   }
+// };
+
 // To add Question to database
+// Note: Convert it to taking asked_by directly from token
 const addQuestion = async (req, res) => {
   try {
     let tags = await Promise.all(
@@ -92,7 +127,7 @@ const addQuestion = async (req, res) => {
 const upvoteQuestion = async (req, res) => {
   try {
     let qid = preprocessing(req.body.qid);
-    let uid = preprocessing(req.body.uid);
+    let uid = preprocessing(req.userId);
     let user = await User.findOne({ _id: uid });
     if (!user) {
       res
@@ -114,11 +149,13 @@ const upvoteQuestion = async (req, res) => {
     const checkUserUpvote = question.upvoted_by.includes(uid);
     if (checkUserUpvote) {
       removeUpvote(qid, uid);
+      await updateReputation(false, question["asked_by"].toString());
       res
         .status(200)
         .json({ message: "Removed previous upvote of user", upvote: false });
     } else {
       addUpvote(qid, uid);
+      await updateReputation(true, question["asked_by"].toString());
       res.status(200).json({ message: "Upvoted for the user", upvote: true });
     }
   } catch (err) {
@@ -132,7 +169,7 @@ const upvoteQuestion = async (req, res) => {
 const downvoteQuestion = async (req, res) => {
   try {
     let qid = preprocessing(req.body.qid);
-    let uid = preprocessing(req.body.uid);
+    let uid = preprocessing(req.userId);
     let user = await User.findOne({ _id: uid });
     if (!user) {
       res
@@ -171,28 +208,11 @@ const downvoteQuestion = async (req, res) => {
   }
 };
 
-// To get vote count of question.
-const getVoteCountQuestion = async (req, res) => {
-  try {
-    let qid = preprocessing(req.params.questionId);
-    let question = await Question.findOne({ _id: qid });
-    if (!question) {
-      res
-        .status(404)
-        .json({ error: `Unavailable resource: Unidentified questionid.` });
-    }
-    res.status(200).json({ vote_count: question.vote_count });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: `Cannot fetch vote count of question: ${err}` });
-  }
-};
-
 // To flag or unflag a question.
 const flagQuestion = async (req, res) => {
   try {
-    let uid = preprocessing(req.body.uid);
+    // let uid = preprocessing(req.body.uid);
+    let uid = preprocessing(req.userId);
     let user = await User.findOne({ _id: uid });
     if (!user) {
       res
@@ -208,27 +228,46 @@ const flagQuestion = async (req, res) => {
     question.flag = !question.flag;
     await question.save();
     if (!question.flag) {
-      res.status(200).json({ message: "Unflagged question from review." });
+      res
+        .status(200)
+        .json({ message: "Unflagged question from review.", flag: false });
     } else {
-      res.status(200).json({ message: "Flagged question for review." });
+      res
+        .status(200)
+        .json({ message: "Flagged question for review.", flag: true });
     }
   } catch (err) {
     res.status(500).json({ error: `Cannot fetch flagged question: ${err}` });
   }
 };
 
+const getTrendingQuestions = async (req, res) => {
+  try {
+    let questions = await getTop10Questions();
+    res.status(200).json({ questions: questions });
+  } catch (err) {
+    res.status(500).json({ error: `Cannot fetch treding questions: ${err}` });
+  }
+};
+
 // add appropriate HTTP verbs and their endpoints to the router
 
-router.get("/getQuestion", authorization, getQuestionsByFilter);
-router.get("/getQuestionById/:questionId", authorization, getQuestionById);
-router.post("/addQuestion", authorization, addQuestion);
-router.post("/upvoteQuestion", authorization, upvoteQuestion);
-router.post("/downvoteQuestion", authorization, downvoteQuestion);
+router.get("/getQuestion", authorization, authorization, getQuestionsByFilter);
 router.get(
-  "/getVoteCountQuestion/:questionId",
+  "/getQuestionById/:questionId",
   authorization,
-  getVoteCountQuestion
+  authorization,
+  getQuestionById
 );
-router.post("/flagQuestion", authorization, flagQuestion);
+router.post("/addQuestion", authorization, authorization, addQuestion);
+router.post("/upvoteQuestion", authorization, authorization, upvoteQuestion);
+router.post(
+  "/downvoteQuestion",
+  authorization,
+  authorization,
+  downvoteQuestion
+);
+router.post("/flagQuestion", authorization, authorization, flagQuestion);
+router.get("/getTrendingQuestions", authorization, getTrendingQuestions);
 
 module.exports = router;

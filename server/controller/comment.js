@@ -2,7 +2,7 @@ const express = require("express");
 const Question = require("../models/questions");
 const Answer = require("../models/answers");
 const Comment = require("../models/comments");
-const { authorization } = require("../server");
+const authorization = require("../middleware/authorization");
 const User = require("../models/users");
 
 const {
@@ -63,7 +63,7 @@ const addAnswerComment = async (req, res) => {
 const upvoteComment = async (req, res) => {
     try {
         let cid = preprocessing(req.body.cid);
-        let uid = preprocessing(req.body.uid);
+        let uid = preprocessing(req.userId);
         let user = await User.findOne({ _id: uid });
         if (!user) {
             res.status(401).json({ error: `Unauthorized access: Unidentified userid.` });
@@ -108,7 +108,7 @@ const getVoteCountComment = async (req, res) => {
 // Note: requires structural change for delete.
 const flagComment = async (req, res) => {
     try {
-        let uid = preprocessing(req.body.uid);
+        let uid = preprocessing(req.userId);
         let user = await User.findOne({ _id: uid });
         if (!user) {
             res.status(401).json({ error: `Unauthorized access: Unidentified userid.` });
@@ -134,8 +134,8 @@ const flagComment = async (req, res) => {
 // add appropriate HTTP verbs and their endpoints to the router.
 router.post("/addQuestionComment", addQuestionComment);
 router.post("/addAnswerComment", addAnswerComment);
-router.post("/upvoteComment", upvoteComment);
+router.post("/upvoteComment", authorization, upvoteComment);
 router.get("/getVoteCountComment/:commentId", getVoteCountComment)
-router.post("/flagComment", flagComment);
+router.post("/flagComment", authorization, flagComment);
 
 module.exports = router;

@@ -58,6 +58,7 @@ app.use("/login", loginController);
 app.use("/register", loginController);
 app.use("/moderator", modController);
 app.use("/user", userController);
+app.use("/user", userController);
 
 let server = app.listen(port, () => {
   console.log(`Server starts at http://localhost:${port}`);
