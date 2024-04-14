@@ -67,40 +67,6 @@ const getQuestionById = async (req, res) => {
   }
 };
 
-// const getQuestionById = async (req, res) => {
-//   try {
-//     let question = await Question.findOneAndUpdate(
-//       { _id: req.params.questionId },
-//       { $inc: { views: 1 } },
-//       { new: true }
-//     )
-//       .populate({
-//         path: "answers",
-//         populate: {
-//           path: "ans_by",
-//           select: "username firstname lastname profilePic",
-//         },
-//       })
-//       .populate({
-//         path: "answers",
-//         populate: {
-//           path: "comments",
-//           populate: {
-//             path: "commented_by",
-//             select: "username firstname lastname profilePic",
-//           },
-//         },
-//       })
-//       .populate("asked_by")
-//       .populate("comments");
-//     res.status(200);
-//     res.json(question);
-//   } catch (err) {
-//     res.status(500);
-//     res.json({});
-//   }
-// };
-
 // To add Question to database
 // Note: Convert it to taking asked_by directly from token
 const addQuestion = async (req, res) => {
