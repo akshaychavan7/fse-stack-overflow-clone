@@ -1,34 +1,52 @@
+import { getMetaData } from "../../../../tool";
+import AuthorMeta from "../../AuthorMeta/AuthorMeta";
 import "./index.css";
+import { Stack } from "@mui/material";
 
-const Question = (props) => {
+const Question = ({ q, clickTag, handleAnswer }) => {
   return (
-    <tr
-      className="question right_padding lastActivity"
-      onClick={() => props.handleAnswer(props.q.qid)}
+    <div
+      className="question right_padding"
+      onClick={() => {
+        handleAnswer(q._id);
+      }}
     >
-      <td className="question-info-grey postStats">
-        <div>{props.q.getAnswerCount()} answers</div>
-        <div>{props.q.getQuestionViews()} views</div>
-      </td>
-      <td className="title_td">
-        <div className="question_mid postTitle">{props.q.title}</div>
+      <div className="postStats">
+        <div>{q.vote_count || 0} votes</div>
+        <div>{q.answers.length || 0} answers</div>
+        <div>{q.views} views</div>
+      </div>
+      <div className="question_mid">
+        <div className="postTitle">{q.title}</div>
         <div className="question_tags">
-          {props.q.tagIds.map((tagID) => {
+          {q.tags.map((tag, idx) => {
             return (
-              <span className="question-tag question_tag_button" key={tagID}>
-                {props.getTagById(tagID).name}
-              </span>
+              <button
+                key={idx}
+                className="question_tag_button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clickTag(tag.name);
+                }}
+              >
+                {tag.name}
+              </button>
             );
           })}
         </div>
-      </td>
-      <td className="question_author">
-        <div>{props.q.askedBy}</div>
-      </td>
-      <td className="question_meta">
-        {" asked " + props.q.calculateTimeElapsed()}
-      </td>
-    </tr>
+      </div>
+      <div className="lastActivity">
+        <Stack direction="column" spacing={1}>
+          <AuthorMeta
+            name={q.asked_by.firstname + " " + q.asked_by.lastname}
+            profilePic={q.asked_by.profilePic}
+          />
+          <div className="question_meta">
+            asked {getMetaData(new Date(q.ask_date_time))}
+          </div>
+        </Stack>
+      </div>
+    </div>
   );
 };
 
