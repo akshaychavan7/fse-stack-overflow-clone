@@ -67,6 +67,7 @@ export default function Login() {
           type: "SET_IS_AUTHENTICATED",
           payload: true,
         });
+        localStorage.setItem("user_details", JSON.stringify(response.user));
         navigate("/home");
       } else {
         alert.showAlert("Invalid credentials", "error");

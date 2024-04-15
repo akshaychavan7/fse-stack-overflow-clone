@@ -21,7 +21,7 @@ const authenticateCredentials = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, username: user.username, role: user.userRole },
+      { userId: user._id, username: user.username, userRole: user.userRole },
       SECRET_KEY,
       { expiresIn: "1d" }
     );
@@ -30,10 +30,19 @@ const authenticateCredentials = async (req, res) => {
       .cookie("access_token", token, {
         httpOnly: true,
         secure: true,
-        expires: new Date(Date.now() + 900000),
+        expires: new Date(Date.now() + 90000000), // expires after 1 day
       })
       .status(200)
-      .json({ status: 200, message: "Logged In Successfully" });
+      .json({
+        status: 200,
+        message: "Logged In Successfully",
+        user: {
+          firstname: user.firstname,
+          lastname: user.lastname,
+          username: user.username,
+          profilePic: user.profilePic,
+        },
+      });
   } catch (error) {
     console.error(`Error while calling authenticate API: ${error}`);
     res.status(500).json({ message: "Internal Server Error" });

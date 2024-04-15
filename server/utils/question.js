@@ -76,7 +76,10 @@ const getQuestionsByOrder = async (order) => {
   try {
     let query = Question.find({})
       .populate("answers")
-      .populate({ path: "tags" });
+      .populate({ path: "tags" })
+      .populate({
+        path: "asked_by",
+      });
 
     let questions = await query.exec();
 

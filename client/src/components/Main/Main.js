@@ -1,24 +1,45 @@
 import "./index.css";
-import { useState } from "react";
-import SideBarNav from "./sideBarNav";
+import { useEffect, useState } from "react";
+import SideBarNav from "./sideBarNav/Sidebar";
 import QuestionPage from "./questionPage";
 import AnswerPage from "./answerPage";
 import NewAnswer from "./newAnswer";
 import NewQuestion from "./newQuestion";
-import TagPage from "./tagPage";
+import TagPage from "./tagPage/TagPage";
+import { addQuestion } from "../../services/questionService";
+import { addAnswer } from "../../services/answerService";
+import { getTagsWithQuestionNumber } from "../../services/tagService";
+import Users from "./Users/Users";
+import getUsersList from "../../services/userService";
+import { useAlert } from "../../context/AlertContext";
 
 const Main = ({
   search = "",
   setSearch = () => {},
-  app,
   title,
   setQuestionPage,
 }) => {
+  const alert = useAlert();
+  const [users, setUsers] = useState([]);
   const [page, setPage] = useState("home");
   const [questionOrder, setQuestionOrder] = useState("newest");
   const [qid, setQid] = useState("");
   const [selected, setSelected] = useState("q");
   let content = null;
+
+  useEffect(() => {
+    async function fetchUsersList() {
+      let res = await getUsersList();
+      setUsers(res || []);
+    }
+    fetchUsersList().catch((e) => {
+      console.error(e);
+      alert.showAlert(
+        "Could not fetch users list. Please contact admin if the issue persists.",
+        "error"
+      );
+    });
+  }, []);
 
   const clickTag = (tagName) => {
     setSearch(`[${tagName}]`);
@@ -35,6 +56,11 @@ const Main = ({
     setPage("tag");
   };
 
+  const handleUsers = () => {
+    setSelected("u");
+    setPage("user");
+  };
+
   const handleNewQuestion = () => {
     setPage("newQuestion");
   };
@@ -48,14 +74,24 @@ const Main = ({
     setPage("newAnswer");
   };
 
+  const handleAddQuestion = async (question) => {
+    await addQuestion(question);
+    handleQuestions();
+  };
+
+  const handleAddAnswer = async (qid, answer) => {
+    await addAnswer(qid, answer);
+    handleAnswer(qid);
+  };
+
   const getQuestionPage = (order, search) => {
     return (
       <QuestionPage
-        app={app}
         title_text={title}
-        qlist={app.getQuestionsByFilter(order, search)}
-        getTagById={app.getTagById}
+        order={order}
+        search={search}
         setQuestionOrder={setQuestionOrder}
+        clickTag={clickTag}
         handleAnswer={handleAnswer}
         handleNewQuestion={handleNewQuestion}
       />
@@ -64,19 +100,13 @@ const Main = ({
 
   switch (page) {
     case "home": {
-      // setSelected("q");
       content = getQuestionPage(questionOrder.toLowerCase(), search);
       break;
     }
     case "answer": {
-      // setSelected("");
-      let q = app.getQuestionById(qid);
-      q.addViewCount();
       content = (
         <AnswerPage
-          app={app}
-          question={q}
-          ans={app.getQuestionAnswer(q)}
+          qid={qid}
           handleNewQuestion={handleNewQuestion}
           handleNewAnswer={handleNewAnswer}
         />
@@ -84,39 +114,32 @@ const Main = ({
       break;
     }
     case "newAnswer": {
-      // setSelected("");
       content = (
-        <NewAnswer
-          qid={qid}
-          addAnswer={app.addAnswer}
-          handleAnswer={handleAnswer}
-        />
+        <NewAnswer handleAddAnswer={(answer) => handleAddAnswer(qid, answer)} />
       );
       break;
     }
     case "newQuestion": {
-      // setSelected("");
       content = (
-        <NewQuestion
-          addQuestion={(question) => app.addQuestion(question)}
-          handleQuestions={handleQuestions}
-        />
+        <NewQuestion addQuestion={(question) => handleAddQuestion(question)} />
       );
       break;
     }
     case "tag": {
       content = (
         <TagPage
-          tlist={app.getTags()}
-          getQuestionCountByTag={app.getQuestionCountByTag}
+          getTagsWithQuestionNumber={getTagsWithQuestionNumber}
           clickTag={clickTag}
           handleNewQuestion={handleNewQuestion}
         />
       );
       break;
     }
+    case "user":
+      content = <Users users={users} />;
+      break;
     default:
-      content = <QuestionPage app={app} />;
+      content = getQuestionPage(questionOrder.toLowerCase(), search);
       break;
   }
 
@@ -126,6 +149,8 @@ const Main = ({
         selected={selected}
         handleQuestions={handleQuestions}
         handleTags={handleTags}
+        handleUsers={handleUsers}
+        setQuestionPage={setQuestionPage}
       />
       <div id="right_main" className="right_main">
         {content}
