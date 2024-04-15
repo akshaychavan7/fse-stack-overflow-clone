@@ -6,6 +6,11 @@ const Tag = require("../models/tags");
 const Question = require("../models/questions");
 const { default: mongoose } = require("mongoose");
 
+// Mock the authorization
+jest.mock('../middleware/authorization', () => (req, res, next) => {
+  next();
+});
+
 // Mock data for tags
 const mockTags = [
   { name: "tag1" },

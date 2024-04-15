@@ -14,8 +14,6 @@ const {
   showQuesUpDown,
 } = require("../utils/question");
 
-const { showAnsUpDown } = require("../utils/answer");
-
 const { preprocessing } = require("../utils/textpreprocess");
 
 const { updateReputation } = require("../utils/user");

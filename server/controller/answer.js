@@ -45,12 +45,6 @@ const upvoteAnswer = async (req, res) => {
   try {
     let aid = preprocessing(req.body.aid);
     let uid = preprocessing(req.userId);
-    let user = await User.findOne({ _id: uid });
-    if (!user) {
-      res
-        .status(401)
-        .json({ error: `Unauthorized access: Unidentified userid.` });
-    }
     let answer = await Answer.findOne({ _id: aid });
     if (!answer) {
       res
@@ -67,18 +61,14 @@ const upvoteAnswer = async (req, res) => {
     if (checkUserUpvote) {
       removeUpvote(aid, uid);
       await updateReputation(false, answer['ans_by'].toString());
-      res
-        .status(200)
-        .json({ message: "Removed previous upvote of user", upvote: false });
+      res.status(200).json({ message: "Removed previous upvote of user", upvote: false });
     } else {
       addUpvote(aid, uid);
       await updateReputation(true, answer['ans_by'].toString());
       res.status(200).json({ message: "Upvoted for the user", upvote: true });
     }
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: `Answer could not be upvoted at this time: ${err}` });
+    res.status(500).json({ error: `Answer could not be upvoted at this time: ${err}` });
   }
 };
 
@@ -87,17 +77,9 @@ const downvoteAnswer = async (req, res) => {
   try {
     let aid = preprocessing(req.body.aid);
     let uid = preprocessing(req.userId);
-    let user = await User.findOne({ _id: uid });
-    if (!user) {
-      res
-        .status(401)
-        .json({ error: `Unauthorized access: Unidentified userid.` });
-    }
     let answer = await Answer.findOne({ _id: aid });
     if (!answer) {
-      res
-        .status(404)
-        .json({ error: `Unavailable resource: Unidentified answerid.` });
+      res.status(404).json({ error: `Unavailable resource: Unidentified answerid.` });
     }
     // If the user id is in the upvote list, remove that and update count.
     const checkUserUpvote = answer.upvoted_by.includes(uid);
@@ -108,37 +90,15 @@ const downvoteAnswer = async (req, res) => {
     const checkUserDownvote = answer.downvoted_by.includes(uid);
     if (checkUserDownvote) {
       removeDownvote(aid, uid);
-      res
-        .status(200)
-        .json({ msg: "Removed previous downvote of user", downvote: false });
+      res.status(200).json({ msg: "Removed previous downvote of user", downvote: false });
     } else {
       addDownvote(aid, uid);
       res.status(200).json({ msg: "Downvoted for the user", downvote: true });
     }
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: `Answer could not be downvoted at this time: ${err}` });
+    res.status(500).json({ error: `Answer could not be downvoted at this time: ${err}` });
   }
 };
-
-// // To get vote count of answer.
-// const getVoteCountAnswer = async (req, res) => {
-//   try {
-//     let aid = preprocessing(req.params.answerId);
-//     let answer = await Answer.findOne({ _id: aid });
-//     if (!answer) {
-//       res
-//         .status(404)
-//         .json({ error: `Unavailable resource: Unidentified answerid.` });
-//     }
-//     res.status(200).json({ vote_count: answer.vote_count });
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ error: `Cannot fetch vote count of answer: ${err}` });
-//   }
-// };
 
 // To flag or unflag an answer.
 const flagAnswer = async (req, res) => {
@@ -172,7 +132,6 @@ const flagAnswer = async (req, res) => {
 router.post("/addAnswer", authorization, addAnswer);
 router.post("/upvoteAnswer", authorization, upvoteAnswer);
 router.post("/downvoteAnswer", authorization, downvoteAnswer)
-// router.get("/getVoteCountAnswer/:answerId", authorization, getVoteCountAnswer)
 router.post("/flagAnswer", authorization, flagAnswer);
 
 module.exports = router;

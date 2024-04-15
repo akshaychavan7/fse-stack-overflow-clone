@@ -88,4 +88,5 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-module.exports = { server };
+module.exports = server;
+// change from {} to blank here to support all jest cases
