@@ -3,7 +3,6 @@ const Question = require("../models/questions");
 const Answer = require("../models/answers");
 const Comment = require("../models/comments");
 const authorization = require("../middleware/authorization");
-const User = require("../models/users");
 
 const {
     removeUpvote,
@@ -64,10 +63,6 @@ const upvoteComment = async (req, res) => {
     try {
         let cid = preprocessing(req.body.cid);
         let uid = preprocessing(req.userId);
-        let user = await User.findOne({ _id: uid });
-        if (!user) {
-            res.status(401).json({ error: `Unauthorized access: Unidentified userid.` });
-        }
         let comment = await Comment.findOne({ _id: cid });
         if (!comment) {
             res.status(404).json({ error: `Unavailable resource: Unidentified commentid.` });
@@ -105,14 +100,8 @@ const getVoteCountComment = async (req, res) => {
 
 
 // To flag or unflag a comment
-// Note: requires structural change for delete.
 const flagComment = async (req, res) => {
     try {
-        let uid = preprocessing(req.userId);
-        let user = await User.findOne({ _id: uid });
-        if (!user) {
-            res.status(401).json({ error: `Unauthorized access: Unidentified userid.` });
-        }
         let comment = await Comment.findOne({ _id: preprocessing(req.body.cid) })
         if (!comment) {
             res.status(404).json({ error: `Unavailable resource: Unidentified commentid.` });

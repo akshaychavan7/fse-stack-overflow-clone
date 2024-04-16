@@ -121,9 +121,9 @@ describe("GET /getQuestionById/:qid", () => {
   //   };
 
   //   // Provide mock question data
-  //   // Question.findOneAndUpdate = jest.fn().mockImplementation(() => ({
-  //   //   populate: jest.fn().mockResolvedValueOnce(mockPopulatedQuestion),
-  //   // }));
+  //   Question.findOneAndUpdate = jest.fn().mockImplementation(() => ({
+  //     populate: jest.fn().mockResolvedValueOnce(mockPopulatedQuestion),
+  //   }));
 
   //   Question.findOneAndUpdate = jest.fn().mockResolvedValueOnce(mockPopulatedQuestion);
 

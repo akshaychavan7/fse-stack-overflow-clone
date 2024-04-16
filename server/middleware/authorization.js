@@ -12,7 +12,7 @@ const authorization = (req, res, next) => {
     const data = jwt.verify(token, SECRET_KEY);
     req.userId = data.userId;
     req.username = data.username;
-    req.userRole = data.role;
+    req.userRole = data.userRole;
     return next();
   } catch (e) {
     console.error(`Error while verifying token: ${e}`);

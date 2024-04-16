@@ -1,7 +1,6 @@
 const express = require("express");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
-const User = require("../models/users");
 const authorization = require("../middleware/authorization");
 const { preprocessing } = require("../utils/textpreprocess");
 
@@ -103,13 +102,6 @@ const downvoteAnswer = async (req, res) => {
 // To flag or unflag an answer.
 const flagAnswer = async (req, res) => {
   try {
-    let uid = preprocessing(req.userId);
-    let user = await User.findOne({ _id: uid });
-    if (!user) {
-      res
-        .status(401)
-        .json({ error: `Unauthorized access: Unidentified userid.` });
-    }
     let answer = await Answer.findOne({ _id: preprocessing(req.body.aid) });
     if (!answer) {
       res
