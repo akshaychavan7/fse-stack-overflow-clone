@@ -1,7 +1,12 @@
 const express = require("express");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
-const authorization = require("../middleware/authorization");
+const User = require("../models/users");
+const sanitizeParams = require("../middleware/sanitizeParams");
+const {
+  authorization,
+  adminAuthorization,
+} = require("../middleware/authorization");
 const { preprocessing } = require("../utils/textpreprocess");
 
 const {
@@ -18,24 +23,31 @@ const router = express.Router();
 // Adding answer
 // Method to add answer to a question.
 const addAnswer = async (req, res) => {
+  let answer = await Answer.create({
+    ...req.body.ans,
+    ans_by: req.userId,
+    ans_date_time: new Date(),
+  });
+  res.status(200);
+  let qid = req.body.qid;
+  await Question.findOneAndUpdate(
+    { _id: qid },
+    { $push: { answers: { $each: [answer._id], $position: 0 } } },
+    { new: true }
+  );
+  res.json(answer);
+};
+
+const getReportedAnswers = async (req, res) => {
   try {
-    let answer = req.body.ans;
-    const newanswer = await Answer.create({
-      description: preprocessing(answer.description),
-      ans_by: preprocessing(answer.ans_by),
-      ans_date_time: preprocessing(answer.ans_date_time),
+    let answers = await Answer.find({ flag: true }).populate({
+      path: "ans_by",
+      select: "username firstname lastname profilePic",
     });
-    let qid = preprocessing(req.body.qid);
-    await Question.findOneAndUpdate(
-      { _id: qid },
-      { $push: { answers: { $each: [newanswer._id], $position: 0 } } },
-      { new: true }
-    );
-    res.status(200);
-    res.json(newanswer);
-  } catch (err) {
-    res.status(500);
-    res.json({ error: `Answer could not be added: ${err}` });
+    res.status(200).json(answers);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
 
@@ -59,15 +71,19 @@ const upvoteAnswer = async (req, res) => {
     const checkUserUpvote = answer.upvoted_by.includes(uid);
     if (checkUserUpvote) {
       removeUpvote(aid, uid);
-      await updateReputation(false, answer['ans_by'].toString());
-      res.status(200).json({ message: "Removed previous upvote of user", upvote: false });
+      await updateReputation(false, answer["ans_by"].toString());
+      res
+        .status(200)
+        .json({ message: "Removed previous upvote of user", upvote: false });
     } else {
       addUpvote(aid, uid);
-      await updateReputation(true, answer['ans_by'].toString());
+      await updateReputation(true, answer["ans_by"].toString());
       res.status(200).json({ message: "Upvoted for the user", upvote: true });
     }
   } catch (err) {
-    res.status(500).json({ error: `Answer could not be upvoted at this time: ${err}` });
+    res
+      .status(500)
+      .json({ error: `Answer could not be upvoted at this time: ${err}` });
   }
 };
 
@@ -78,7 +94,9 @@ const downvoteAnswer = async (req, res) => {
     let uid = preprocessing(req.userId);
     let answer = await Answer.findOne({ _id: aid });
     if (!answer) {
-      res.status(404).json({ error: `Unavailable resource: Unidentified answerid.` });
+      res
+        .status(404)
+        .json({ error: `Unavailable resource: Unidentified answerid.` });
     }
     // If the user id is in the upvote list, remove that and update count.
     const checkUserUpvote = answer.upvoted_by.includes(uid);
@@ -89,13 +107,17 @@ const downvoteAnswer = async (req, res) => {
     const checkUserDownvote = answer.downvoted_by.includes(uid);
     if (checkUserDownvote) {
       removeDownvote(aid, uid);
-      res.status(200).json({ msg: "Removed previous downvote of user", downvote: false });
+      res
+        .status(200)
+        .json({ msg: "Removed previous downvote of user", downvote: false });
     } else {
       addDownvote(aid, uid);
       res.status(200).json({ msg: "Downvoted for the user", downvote: true });
     }
   } catch (err) {
-    res.status(500).json({ error: `Answer could not be downvoted at this time: ${err}` });
+    res
+      .status(500)
+      .json({ error: `Answer could not be downvoted at this time: ${err}` });
   }
 };
 
@@ -120,10 +142,75 @@ const flagAnswer = async (req, res) => {
   }
 };
 
+const reportAnswer = async (req, res) => {
+  try {
+    let answer = await Answer.exists({ _id: req.body.aid });
+    if (!answer) {
+      return res.status(404).send({ status: 404, message: "Answer not found" });
+    }
+
+    await Answer.findByIdAndUpdate(req.body.aid, { flag: true }, { new: true });
+    res.status(200).send({ status: 200, message: "Answer reported" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ status: 500, message: "Internal Server Error" });
+  }
+};
+
+const resolveAnswer = async (req, res) => {
+  try {
+    let answer = await Answer.exists({ _id: req.params.answerId });
+    if (!answer) {
+      return res.status(404).send("Answer not found");
+    }
+
+    await Answer.findByIdAndUpdate(
+      req.params.answerId,
+      { flag: false },
+      { new: true }
+    );
+    res.status(200).send("Answer resolved successfully");
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+const deleteAnswer = async (req, res) => {
+  try {
+    let answer = await Answer.exists({ _id: req.params.answerId });
+    if (!answer) {
+      return res.status(404).send("Answer not found");
+    }
+
+    await Answer.findByIdAndDelete(req.params.answerId);
+    res.status(200).send("Answer deleted successfully");
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 // add appropriate HTTP verbs and their endpoints to the router.
-router.post("/addAnswer", authorization, addAnswer);
-router.post("/upvoteAnswer", authorization, upvoteAnswer);
-router.post("/downvoteAnswer", authorization, downvoteAnswer)
-router.post("/flagAnswer", authorization, flagAnswer);
+router.get(
+  "/getReportedAnswers",
+  adminAuthorization,
+  sanitizeParams,
+  getReportedAnswers
+);
+router.post("/addAnswer", authorization, sanitizeParams, addAnswer);
+router.post("/reportAnswer/", authorization, sanitizeParams, reportAnswer);
+router.post(
+  "/resolveAnswer/:answerId",
+  adminAuthorization,
+  sanitizeParams,
+  resolveAnswer
+);
+router.delete(
+  "/deleteAnswer/:answerId",
+  adminAuthorization,
+  sanitizeParams,
+  deleteAnswer
+);
 
 module.exports = router;
