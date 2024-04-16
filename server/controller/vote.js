@@ -5,6 +5,7 @@ const Answer = require("../models/answers");
 const router = express.Router();
 const { authorization } = require("../middleware/authorization");
 const { validateId } = require("../utils/validator");
+const sanitizeParams = require("../middleware/sanitizeParams");
 
 const upvote = async (req, res) => {
   try {
@@ -108,7 +109,7 @@ const downvote = async (req, res) => {
   }
 };
 
-router.post("/upvote", authorization, upvote);
-router.post("/downvote", authorization, downvote);
+router.post("/upvote", authorization, sanitizeParams, upvote);
+router.post("/downvote", authorization, sanitizeParams, downvote);
 
 module.exports = router;

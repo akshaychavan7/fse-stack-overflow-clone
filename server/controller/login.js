@@ -4,6 +4,8 @@ const express = require("express");
 const User = require("../models/users");
 
 const { SECRET_KEY } = require("../config");
+const { sanitizeFilter } = require("mongoose");
+const sanitizeParams = require("../middleware/sanitizeParams");
 
 const router = express.Router();
 
@@ -79,6 +81,6 @@ const registerUser = async (req, res) => {
 
 // add appropriate HTTP verbs and their endpoints to the router
 
-router.post("/authenticate", authenticateCredentials);
-router.post("/register", registerUser);
+router.post("/authenticate", sanitizeParams, authenticateCredentials);
+router.post("/register", sanitizeParams, registerUser);
 module.exports = router;

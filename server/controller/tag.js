@@ -2,6 +2,7 @@ const express = require("express");
 const Tag = require("../models/tags");
 const Question = require("../models/questions");
 const { authorization } = require("../middleware/authorization");
+const sanitizeParams = require("../middleware/sanitizeParams");
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ const getTagsWithQuestionNumber = async (req, res) => {
 router.get(
   "/getTagsWithQuestionNumber",
   authorization,
+  sanitizeParams,
   getTagsWithQuestionNumber
 );
 

@@ -1,6 +1,7 @@
 const express = require("express");
 const Question = require("../models/questions");
 const { updateReputation } = require("../utils/user");
+const sanitizeParams = require("../middleware/sanitizeParams");
 const {
   addTag,
   getQuestionsByOrder,
@@ -8,8 +9,6 @@ const {
   showQuesUpDown,
   getTop10Questions,
 } = require("../utils/question");
-
-const { preprocessing } = require("../utils/textpreprocess");
 
 const router = express.Router();
 const {
@@ -184,14 +183,19 @@ router.get(
   getQuestionById
 );
 router.get("/getReportedQuestions", adminAuthorization, getReportedQuestions);
-router.post("/addQuestion", authorization, addQuestion);
-router.post("/reportQuestion/", authorization, reportQuestion);
+router.post("/addQuestion", authorization, sanitizeParams, addQuestion);
+router.post("/reportQuestion/", authorization, sanitizeParams, reportQuestion);
 router.post(
   "/resolveQuestion/:questionId",
   adminAuthorization,
   resolveQuestion
 );
-router.delete("/deleteQuestion/:questionId", authorization, deleteQuestion);
+router.delete(
+  "/deleteQuestion/:questionId",
+  authorization,
+  sanitizeParams,
+  deleteQuestion
+);
 router.get("/getTrendingQuestions", getTrendingQuestions);
 
 module.exports = router;

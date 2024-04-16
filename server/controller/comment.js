@@ -2,6 +2,7 @@ const express = require("express");
 const Question = require("../models/questions");
 const Answer = require("../models/answers");
 const Comment = require("../models/comments");
+const sanitizeParams = require("../middleware/sanitizeParams");
 const router = express.Router();
 
 const {
@@ -125,9 +126,19 @@ const resolveComment = async (req, res) => {
 };
 
 router.get("/getReportedComments", authorization, getReportedComments);
-router.post("/addComment", authorization, addComment);
-router.post("/reportComment", authorization, reportComment);
-router.delete("/deleteComment/:commentId", authorization, deleteComment);
-router.post("/resolveComment/:commentId", adminAuthorization, resolveComment);
+router.post("/addComment", authorization, sanitizeParams, addComment);
+router.post("/reportComment", authorization, sanitizeParams, reportComment);
+router.delete(
+  "/deleteComment/:commentId",
+  authorization,
+  sanitizeParams,
+  deleteComment
+);
+router.post(
+  "/resolveComment/:commentId",
+  adminAuthorization,
+  sanitizeParams,
+  resolveComment
+);
 
 module.exports = router;

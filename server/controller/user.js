@@ -7,6 +7,7 @@ const Comment = require("../models/comments");
 const { preprocessing } = require("../utils/textpreprocess");
 
 const { authorization } = require("../middleware/authorization");
+const sanitizeParams = require("../middleware/sanitizeParams");
 
 const router = express.Router();
 
@@ -25,7 +26,6 @@ const getUsersList = async (req, res) => {
   });
   res.json(usersList);
 };
-
 
 const getUserDetails = async (req, res) => {
   try {
@@ -114,8 +114,13 @@ const getUserPosts = async (req, res) => {
 };
 // have to make route to update user details.
 
-router.post("/getUsersList", authorization, getUsersList);
-router.get("/getUserDetails/:username", authorization, getUserDetails);
-router.get("/getUserPosts", authorization, getUserPosts);
+router.post("/getUsersList", authorization, sanitizeParams, getUsersList);
+router.get(
+  "/getUserDetails/:username",
+  authorization,
+  sanitizeParams,
+  getUserDetails
+);
+router.get("/getUserPosts", authorization, sanitizeParams, getUserPosts);
 
 module.exports = router;

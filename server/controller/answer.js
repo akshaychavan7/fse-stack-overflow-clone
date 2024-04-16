@@ -2,6 +2,7 @@ const express = require("express");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
 const User = require("../models/users");
+const sanitizeParams = require("../middleware/sanitizeParams");
 const {
   authorization,
   adminAuthorization,
@@ -191,10 +192,25 @@ const deleteAnswer = async (req, res) => {
 };
 
 // add appropriate HTTP verbs and their endpoints to the router.
-router.get("/getReportedAnswers", adminAuthorization, getReportedAnswers);
-router.post("/addAnswer", authorization, addAnswer);
-router.post("/reportAnswer/", authorization, reportAnswer);
-router.post("/resolveAnswer/:answerId", adminAuthorization, resolveAnswer);
-router.delete("/deleteAnswer/:answerId", adminAuthorization, deleteAnswer);
+router.get(
+  "/getReportedAnswers",
+  adminAuthorization,
+  sanitizeParams,
+  getReportedAnswers
+);
+router.post("/addAnswer", authorization, sanitizeParams, addAnswer);
+router.post("/reportAnswer/", authorization, sanitizeParams, reportAnswer);
+router.post(
+  "/resolveAnswer/:answerId",
+  adminAuthorization,
+  sanitizeParams,
+  resolveAnswer
+);
+router.delete(
+  "/deleteAnswer/:answerId",
+  adminAuthorization,
+  sanitizeParams,
+  deleteAnswer
+);
 
 module.exports = router;
