@@ -6,7 +6,7 @@ const Comment = require("../models/comments");
 
 const { preprocessing } = require("../utils/textpreprocess");
 
-const authorization = require("../middleware/authorization");
+const { authorization } = require("../middleware/authorization");
 
 const router = express.Router();
 

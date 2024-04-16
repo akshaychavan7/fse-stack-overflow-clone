@@ -2,140 +2,132 @@ const express = require("express");
 const Question = require("../models/questions");
 const Answer = require("../models/answers");
 const Comment = require("../models/comments");
-const authorization = require("../middleware/authorization");
-const User = require("../models/users");
-
-const {
-    removeUpvote,
-    addUpvote
-} = require("../utils/comment");
-
-const { preprocessing } = require("../utils/textpreprocess")
-
 const router = express.Router();
 
-// To add question comments to the database.
-const addQuestionComment = async (req, res) => {
-    try {
-        let comment = req.body.comment;
-        let qid = preprocessing(req.body.qid);
-        const newcomment = await Comment.create({
-            description: preprocessing(comment.description),
-            commented_by: preprocessing(comment.commented_by),
-            comment_date_time: preprocessing(comment.comment_date_time),
-        })
-        await Question.findOneAndUpdate(
-            { _id: qid },
-            { $push: { comments: { $each: [newcomment._id], $position: 0 } } },
-            { new: true }
-        );
-        res.status(200).json(newcomment);
+const {
+  authorization,
+  adminAuthorization,
+} = require("../middleware/authorization");
+const { validateId } = require("../utils/validator");
+
+const addComment = async (req, res) => {
+  try {
+    let comment = await Comment.create({
+      description: req.body.description,
+      commented_by: req.userId,
+      comment_date_time: new Date(),
+    });
+
+    let parentId = req.body.parentId;
+    let parentType = req.body.parentType;
+
+    if (!validateId(parentId)) {
+      return res
+        .status(400)
+        .send({ status: 400, message: "Invalid parent id" });
     }
-    catch (err) {
-        res.status(500).json({ error: `Comment could not be added for the question: ${err}` });
+
+    let parentModel;
+    if (parentType === "question") {
+      parentModel = Question;
+    } else if (parentType === "answer") {
+      parentModel = Answer;
+    } else {
+      return res.status(400).send({ status: 400, message: "Invalid parent" });
     }
+
+    let parentObject = await parentModel.exists({ _id: parentId });
+    if (!parentObject) {
+      return res.status(404).send({ status: 404, message: "Parent not found" });
+    }
+
+    await parentModel.findByIdAndUpdate(
+      parentId,
+      { $push: { comments: comment._id } },
+      { new: true }
+    );
+
+    res.status(200).json({ status: 200, body: comment });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ status: 500, message: "Internal Server Error" });
+  }
 };
 
+const reportComment = async (req, res) => {
+  try {
+    let comment = await Comment.exists({ _id: req.body.cid });
+    if (!comment) {
+      return res
+        .status(404)
+        .send({ status: 404, message: "Comment not found" });
+    }
 
-// To add answer comments to the database.
-const addAnswerComment = async (req, res) => {
-    try {
-        let comment = req.body.comment;
-        let aid = preprocessing(req.body.aid);
-        const newcomment = await Comment.create({
-            description: preprocessing(comment.description),
-            commented_by: preprocessing(comment.commented_by),
-            comment_date_time: preprocessing(comment.comment_date_time),
-        })
-        await Answer.findOneAndUpdate(
-            { _id: aid },
-            { $push: { comments: { $each: [newcomment._id], $position: 0 } } },
-            { new: true }
-        );
-        res.status(200).json(newcomment);
-    }
-    catch (err) {
-        res.status(500).json({ error: `Comment could not be added for the answer: ${err}` });
-    }
+    await Comment.findByIdAndUpdate(
+      req.body.cid,
+      { flag: true },
+      { new: true }
+    );
+    res
+      .status(200)
+      .send({ status: 200, message: "Comment reported successfully" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ status: 500, message: "Internal Server Error" });
+  }
 };
 
-// To upvote a answer
-const upvoteComment = async (req, res) => {
-    try {
-        let cid = preprocessing(req.body.cid);
-        let uid = preprocessing(req.userId);
-        let user = await User.findOne({ _id: uid });
-        if (!user) {
-            res.status(401).json({ error: `Unauthorized access: Unidentified userid.` });
-        }
-        let comment = await Comment.findOne({ _id: cid });
-        if (!comment) {
-            res.status(404).json({ error: `Unavailable resource: Unidentified commentid.` });
-        }
-        // If the user id is in the upvote list, remove that and update count else upvote.
-        const checkUserUpvote = comment.upvoted_by.includes(uid);
-        if (checkUserUpvote) {
-            removeUpvote(cid, uid);
-            res.status(200).json({ message: "Removed previous upvote of user", 'upvote': false });
-        }
-        else {
-            addUpvote(cid, uid);
-            res.status(200).json({ message: "Upvoted for the user", 'upvote': true });
-        }
-    }
-    catch (err) {
-        res.status(500).json({ error: `Answer could not be upvoted at this time: ${err}` });
-    }
-}
+const getReportedComments = async (req, res) => {
+  try {
+    let comments = await Comment.find({ flag: true }).populate({
+      path: "commented_by",
+      select: "username firstname lastname profilePic",
+    });
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
-// To get vote count of comment.
-const getVoteCountComment = async (req, res) => {
-    try {
-        let cid = preprocessing(req.params.commentId);
-        let comment = await Comment.findOne({ _id: cid });
-        if (!comment) {
-            res.status(404).json({ error: `Unavailable resource: Unidentified commentid.` });
-        }
-        res.status(200).json({ vote_count: comment.vote_count });
+const deleteComment = async (req, res) => {
+  try {
+    let comment = await Comment.exists({ _id: req.params.commentId });
+    if (!comment) {
+      return res.status(404).send("Comment not found");
     }
-    catch (err) {
-        res.status(500).json({ error: `Cannot fetch vote count of comment: ${err}` });
-    }
-}
 
+    await Comment.findByIdAndDelete(req.params.commentId);
+    res.status(200).send("Comment deleted successfully");
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
-// To flag or unflag a comment
-// Note: requires structural change for delete.
-const flagComment = async (req, res) => {
-    try {
-        let uid = preprocessing(req.userId);
-        let user = await User.findOne({ _id: uid });
-        if (!user) {
-            res.status(401).json({ error: `Unauthorized access: Unidentified userid.` });
-        }
-        let comment = await Comment.findOne({ _id: preprocessing(req.body.cid) })
-        if (!comment) {
-            res.status(404).json({ error: `Unavailable resource: Unidentified commentid.` });
-        }
-        comment.flag = !comment.flag;
-        await comment.save();
-        if (!comment.flag) {
-            res.status(200).json({ message: "Unflagged comment from review." });
-        }
-        else {
-            res.status(200).json({ message: "Flagged comment for review." });
-        }
+const resolveComment = async (req, res) => {
+  try {
+    let comment = await Comment.exists({ _id: req.params.commentId });
+    if (!comment) {
+      return res.status(404).send("Comment not found");
     }
-    catch (err) {
-        res.status(500).json({ error: `Cannot fetch flagged comment: ${err}` });
-    }
-}
 
-// add appropriate HTTP verbs and their endpoints to the router.
-router.post("/addQuestionComment", addQuestionComment);
-router.post("/addAnswerComment", addAnswerComment);
-router.post("/upvoteComment", authorization, upvoteComment);
-router.get("/getVoteCountComment/:commentId", getVoteCountComment)
-router.post("/flagComment", authorization, flagComment);
+    await Comment.findByIdAndUpdate(
+      req.params.commentId,
+      { flag: false },
+      { new: true }
+    );
+    res.status(200).send("Comment resolved successfully");
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+router.get("/getReportedComments", authorization, getReportedComments);
+router.post("/addComment", authorization, addComment);
+router.post("/reportComment", authorization, reportComment);
+router.delete("/deleteComment/:commentId", authorization, deleteComment);
+router.post("/resolveComment/:commentId", adminAuthorization, resolveComment);
 
 module.exports = router;

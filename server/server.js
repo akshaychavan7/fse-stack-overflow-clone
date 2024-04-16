@@ -6,6 +6,10 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const {
+  authorization,
+  adminAuthorization,
+} = require("./middleware/authorization"); // custom middleware defined for user authorization
 
 const { MONGO_URL, port, CLIENT_URL } = require("./config");
 
@@ -44,20 +48,19 @@ app.get("/", (_, res) => {
 const questionController = require("./controller/question");
 const tagController = require("./controller/tag");
 const answerController = require("./controller/answer");
-const commentController = require("./controller/comment");
 const loginController = require("./controller/login");
 const userController = require("./controller/user");
-const modController = require("./controller/moderator");
-const authorization = require("./middleware/authorization");
+const commentController = require("./controller/comment");
+const voteController = require("./controller/vote");
 
 app.use("/question", questionController);
 app.use("/tag", tagController);
 app.use("/answer", answerController);
-app.use("/comment", commentController);
 app.use("/login", loginController);
 app.use("/register", loginController);
-app.use("/moderator", modController);
 app.use("/user", userController);
+app.use("/comment", commentController);
+app.use("/vote", voteController);
 
 let server = app.listen(port, () => {
   console.log(`Server starts at http://localhost:${port}`);
@@ -65,6 +68,10 @@ let server = app.listen(port, () => {
 
 // route to check if user is authenticated
 app.get("/isUserAuthenticated", authorization, (req, res) => {
+  res.status(200).json({ message: "User is authenticated" });
+});
+
+app.get("/isUserModeratorAuthenticated", adminAuthorization, (req, res) => {
   res.status(200).json({ message: "User is authenticated" });
 });
 
@@ -88,4 +95,4 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-module.exports = { server };
+module.exports = { server, authorization };
