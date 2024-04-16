@@ -2,9 +2,7 @@ const { preprocessing } = require("../utils/textpreprocess");
 
 // middleware to sanitize params
 function sanitizeParams(req, res, next) {
-  console.log("Before Sanitizing body:", req.body);
   req.body = sanitizer(req.body);
-  console.log("Sanitized body:", req.body);
   next();
 }
 
