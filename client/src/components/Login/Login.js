@@ -17,6 +17,7 @@ import { ApplicationContext } from "../../context/ApplicationContext";
 import login from "../../services/loginService";
 import { useNavigate } from "react-router-dom";
 import useIsAuthenticated from "../../hooks/useIsAuthenticated";
+
 import { useAlert } from "../../context/AlertContext";
 function Copyright(props) {
   return (
@@ -31,8 +32,8 @@ function Copyright(props) {
         Akshay Chavan
       </Link>
       {" & "}
-      <Link color="inherit" href="https://www.linkedin.com/in/vedantrishidas/">
-        Vedant Rishi Das
+      <Link color="inherit" href="https://www.linkedin.com/in/shawnchen2338/">
+        Shiu Yun Chen
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
