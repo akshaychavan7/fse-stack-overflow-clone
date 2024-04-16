@@ -26,33 +26,15 @@ const getUsersList = async (req, res) => {
   res.json(usersList);
 };
 
-const ownUserDetails = async (req, res) => {
-  try {
-    let user = await User.findOne({ _id: preprocessing(req.userId) });
-    // add authorization instead of this and authentication based on that.
-    if (!user) {
-      res.status(401).json({ error: `User not authorized.` });
-    }
-    let udetails = {
-      username: user["username"],
-      firstname: user["firstname"],
-      lastname: user["lastname"],
-      joiningDate: user["joiningDate"],
-      profilePic: user["profilePic"],
-      userRole: user["userRole"],
-      reputation: user["reputation"],
-    };
-    res.status(200).json({ userDetails: udetails });
-  } catch (err) {
-    res.status(500).json({ error: `Error in fetching user details : ${err}` });
-  }
-};
 
-const otherUserDetails = async (req, res) => {
+const getUserDetails = async (req, res) => {
   try {
     let user = await User.findOne({
       username: preprocessing(req.params.username),
     });
+    let questions = await getQuestionsByUser(user._id.toString());
+    let answers = await getAnswersByUser(user._id.toString());
+    let comments = await getCommentsByUser(user._id.toString());
     let udetails = {
       username: user["username"],
       firstname: user["firstname"],
@@ -61,6 +43,9 @@ const otherUserDetails = async (req, res) => {
       profilePic: user["profilePic"],
       userRole: user["userRole"],
       reputation: user["reputation"],
+      no_questions: questions.length,
+      no_answers: answers.length,
+      no_comments: comments.length,
     };
     res.status(200).json({ userDetails: udetails });
   } catch (err) {
@@ -130,8 +115,7 @@ const getUserPosts = async (req, res) => {
 // have to make route to update user details.
 
 router.post("/getUsersList", authorization, getUsersList);
-router.get("/ownUserDetails", authorization, ownUserDetails);
-router.get("/otherUserDetails/:username", otherUserDetails);
+router.get("/getUserDetails/:username", authorization, getUserDetails);
 router.get("/getUserPosts", authorization, getUserPosts);
 
 module.exports = router;

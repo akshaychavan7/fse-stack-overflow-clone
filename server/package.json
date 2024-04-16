@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "jest"
+    "test": "npx jest --runInBand"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +23,9 @@
     "mysql": "*"
   },
   "devDependencies": {
-    "eslint": "^8.54.0"
+    "eslint": "^8.54.0",
+    "mockingoose": "^2.16.2",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.4"
   }
 }

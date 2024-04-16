@@ -9,6 +9,8 @@ const {
   getTop10Questions,
 } = require("../utils/question");
 
+const { preprocessing } = require("../utils/textpreprocess");
+
 const router = express.Router();
 const {
   authorization,

@@ -1,6 +1,7 @@
 const express = require("express");
 const Tag = require("../models/tags");
 const Question = require("../models/questions");
+const { authorization } = require("../middleware/authorization");
 
 const router = express.Router();
 
@@ -26,6 +27,10 @@ const getTagsWithQuestionNumber = async (req, res) => {
 };
 
 // add appropriate HTTP verbs and their endpoints to the router.
-router.get("/getTagsWithQuestionNumber", getTagsWithQuestionNumber);
+router.get(
+  "/getTagsWithQuestionNumber",
+  authorization,
+  getTagsWithQuestionNumber
+);
 
 module.exports = router;

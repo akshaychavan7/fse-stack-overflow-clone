@@ -55,12 +55,6 @@ const upvoteAnswer = async (req, res) => {
   try {
     let aid = preprocessing(req.body.aid);
     let uid = preprocessing(req.userId);
-    let user = await User.findOne({ _id: uid });
-    if (!user) {
-      res
-        .status(401)
-        .json({ error: `Unauthorized access: Unidentified userid.` });
-    }
     let answer = await Answer.findOne({ _id: aid });
     if (!answer) {
       res
@@ -97,12 +91,6 @@ const downvoteAnswer = async (req, res) => {
   try {
     let aid = preprocessing(req.body.aid);
     let uid = preprocessing(req.userId);
-    let user = await User.findOne({ _id: uid });
-    if (!user) {
-      res
-        .status(401)
-        .json({ error: `Unauthorized access: Unidentified userid.` });
-    }
     let answer = await Answer.findOne({ _id: aid });
     if (!answer) {
       res
@@ -132,34 +120,9 @@ const downvoteAnswer = async (req, res) => {
   }
 };
 
-// // To get vote count of answer.
-// const getVoteCountAnswer = async (req, res) => {
-//   try {
-//     let aid = preprocessing(req.params.answerId);
-//     let answer = await Answer.findOne({ _id: aid });
-//     if (!answer) {
-//       res
-//         .status(404)
-//         .json({ error: `Unavailable resource: Unidentified answerid.` });
-//     }
-//     res.status(200).json({ vote_count: answer.vote_count });
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ error: `Cannot fetch vote count of answer: ${err}` });
-//   }
-// };
-
 // To flag or unflag an answer.
 const flagAnswer = async (req, res) => {
   try {
-    let uid = preprocessing(req.userId);
-    let user = await User.findOne({ _id: uid });
-    if (!user) {
-      res
-        .status(401)
-        .json({ error: `Unauthorized access: Unidentified userid.` });
-    }
     let answer = await Answer.findOne({ _id: preprocessing(req.body.aid) });
     if (!answer) {
       res

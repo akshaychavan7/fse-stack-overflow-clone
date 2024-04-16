@@ -2,7 +2,6 @@ const express = require("express");
 
 const router = express.Router();
 
-const User = require("../models/users");
 const Question = require("../models/questions");
 const Answer = require("../models/answers");
 const Comment = require("../models/comments");
@@ -10,29 +9,11 @@ const Comment = require("../models/comments");
 const { preprocessing } = require("../utils/textpreprocess")
 
 const authorization = require("../middleware/authorization");
-const { route } = require("./question");
-const comment = require("../models/schema/comment");
-
-
-// // Function to check if mod.
-// const checkMod = async (uid) => {
-//     try {
-//         let user = await User.findOne({ _id: uid });
-//         if (!user) {
-//             return false;
-//         }
-//         return !(user.userRole.localeCompare("moderator"));
-//     }
-//     catch (err) {
-//         return false;
-//     }
-// }
-// Note: Find a better try catch maybe? Have to check again.
 
 // View flagged questions.
 const viewFlaggedQuestions = async (req, res) => {
     try {
-        // let modid = preprocessing(req.userId);
+        console.log(req.userRole);
         let role = preprocessing(req.userRole);
         if (role == "moderator") {
             let questions = await Question.find({ flag: true }).sort({ ask_date_time: -1 });
@@ -52,7 +33,6 @@ const viewFlaggedQuestions = async (req, res) => {
 // View flagged answers.
 const viewFlaggedAnswers = async (req, res) => {
     try {
-        // let modid = preprocessing(req.body.uid);
         let role = preprocessing(req.userRole);
         if (role == "moderator") {
             let answers = await Answer.find({ flag: true }).sort({ ans_date_time: -1 });
@@ -70,7 +50,6 @@ const viewFlaggedAnswers = async (req, res) => {
 // View flagged comments.
 const viewFlaggedComments = async (req, res) => {
     try {
-        // let modid = preprocessing(req.body.uid);
         let role = preprocessing(req.userRole);
         if (role == "moderator") {
             let comments = await Comment.find({ flag: true }).sort({ comment_date_time: -1 });
@@ -88,7 +67,6 @@ const viewFlaggedComments = async (req, res) => {
 // Delete flagged question.
 const deleteFlaggedQuestion = async (req, res) => {
     try {
-        // let modid = preprocessing(req.body.uid);
         let role = preprocessing(req.userRole);
         let qid = preprocessing(req.body.qid);
         if(qid == "") {
@@ -114,13 +92,10 @@ const deleteFlaggedQuestion = async (req, res) => {
     }
 }
 
-// Yet to solve this
 // Delete flagged answer.
 const deleteFlaggedAnswer = async (req, res) => {
     try {
-        // let modid = preprocessing(req.body.uid);
         let role = preprocessing(req.userRole);
-        // let qid = preprocessing(req.body.qid);
         let aid = preprocessing(req.body.aid);
         if(aid == "") {
             res.status(422).json({error: "Bad input received. Cannot receive empty aid."});
@@ -147,22 +122,12 @@ const deleteFlaggedAnswer = async (req, res) => {
         res.status(500).json({ error: `Unable to delete flagged answer: ${err}` });
     }
 }
-// Note: may have to store qid in answer to make it easier to delete and keep reference to question.
 
 // Delete flagged comment.
 const deleteFlaggedComment = async (req, res) => {
     try {
-        // let modid = preprocessing(req.body.uid);
         let role = preprocessing(req.userRole);
-        // let qid = preprocessing(req.body.qid);
-        // let aid = preprocessing(req.body.aid);
         let cid = preprocessing(req.body.cid);
-        // if(qid != ""  && aid != "") {
-        //     res.status(422).json({error: "Bad input received. Cannot receive both qid and aid."});
-        // }
-        // if(qid == "" && aid == "") {
-        //     res.status(422).json({error: "Bad input received. Cannot receive both empty qid and aid."});
-        // }
         if(cid == "") {
             res.status(422).json({error: "Bad input received. Cannot receive both empty cid."});
         }
@@ -194,8 +159,7 @@ const deleteFlaggedComment = async (req, res) => {
         res.status(500).json({ error: `Unable to delete flagged comment: ${err}` });
     }
 }
-// Note: may have to store qid and aid in comment to make it easier to delete and keep reference to question/answer.
-// Note: Error comes when any 400 error is sent. Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client.
+// Note: Shorten code
 
 // add appropriate HTTP verbs and their endpoints to the router
 

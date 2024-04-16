@@ -6,8 +6,15 @@ const { default: mongoose } = require("mongoose");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
 
+const authorization = require("../middleware/authorization");
+
 // Mock the Answer model
 jest.mock("../models/answers");
+
+// Mock the authorization
+jest.mock('../middleware/authorization', () => (req, res, next) => {
+  next();
+});
 
 let server;
 describe("POST /addAnswer", () => {
@@ -26,13 +33,17 @@ describe("POST /addAnswer", () => {
     const mockReqBody = {
       qid: "dummyQuestionId",
       ans: {
-        text: "This is a test answer"
+        description: "This is a test answer",
+        ans_by: "dummyUserId",
+        ans_date_time: "2024-05-22T16:08:22.613Z"
       }
     };
 
     const mockAnswer = {
       _id: "dummyAnswerId",
-      text: "This is a test answer"
+      description: "This is a test answer",
+      ans_by: "dummyUserId",
+      ans_date_time: "2024-05-22T16:08:22.613Z"
     }
     // Mock the create method of the Answer model
     Answer.create.mockResolvedValueOnce(mockAnswer);
@@ -54,7 +65,9 @@ describe("POST /addAnswer", () => {
 
     // Verifying that Answer.create method was called with the correct arguments
     expect(Answer.create).toHaveBeenCalledWith({
-      text: "This is a test answer"
+      description: "This is a test answer",
+      ans_by: "dummyUserId",
+      ans_date_time: "2024-05-22T16:08:22.613Z"
     });
 
     // Verifying that Question.findOneAndUpdate method was called with the correct arguments
