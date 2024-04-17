@@ -1,4 +1,7 @@
 const User = require("../models/users");
+const Question = require("../models/questions");
+const Answer = require("../models/answers");
+const Comment = require("../models/comments");
 
 const updateReputation = async (upvoteBool, downvoteBool, uid, typeVote) => {
     try {
@@ -16,4 +19,29 @@ const updateReputation = async (upvoteBool, downvoteBool, uid, typeVote) => {
     }
 }
 
-module.exports = {updateReputation};
+const reportPost = async (id, type) => {
+    let postType;
+    switch (type) {
+        case "question":
+            postType = await Question;
+          break;
+        case "answer":
+            postType = await Answer;
+          break;
+        case "comment":
+            postType = await Comment;
+          break;
+        default:
+          return Error("Invalid type");
+      }
+
+    let post = await postType.findOne(
+        {"_id": id}
+    );
+    post['flag'] = !post['flag'];
+    post.save();
+    return post['flag'];
+    
+}
+
+module.exports = {updateReputation, reportPost};

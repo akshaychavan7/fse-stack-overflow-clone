@@ -4,6 +4,7 @@ const Answer = require("../models/answers");
 const Comment = require("../models/comments");
 const sanitizeParams = require("../middleware/sanitizeParams");
 const router = express.Router();
+const { reportPost } = require("../utils/user");
 
 const {
   authorization,
@@ -63,15 +64,17 @@ const reportComment = async (req, res) => {
         .status(404)
         .send({ status: 404, message: "Comment not found" });
     }
-
-    await Comment.findByIdAndUpdate(
-      req.body.cid,
-      { flag: true },
-      { new: true }
-    );
+    let report = await reportPost(req.body.cid, "comment");
+    let message;
+    if(report) {
+      message = "Comment reported successfully.";
+    }
+    else {
+      message = "Successfully removed report from comment."
+    }
     res
       .status(200)
-      .send({ status: 200, message: "Comment reported successfully" });
+      .send({ status: 200, message: message });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });

@@ -1,6 +1,6 @@
 const express = require("express");
 const Question = require("../models/questions");
-const { updateReputation } = require("../utils/user");
+const { reportPost } = require("../utils/user");
 const sanitizeParams = require("../middleware/sanitizeParams");
 const {
   addTag,
@@ -101,16 +101,19 @@ const reportQuestion = async (req, res) => {
       return res.status(404).send("Question not found");
     }
 
-    await Question.findByIdAndUpdate(
-      req.body.qid,
-      { flag: true },
-      { new: true }
-    );
+    let report = await reportPost(req.body.qid, "question");
+    let message;
+    if(report) {
+      message = "Question reported successfully.";
+    }
+    else {
+      message = "Successfully removed report from question."
+    }
     res
       .status(200)
-      .send({ status: 200, message: "Question reported successfully" });
+      .send({ status: 200, message: message });
   } catch (error) {
-    res.status(500).send({ status: 500, message: "Internal Server Error" });
+    res.status(500).send({ status: 500, message: `Internal Server Error ${error}` });
   }
 };
 
