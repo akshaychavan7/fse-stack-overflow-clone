@@ -60,7 +60,8 @@ const Main = ({
 
   const clickTag = (tagName) => {
     setSearch(`[${tagName}]`);
-    setPage("home");
+    setPage("question");
+    setSelected("q");
   };
   const handleQuestions = () => {
     setSelected("q");
