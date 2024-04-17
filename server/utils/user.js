@@ -1,19 +1,13 @@
 const User = require("../models/users");
 
-const updateReputation = async (upvoteBool, uid) => {
+const updateReputation = async (upvoteBool, downvoteBool, uid, typeVote) => {
     try {
         let user = await User.findOne({_id: uid});
-        if(upvoteBool) {
+        if(upvoteBool || (typeVote == "downvote" && !downvoteBool)) {
             user['reputation'] = user['reputation'] + 10;
         }
         else {
             user['reputation'] = user['reputation'] <= 10? 0: user['reputation'] - 10;
-            // if(user['reputation'] <= 10) {
-            //     user['reputation'] = 0;
-            // }
-            // else {
-            //     user['reputation'] = user['reputation'] - 10;
-            // }
         }
         await user.save();
     }

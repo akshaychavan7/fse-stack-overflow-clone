@@ -6,6 +6,8 @@ const router = express.Router();
 const { authorization } = require("../middleware/authorization");
 const { validateId } = require("../utils/validator");
 const sanitizeParams = require("../middleware/sanitizeParams");
+const {updateUpvote, updateDownvote} = require("../utils/vote");
+const {updateReputation} = require("../utils/user");
 
 const upvote = async (req, res) => {
   try {
@@ -35,23 +37,27 @@ const upvote = async (req, res) => {
     if (!obj) {
       return res.status(404).send({ status: 404, message: "Object not found" });
     }
-
-    if (obj.upvoted_by.includes(req.userId)) {
-      return res.status(200).send("User already upvoted");
-    } else if (obj.downvoted_by.includes(req.userId)) {
-      await voteObject.findByIdAndUpdate(id, {
-        $pull: { downvoted_by: req.userId },
-        $addToSet: { upvoted_by: req.userId },
-        $inc: { vote_count: 2 },
-      });
-    } else {
-      await voteObject.findByIdAndUpdate(id, {
-        $addToSet: { upvoted_by: req.userId },
-        $inc: { vote_count: 1 },
-      });
+    
+    let post_by;
+    let result = await updateUpvote(voteObject, obj, req.userId, id);
+    switch (voteType) {
+      case "question":
+        post_by = obj.asked_by.toString();
+        break;
+      case "answer":
+        post_by = obj.ans_by.toString();
+        break;
+      case "comment":
+        post_by = obj.commented_by.toString();
+        break;
     }
-
-    res.status(200).send({ status: 200, message: "Upvoted successfully" });
+    await updateReputation(result['upvote'], result['downvote'], post_by, "upvote");
+    res.status(200).send({ 
+      status: 200, 
+      upvote: result['upvote'], 
+      downvote: result['downvote'], 
+      message: result['message'] 
+    });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
@@ -75,9 +81,6 @@ const downvote = async (req, res) => {
       case "answer":
         voteObject = await Answer;
         break;
-      case "comment":
-        voteObject = await Comment;
-        break;
       default:
         throw new Error("Invalid type");
     }
@@ -87,22 +90,27 @@ const downvote = async (req, res) => {
       return res.status(404).send({ status: 404, message: "Object not found" });
     }
 
-    if (obj.downvoted_by.includes(req.userId)) {
-      return res.status(200).send("User already downvoted");
-    } else if (obj.upvoted_by.includes(req.userId)) {
-      await voteObject.findByIdAndUpdate(id, {
-        $pull: { upvoted_by: req.userId },
-        $addToSet: { downvoted_by: req.userId },
-        $inc: { vote_count: -2 },
-      });
-    } else {
-      await voteObject.findByIdAndUpdate(id, {
-        $addToSet: { downvoted_by: req.userId },
-        $inc: { vote_count: -1 },
-      });
-    }
+    let result = await updateDownvote(voteObject, obj, req.userId, id);
 
-    res.status(200).send({ status: 200, message: "Downvoted successfully" });
+    let post_by;
+    switch (voteType) {
+      case "question":
+        post_by = obj.asked_by.toString();
+        break;
+      case "answer":
+        post_by = obj.ans_by.toString();
+        break;
+    }
+    
+    await updateReputation(result['upvote'], result['downvote'], post_by, "downvote");
+
+    res.status(200).send({ 
+      status: 200, 
+      upvote: result['upvote'], 
+      downvote: result['downvote'], 
+      message: result['message'] 
+    });
+  
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
