@@ -148,7 +148,7 @@ const deleteQuestion = async (req, res) => {
 const getTrendingQuestions = async (req, res) => {
   try {
     let questions = await getTop10Questions();
-    res.status(200).json({ questions: questions });
+    res.status(200).json(questions);
   } catch (err) {
     res.status(500).json({ error: `Cannot fetch treding questions: ${err}` });
   }
