@@ -101,6 +101,7 @@ export default function Sidebar({
   handleQuestions,
   handleTags,
   handleUsers,
+  handleHomePage,
   setQuestionPage,
   search,
 }) {
@@ -184,7 +185,12 @@ export default function Sidebar({
         </DrawerHeader>
         <Divider />
         <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={() => handleHomePage()}
+            selected={selected == "h" ? true : false}
+          >
             <ListItemButton
               sx={{
                 minHeight: 48,

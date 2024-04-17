@@ -6,12 +6,16 @@ import AnswerPage from "./answerPage/AnwerPage";
 import NewAnswer from "./newAnswer";
 import NewQuestion from "./newQuestion";
 import TagPage from "./tagPage/TagPage";
-import { addQuestion } from "../../services/questionService";
+import {
+  addQuestion,
+  getTrendingQuestions,
+} from "../../services/questionService";
 import { addAnswer } from "../../services/answerService";
 import { getTagsWithQuestionNumber } from "../../services/tagService";
 import Users from "./Users/Users";
 import getUsersList from "../../services/userService";
 import { useAlert } from "../../context/AlertContext";
+import HomePage from "./HomePage/HomePage";
 
 const Main = ({
   search = "",
@@ -24,7 +28,8 @@ const Main = ({
   const [page, setPage] = useState("home");
   const [questionOrder, setQuestionOrder] = useState("newest");
   const [qid, setQid] = useState("");
-  const [selected, setSelected] = useState("q");
+  const [selected, setSelected] = useState("h");
+  const [qlist, setQlist] = useState([]);
   let content = null;
 
   useEffect(() => {
@@ -39,16 +44,29 @@ const Main = ({
         "error"
       );
     });
+
+    async function fetchTrendingQuestions() {
+      let res = await getTrendingQuestions();
+      setQlist(res || []);
+    }
+    fetchTrendingQuestions().catch((e) => {
+      console.error(e);
+      alert.showAlert(
+        "Could not fetch trending questions. Please contact admin if the issue persists.",
+        "error"
+      );
+    });
   }, []);
 
   const clickTag = (tagName) => {
     setSearch(`[${tagName}]`);
-    setPage("home");
+    setPage("question");
+    setSelected("q");
   };
   const handleQuestions = () => {
     setSelected("q");
     setQuestionPage();
-    setPage("home");
+    setPage("questions");
   };
 
   const handleTags = () => {
@@ -59,6 +77,11 @@ const Main = ({
   const handleUsers = () => {
     setSelected("u");
     setPage("user");
+  };
+
+  const handleHomePage = () => {
+    setSelected("h");
+    setPage("home");
   };
 
   const handleNewQuestion = () => {
@@ -100,6 +123,21 @@ const Main = ({
 
   switch (page) {
     case "home": {
+      content = (
+        <HomePage
+          title_text={title}
+          order={questionOrder.toLowerCase()}
+          search={search}
+          setQuestionOrder={setQuestionOrder}
+          clickTag={clickTag}
+          handleAnswer={handleAnswer}
+          handleNewQuestion={handleNewQuestion}
+          qlist={qlist}
+        />
+      );
+      break;
+    }
+    case "question": {
       content = getQuestionPage(questionOrder.toLowerCase(), search);
       break;
     }
@@ -151,6 +189,7 @@ const Main = ({
         handleQuestions={handleQuestions}
         handleTags={handleTags}
         handleUsers={handleUsers}
+        handleHomePage={handleHomePage}
         setQuestionPage={setQuestionPage}
       />
       <div id="right_main" className="right_main">

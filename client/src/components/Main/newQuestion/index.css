@@ -1,0 +1,7 @@
+.flex-spaced {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  flex-direction: column;
+  height: 250px;
+}
