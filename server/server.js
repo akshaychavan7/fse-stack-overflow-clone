@@ -95,6 +95,5 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-module.exports = { server, authorization };
 module.exports = server;
 // change from {} to blank here to support all jest cases

@@ -7,12 +7,13 @@ const updateReputation = async (upvoteBool, uid) => {
             user['reputation'] = user['reputation'] + 10;
         }
         else {
-            if(user['reputation'] <= 10) {
-                user['reputation'] = 0;
-            }
-            else {
-                user['reputation'] = user['reputation'] - 10;
-            }
+            user['reputation'] = user['reputation'] <= 10? 0: user['reputation'] - 10;
+            // if(user['reputation'] <= 10) {
+            //     user['reputation'] = 0;
+            // }
+            // else {
+            //     user['reputation'] = user['reputation'] - 10;
+            // }
         }
         await user.save();
     }
