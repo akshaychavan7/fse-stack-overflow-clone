@@ -68,14 +68,15 @@ export default function ProfilePage({ username, setViewUserProfile }) {
             direction=""
             alignItems="center"
             justifyContent="space-between"
-            sx={{ minWidth: 380 }}
           >
             <Typography variant="body2">
               <span className="field-name">Reputation:</span> {user.reputation}
             </Typography>
+            &nbsp;&nbsp;
             <Typography variant="body2">
               <span className="field-name">Location:</span> {user.location}
             </Typography>
+            &nbsp;&nbsp;
             <Typography variant="body2">
               <span className="field-name">Member since:</span>{" "}
               {memberSince(user.joiningDate)}
