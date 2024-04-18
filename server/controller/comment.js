@@ -6,7 +6,7 @@ const sanitizeParams = require("../middleware/sanitizeParams");
 const router = express.Router();
 const { reportPost } = require("../utils/user");
 const {QUESTIONTYPE, ANSWERTYPE, COMMENTTYPE} = require("../utils/constants");
-const { preprocessing } = require("../utils/textpreprocess");
+const { preprocessing, textfiltering } = require("../utils/textpreprocess");
 
 const {
   authorization,
@@ -16,9 +16,15 @@ const { validateId } = require("../utils/validator");
 
 const addComment = async (req, res) => {
   try {
+    let flag = false;
+
+  if(textfiltering(req.body.description)) {
+    flag = true;
+  }
     let comment = await Comment.create({
       description: req.body.description,
       commented_by: req.userId,
+      flag: flag
       // comment_date_time: new Date(),
       // not needed since internally date created for comment schema
     });
@@ -78,7 +84,7 @@ const reportComment = async (req, res) => {
     }
     res
       .status(200)
-      .send({ status: 200, message: message });
+      .send({ status: 200, message: message, reportBool: report });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
