@@ -1,7 +1,8 @@
 const express = require("express");
 const Question = require("../models/questions");
-const { updateReputation } = require("../utils/user");
+const { reportPost } = require("../utils/user");
 const sanitizeParams = require("../middleware/sanitizeParams");
+const { preprocessing } = require("../utils/textpreprocess");
 const {
   addTag,
   getQuestionsByOrder,
@@ -10,7 +11,10 @@ const {
   getTop10Questions,
 } = require("../utils/question");
 
+const {QUESTIONTYPE} = require("../utils/constants");
+
 const router = express.Router();
+
 const {
   authorization,
   adminAuthorization,
@@ -24,41 +28,38 @@ const getQuestionsByFilter = async (req, res) => {
 
     res.status(200).json(questions);
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send(`Internal Server Error ${error}`);
   }
 };
 
 // To get Questions by Id
 const getQuestionById = async (req, res) => {
   try {
+    let qid = preprocessing(req.params.questionId);
     let question = await Question.findOneAndUpdate(
-      { _id: req.params.questionId },
+      { _id: qid },
       { $inc: { views: 1 } },
       { new: true }
     )
-      .populate({
+    .populate([{
         path: "answers",
-        populate: {
+        populate: [{
           path: "ans_by",
           select: "username firstname lastname profilePic",
         },
-      })
-      .populate({
-        path: "answers",
-        populate: {
+        {
           path: "comments",
           populate: {
             path: "commented_by",
             select: "username firstname lastname profilePic",
           },
         },
-        // sort by votes
-        options: { sort: { vote_count: -1 } },
-      })
-      .populate({ path: "asked_by", select: "-password" })
-      .populate("tags")
-      .populate({
+      ],
+      options: { sort: { vote_count: -1 } },
+      },
+      { path: "asked_by", select: "-password" },
+      { path: "tags"},
+      {
         path: "comments",
         populate: {
           path: "commented_by",
@@ -66,8 +67,8 @@ const getQuestionById = async (req, res) => {
         },
         //sort by votes
         options: { sort: { vote_count: -1 } },
-      })
-      .exec();
+      }
+    ]).exec();
     let jsonQuestion = question.toJSON();
     jsonQuestion = showQuesUpDown(req.userId, jsonQuestion);
     res.status(200).json(jsonQuestion);
@@ -97,23 +98,24 @@ const addQuestion = async (req, res) => {
 
 const reportQuestion = async (req, res) => {
   try {
-    console.log(req.body);
     let question = await Question.exists({ _id: req.body.qid });
     if (!question) {
       return res.status(404).send("Question not found");
     }
 
-    await Question.findByIdAndUpdate(
-      req.body.qid,
-      { flag: true },
-      { new: true }
-    );
+    let report = await reportPost(req.body.qid, QUESTIONTYPE);
+    let message;
+    if(report) {
+      message = "Question reported successfully.";
+    }
+    else {
+      message = "Successfully removed report from question."
+    }
     res
       .status(200)
-      .send({ status: 200, message: "Question reported successfully" });
+      .send({ status: 200, message: message });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send({ status: 500, message: "Internal Server Error" });
+    res.status(500).send({ status: 500, message: `Internal Server Error ${error}` });
   }
 };
 
@@ -125,22 +127,21 @@ const getReportedQuestions = async (req, res) => {
     });
     res.status(200).json(questions);
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
 
 const deleteQuestion = async (req, res) => {
   try {
-    let question = await Question.exists({ _id: req.params.questionId });
+    let qid = preprocessing(req.params.questionId);
+    let question = await Question.exists({ _id: qid });
     if (!question) {
       return res.status(404).send("Question not found");
     }
 
-    await Question.findByIdAndDelete(req.params.questionId);
+    await Question.findByIdAndDelete(qid);
     res.status(200).send("Question deleted successfully");
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send("Internal Server Error");
   }
 };
@@ -156,19 +157,19 @@ const getTrendingQuestions = async (req, res) => {
 
 const resolveQuestion = async (req, res) => {
   try {
-    let question = await Question.exists({ _id: req.params.questionId });
+    let qid = preprocessing(req.params.questionId);
+    let question = await Question.exists({ _id: qid });
     if (!question) {
       return res.status(404).send("Question not found");
     }
 
     await Question.findByIdAndUpdate(
-      req.params.questionId,
+      qid,
       { flag: false },
       { new: true }
     );
     res.status(200).send("Question resolved successfully");
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send("Internal Server Error");
   }
 };
@@ -178,7 +179,6 @@ const resolveQuestion = async (req, res) => {
 router.get("/getQuestion", authorization, getQuestionsByFilter);
 router.get(
   "/getQuestionById/:questionId",
-  authorization,
   authorization,
   getQuestionById
 );

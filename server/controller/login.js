@@ -4,7 +4,7 @@ const express = require("express");
 const User = require("../models/users");
 
 const { SECRET_KEY } = require("../config");
-const { sanitizeFilter } = require("mongoose");
+// const { sanitizeFilter } = require("mongoose");
 const sanitizeParams = require("../middleware/sanitizeParams");
 
 const router = express.Router();

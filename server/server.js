@@ -62,6 +62,7 @@ app.use("/user", userController);
 app.use("/comment", commentController);
 app.use("/vote", voteController);
 
+
 let server = app.listen(port, () => {
   console.log(`Server starts at http://localhost:${port}`);
 });
@@ -95,6 +96,5 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-module.exports = { server, authorization };
 module.exports = server;
 // change from {} to blank here to support all jest cases

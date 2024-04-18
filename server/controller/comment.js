@@ -4,6 +4,9 @@ const Answer = require("../models/answers");
 const Comment = require("../models/comments");
 const sanitizeParams = require("../middleware/sanitizeParams");
 const router = express.Router();
+const { reportPost } = require("../utils/user");
+const {QUESTIONTYPE, ANSWERTYPE, COMMENTTYPE} = require("../utils/constants");
+const { preprocessing } = require("../utils/textpreprocess");
 
 const {
   authorization,
@@ -16,7 +19,8 @@ const addComment = async (req, res) => {
     let comment = await Comment.create({
       description: req.body.description,
       commented_by: req.userId,
-      comment_date_time: new Date(),
+      // comment_date_time: new Date(),
+      // not needed since internally date created for comment schema
     });
 
     let parentId = req.body.parentId;
@@ -29,22 +33,23 @@ const addComment = async (req, res) => {
     }
 
     let parentModel;
-    if (parentType === "question") {
+    if (parentType === QUESTIONTYPE) {
       parentModel = Question;
-    } else if (parentType === "answer") {
+    } else if (parentType === ANSWERTYPE) {
       parentModel = Answer;
     } else {
       return res.status(400).send({ status: 400, message: "Invalid parent" });
     }
 
     let parentObject = await parentModel.exists({ _id: parentId });
+    
     if (!parentObject) {
       return res.status(404).send({ status: 404, message: "Parent not found" });
     }
 
     await parentModel.findByIdAndUpdate(
       parentId,
-      { $push: { comments: comment._id } },
+      { $push: { comments: { $each: [comment._id], $position: 0 } } },
       { new: true }
     );
 
@@ -63,15 +68,17 @@ const reportComment = async (req, res) => {
         .status(404)
         .send({ status: 404, message: "Comment not found" });
     }
-
-    await Comment.findByIdAndUpdate(
-      req.body.cid,
-      { flag: true },
-      { new: true }
-    );
+    let report = await reportPost(req.body.cid, COMMENTTYPE);
+    let message;
+    if(report) {
+      message = "Comment reported successfully.";
+    }
+    else {
+      message = "Successfully removed report from comment."
+    }
     res
       .status(200)
-      .send({ status: 200, message: "Comment reported successfully" });
+      .send({ status: 200, message: message });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
@@ -93,12 +100,13 @@ const getReportedComments = async (req, res) => {
 
 const deleteComment = async (req, res) => {
   try {
-    let comment = await Comment.exists({ _id: req.params.commentId });
+    let cid = preprocessing(req.params.commentId);
+    let comment = await Comment.exists({ _id: cid });
     if (!comment) {
       return res.status(404).send("Comment not found");
     }
 
-    await Comment.findByIdAndDelete(req.params.commentId);
+    await Comment.findByIdAndDelete(cid);
     res.status(200).send("Comment deleted successfully");
   } catch (error) {
     console.error("Error:", error);
@@ -108,13 +116,14 @@ const deleteComment = async (req, res) => {
 
 const resolveComment = async (req, res) => {
   try {
-    let comment = await Comment.exists({ _id: req.params.commentId });
+    let cid = preprocessing(req.params.commentId);
+    let comment = await Comment.exists({ _id: cid });
     if (!comment) {
       return res.status(404).send("Comment not found");
     }
 
     await Comment.findByIdAndUpdate(
-      req.params.commentId,
+      cid,
       { flag: false },
       { new: true }
     );

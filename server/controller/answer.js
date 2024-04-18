@@ -1,7 +1,6 @@
 const express = require("express");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
-const User = require("../models/users");
 const sanitizeParams = require("../middleware/sanitizeParams");
 const {
   authorization,
@@ -9,14 +8,9 @@ const {
 } = require("../middleware/authorization");
 const { preprocessing } = require("../utils/textpreprocess");
 
-const {
-  removeDownvote,
-  removeUpvote,
-  addDownvote,
-  addUpvote,
-} = require("../utils/answer");
+const {ANSWERTYPE} = require("../utils/constants");
 
-const { updateReputation } = require("../utils/user");
+const { reportPost } = require("../utils/user");
 
 const router = express.Router();
 
@@ -26,7 +20,8 @@ const addAnswer = async (req, res) => {
   let answer = await Answer.create({
     ...req.body.ans,
     ans_by: req.userId,
-    ans_date_time: new Date(),
+    // ans_date_time: new Date(),
+    // Note: check if this is required or no since in DB already setting Date.now
   });
   res.status(200);
   let qid = req.body.qid;
@@ -51,97 +46,6 @@ const getReportedAnswers = async (req, res) => {
   }
 };
 
-// To upvote a answer
-const upvoteAnswer = async (req, res) => {
-  try {
-    let aid = preprocessing(req.body.aid);
-    let uid = preprocessing(req.userId);
-    let answer = await Answer.findOne({ _id: aid });
-    if (!answer) {
-      res
-        .status(404)
-        .json({ error: `Unavailable resource: Unidentified answerid.` });
-    }
-    // If the user id is in the downvote list, remove that and update count.
-    const checkUserDownvote = answer.downvoted_by.includes(uid);
-    if (checkUserDownvote) {
-      removeDownvote(aid, uid);
-    }
-    // If the user id is in the upvote list, remove that and update count else upvote.
-    const checkUserUpvote = answer.upvoted_by.includes(uid);
-    if (checkUserUpvote) {
-      removeUpvote(aid, uid);
-      await updateReputation(false, answer["ans_by"].toString());
-      res
-        .status(200)
-        .json({ message: "Removed previous upvote of user", upvote: false });
-    } else {
-      addUpvote(aid, uid);
-      await updateReputation(true, answer["ans_by"].toString());
-      res.status(200).json({ message: "Upvoted for the user", upvote: true });
-    }
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: `Answer could not be upvoted at this time: ${err}` });
-  }
-};
-
-// To downvote a answer
-const downvoteAnswer = async (req, res) => {
-  try {
-    let aid = preprocessing(req.body.aid);
-    let uid = preprocessing(req.userId);
-    let answer = await Answer.findOne({ _id: aid });
-    if (!answer) {
-      res
-        .status(404)
-        .json({ error: `Unavailable resource: Unidentified answerid.` });
-    }
-    // If the user id is in the upvote list, remove that and update count.
-    const checkUserUpvote = answer.upvoted_by.includes(uid);
-    if (checkUserUpvote) {
-      removeUpvote(aid, uid);
-    }
-    // If the user id is in the downvote list, remove that and update count else downvote.
-    const checkUserDownvote = answer.downvoted_by.includes(uid);
-    if (checkUserDownvote) {
-      removeDownvote(aid, uid);
-      res
-        .status(200)
-        .json({ msg: "Removed previous downvote of user", downvote: false });
-    } else {
-      addDownvote(aid, uid);
-      res.status(200).json({ msg: "Downvoted for the user", downvote: true });
-    }
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: `Answer could not be downvoted at this time: ${err}` });
-  }
-};
-
-// To flag or unflag an answer.
-const flagAnswer = async (req, res) => {
-  try {
-    let answer = await Answer.findOne({ _id: preprocessing(req.body.aid) });
-    if (!answer) {
-      res
-        .status(404)
-        .json({ error: `Unavailable resource: Unidentified answerid.` });
-    }
-    answer.flag = !answer.flag;
-    await answer.save();
-    if (!answer.flag) {
-      res.status(200).json({ message: "Unflagged answer from review." });
-    } else {
-      res.status(200).json({ message: "Flagged answer for review." });
-    }
-  } catch (err) {
-    res.status(500).json({ error: `Cannot fetch flagged answer: ${err}` });
-  }
-};
-
 const reportAnswer = async (req, res) => {
   try {
     let answer = await Answer.exists({ _id: req.body.aid });
@@ -149,8 +53,17 @@ const reportAnswer = async (req, res) => {
       return res.status(404).send({ status: 404, message: "Answer not found" });
     }
 
-    await Answer.findByIdAndUpdate(req.body.aid, { flag: true }, { new: true });
-    res.status(200).send({ status: 200, message: "Answer reported" });
+    let report = await reportPost(req.body.aid, ANSWERTYPE);
+    let message;
+    if(report) {
+      message = "Answer reported successfully.";
+    }
+    else {
+      message = "Successfully removed report from answer."
+    }
+    res
+      .status(200)
+      .send({ status: 200, message: message });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
@@ -159,13 +72,14 @@ const reportAnswer = async (req, res) => {
 
 const resolveAnswer = async (req, res) => {
   try {
-    let answer = await Answer.exists({ _id: req.params.answerId });
+    let aid = preprocessing(req.params.answerId);
+    let answer = await Answer.exists({ _id: aid });
     if (!answer) {
       return res.status(404).send("Answer not found");
     }
 
     await Answer.findByIdAndUpdate(
-      req.params.answerId,
+      aid,
       { flag: false },
       { new: true }
     );
@@ -178,12 +92,13 @@ const resolveAnswer = async (req, res) => {
 
 const deleteAnswer = async (req, res) => {
   try {
-    let answer = await Answer.exists({ _id: req.params.answerId });
+    let aid = preprocessing(req.params.answerId);
+    let answer = await Answer.exists({ _id: aid });
     if (!answer) {
       return res.status(404).send("Answer not found");
     }
 
-    await Answer.findByIdAndDelete(req.params.answerId);
+    await Answer.findByIdAndDelete(aid);
     res.status(200).send("Answer deleted successfully");
   } catch (error) {
     console.error("Error:", error);

@@ -11,8 +11,22 @@ const authorization = require("../middleware/authorization");
 // Mock the Answer model
 jest.mock("../models/answers");
 
+// Mock authorization
+jest.mock("../middleware/authorization");
+let auth = require('../middleware/authorization');
+
 // Mock the authorization
-jest.mock('../middleware/authorization', () => (req, res, next) => {
+auth.authorization = jest.fn((req, res, next) => {
+  req.userId = "dummyUserId";
+  next();
+});
+
+auth.adminAuthorization = jest.fn((req, res, next) => {
+  next();
+});
+
+
+jest.mock('../middleware/sanitizeParams', () => (req, res, next) => {
   next();
 });
 
@@ -34,16 +48,14 @@ describe("POST /addAnswer", () => {
       qid: "dummyQuestionId",
       ans: {
         description: "This is a test answer",
-        ans_by: "dummyUserId",
-        ans_date_time: "2024-05-22T16:08:22.613Z"
+        ans_by: "dummyUserId"
       }
     };
 
     const mockAnswer = {
       _id: "dummyAnswerId",
       description: "This is a test answer",
-      ans_by: "dummyUserId",
-      ans_date_time: "2024-05-22T16:08:22.613Z"
+      ans_by: "dummyUserId"
     }
     // Mock the create method of the Answer model
     Answer.create.mockResolvedValueOnce(mockAnswer);
@@ -67,7 +79,6 @@ describe("POST /addAnswer", () => {
     expect(Answer.create).toHaveBeenCalledWith({
       description: "This is a test answer",
       ans_by: "dummyUserId",
-      ans_date_time: "2024-05-22T16:08:22.613Z"
     });
 
     // Verifying that Question.findOneAndUpdate method was called with the correct arguments

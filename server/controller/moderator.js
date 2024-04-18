@@ -8,13 +8,12 @@ const Comment = require("../models/comments");
 
 const { preprocessing } = require("../utils/textpreprocess");
 
-const authorization = require("../middleware/authorization");
+const {adminAuthorization} = require("../middleware/authorization");
 const sanitizeParams = require("../middleware/sanitizeParams");
 
 // View flagged questions.
 const viewFlaggedQuestions = async (req, res) => {
   try {
-    console.log(req.userRole);
     let role = preprocessing(req.userRole);
     if (role == "moderator") {
       let questions = await Question.find({ flag: true }).sort({
@@ -167,37 +166,37 @@ const deleteFlaggedComment = async (req, res) => {
 
 router.get(
   "/viewFlaggedQuestions",
-  authorization,
+  adminAuthorization,
   sanitizeParams,
   viewFlaggedQuestions
 );
 router.get(
   "/viewFlaggedAnswers",
-  authorization,
+  adminAuthorization,
   sanitizeParams,
   viewFlaggedAnswers
 );
 router.get(
   "/viewFlaggedComments",
-  authorization,
+  adminAuthorization,
   sanitizeParams,
   viewFlaggedComments
 );
 router.post(
   "/deleteFlaggedQuestion",
-  authorization,
+  adminAuthorization,
   sanitizeParams,
   deleteFlaggedQuestion
 );
 router.post(
   "/deleteFlaggedAnswer",
-  authorization,
+  adminAuthorization,
   sanitizeParams,
   deleteFlaggedAnswer
 );
 router.post(
   "/deleteFlaggedComment",
-  authorization,
+  adminAuthorization,
   sanitizeParams,
   deleteFlaggedComment
 );
