@@ -4,7 +4,22 @@ import TagChip from "../../TagChip/TagChip";
 import "./index.css";
 import { Stack } from "@mui/material";
 
-const Question = ({ q, clickTag, handleAnswer }) => {
+const Question = ({
+  q,
+  clickTag,
+  handleAnswer,
+  setViewUserProfile,
+  setSelected,
+  handleUsers,
+}) => {
+  const handleProfileClick = (e) => {
+    console.log("profile clicked", setViewUserProfile);
+    e.stopPropagation();
+    setViewUserProfile({ view: true, username: q.asked_by.username });
+    setSelected("u");
+    handleUsers();
+  };
+
   return (
     <div
       className="question right_padding"
@@ -25,7 +40,7 @@ const Question = ({ q, clickTag, handleAnswer }) => {
           })}
         </div>
       </div>
-      <div className="lastActivity">
+      <div className="lastActivity" onClick={handleProfileClick}>
         <Stack direction="column" spacing={1}>
           <AuthorMeta
             name={q.asked_by.firstname + " " + q.asked_by.lastname}
