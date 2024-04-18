@@ -26,6 +26,10 @@ async def generateTags(item: tagsGen):
         tags.append(tag['name'])
     return findtags(text, tags)
 
+@app.get("/")
+async def root():
+    return {"message": "Python Server Works"}
+
 
 # Run this file to run the server
 if __name__ == "__main__":
