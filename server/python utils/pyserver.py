@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
+from config import MONGO_URI
 
 from tagsgen import findtags 
 
 app = FastAPI()
 
-MONGO_URI = "mongodb://localhost:27017/"
 client = AsyncIOMotorClient(MONGO_URI)
 
 db = client.get_database("fake_so_fse")

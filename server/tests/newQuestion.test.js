@@ -19,8 +19,21 @@ jest.mock("../utils/question", () => ({
   filterQuestionsBySearch: jest.fn(),
 }));
 
+// Mock authorization
+jest.mock("../middleware/authorization");
+let auth = require('../middleware/authorization');
+
 // Mock the authorization
-jest.mock('../middleware/authorization', () => (req, res, next) => {
+auth.authorization = jest.fn((req, res, next) => {
+  next();
+});
+
+auth.adminAuthorization = jest.fn((req, res, next) => {
+  next();
+});
+
+
+jest.mock('../middleware/sanitizeParams', () => (req, res, next) => {
   next();
 });
 
@@ -98,6 +111,7 @@ describe("GET /getQuestion", () => {
   });
 });
 
+// Note: Figure out getQuestionById mock
 describe("GET /getQuestionById/:qid", () => {
   beforeEach(() => {
     server = require("../server");
@@ -108,35 +122,37 @@ describe("GET /getQuestionById/:qid", () => {
     await mongoose.disconnect();
   });
 
-  // it("should return a question by id and increment its views by 1", async () => {
-  //   // Mock request parameters
-  //   const mockReqParams = {
-  //     qid: "65e9b5a995b6c7045a30d823",
-  //   };
+  it("should return a question by id and increment its views by 1", async () => {
+    // Mock request parameters
+    const mockReqParams = {
+      qid: "65e9b5a995b6c7045a30d823",
+    };
 
-  //   const mockPopulatedQuestion = {
-  //     answers: [
-  //       mockQuestions.filter((q) => q._id == mockReqParams.qid)[0]["answers"],
-  //     ], // Mock answers
-  //   };
+    const mockPopulatedQuestion = {
+      answers: [
+        mockQuestions.filter((q) => q._id == mockReqParams.qid)[0]["answers"],
+      ], // Mock answers
+      views: mockQuestions[1].views + 1,
+    };
 
-  //   // Provide mock question data
-  //   Question.findOneAndUpdate = jest.fn().mockImplementation(() => ({
-  //     populate: jest.fn().mockResolvedValueOnce(mockPopulatedQuestion),
-  //   }));
+    console.log(mockPopulatedQuestion);
+    // Provide mock question data
+    Question.findOneAndUpdate = jest.fn().mockImplementation(() => ({
+      populate: jest.fn().mockResolvedValueOnce(mockPopulatedQuestion),
+    }));
 
-  //   Question.findOneAndUpdate = jest.fn().mockResolvedValueOnce(mockPopulatedQuestion);
+    // Question.findOneAndUpdate = jest.fn().mockResolvedValueOnce(mockPopulatedQuestion);
 
-  //   // Making the request
-  //   const response = await supertest(server).get(
-  //     `/question/getQuestionById/${mockReqParams.qid}`
-  //   );
+    // Making the request
+    const response = await supertest(server).get(
+      `/question/getQuestionById/${mockReqParams.qid}`
+    );
 
-  //   console.log(response);
-  //   // Asserting the response
-  //   expect(response.status).toBe(200);
-  //   expect(response.body).toEqual(mockPopulatedQuestion);
-  // });
+    console.log(response.body);
+    // Asserting the response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockPopulatedQuestion);
+  });
 
   // Note Add Test case for getQuestionById
 

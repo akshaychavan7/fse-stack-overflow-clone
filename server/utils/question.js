@@ -71,7 +71,7 @@ const sortByActiveOrder = (qList) => {
   return qList;
 };
 
-const getQuestionsByOrder = async (order) => {
+const getQuestionsByOrder = async (order = "active") => {
   try {
     let query = Question.find({})
       .populate("answers")
@@ -106,7 +106,7 @@ const getQuestionsByOrder = async (order) => {
   }
 };
 
-const filterQuestionsBySearch = (qlist, search) => {
+const filterQuestionsBySearch = (qlist = [], search = "") => {
   let searchTags = parseTags(search);
   let searchKeyword = parseKeyword(search);
   const res = qlist.filter((q) => {
@@ -127,73 +127,73 @@ const filterQuestionsBySearch = (qlist, search) => {
   return res;
 };
 
-const removeDownvote = async (qid, uid) => {
-  await Question.bulkWrite([
-    {
-      updateOne: {
-        filter: { _id: qid },
-        update: { $pull: { downvoted_by: { $eq: uid } } },
-      },
-    },
-    {
-      updateOne: {
-        filter: { _id: qid },
-        update: { $inc: { vote_count: 1 } },
-      },
-    },
-  ]);
-};
+// const removeDownvote = async (qid, uid) => {
+//   await Question.bulkWrite([
+//     {
+//       updateOne: {
+//         filter: { _id: qid },
+//         update: { $pull: { downvoted_by: { $eq: uid } } },
+//       },
+//     },
+//     {
+//       updateOne: {
+//         filter: { _id: qid },
+//         update: { $inc: { vote_count: 1 } },
+//       },
+//     },
+//   ]);
+// };
 
-const removeUpvote = async (qid, uid) => {
-  await Question.bulkWrite([
-    {
-      updateOne: {
-        filter: { _id: qid },
-        update: { $pull: { upvoted_by: { $eq: uid } } },
-      },
-    },
-    {
-      updateOne: {
-        filter: { _id: qid },
-        update: { $inc: { vote_count: -1 } },
-      },
-    },
-  ]);
-};
+// const removeUpvote = async (qid, uid) => {
+//   await Question.bulkWrite([
+//     {
+//       updateOne: {
+//         filter: { _id: qid },
+//         update: { $pull: { upvoted_by: { $eq: uid } } },
+//       },
+//     },
+//     {
+//       updateOne: {
+//         filter: { _id: qid },
+//         update: { $inc: { vote_count: -1 } },
+//       },
+//     },
+//   ]);
+// };
 
-const addDownvote = async (qid, uid) => {
-  await Question.bulkWrite([
-    {
-      updateOne: {
-        filter: { _id: qid },
-        update: { $push: { downvoted_by: { $each: [uid], $position: 0 } } },
-      },
-    },
-    {
-      updateOne: {
-        filter: { _id: qid },
-        update: { $inc: { vote_count: -1 } },
-      },
-    },
-  ]);
-};
+// const addDownvote = async (qid, uid) => {
+//   await Question.bulkWrite([
+//     {
+//       updateOne: {
+//         filter: { _id: qid },
+//         update: { $push: { downvoted_by: { $each: [uid], $position: 0 } } },
+//       },
+//     },
+//     {
+//       updateOne: {
+//         filter: { _id: qid },
+//         update: { $inc: { vote_count: -1 } },
+//       },
+//     },
+//   ]);
+// };
 
-const addUpvote = async (qid, uid) => {
-  await Question.bulkWrite([
-    {
-      updateOne: {
-        filter: { _id: qid },
-        update: { $push: { upvoted_by: { $each: [uid], $position: 0 } } },
-      },
-    },
-    {
-      updateOne: {
-        filter: { _id: qid },
-        update: { $inc: { vote_count: 1 } },
-      },
-    },
-  ]);
-};
+// const addUpvote = async (qid, uid) => {
+//   await Question.bulkWrite([
+//     {
+//       updateOne: {
+//         filter: { _id: qid },
+//         update: { $push: { upvoted_by: { $each: [uid], $position: 0 } } },
+//       },
+//     },
+//     {
+//       updateOne: {
+//         filter: { _id: qid },
+//         update: { $inc: { vote_count: 1 } },
+//       },
+//     },
+//   ]);
+// };
 
 const getTop10Questions = async () => {
   return await Question.find()
@@ -265,10 +265,6 @@ module.exports = {
   addTag,
   getQuestionsByOrder,
   filterQuestionsBySearch,
-  removeDownvote,
-  removeUpvote,
-  addDownvote,
-  addUpvote,
   getTop10Questions,
   showQuesUpDown,
 };

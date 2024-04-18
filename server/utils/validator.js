@@ -10,5 +10,5 @@ const validateId = (id) => {
 };
 
 module.exports = {
-  validateId,
+  validateId
 };

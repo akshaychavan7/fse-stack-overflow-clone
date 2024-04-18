@@ -9,8 +9,21 @@ const {
 } = require("../utils/question");
 Question.schema.path("answers", Array);
 
+// Mock authorization
+jest.mock("../middleware/authorization");
+let auth = require('../middleware/authorization');
+
 // Mock the authorization
-jest.mock('../middleware/authorization', () => (req, res, next) => {
+auth.authorization = jest.fn((req, res, next) => {
+  next();
+});
+
+auth.adminAuthorization = jest.fn((req, res, next) => {
+  next();
+});
+
+
+jest.mock('../middleware/sanitizeParams', () => (req, res, next) => {
   next();
 });
 

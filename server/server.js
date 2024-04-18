@@ -62,6 +62,7 @@ app.use("/user", userController);
 app.use("/comment", commentController);
 app.use("/vote", voteController);
 
+
 let server = app.listen(port, () => {
   console.log(`Server starts at http://localhost:${port}`);
 });

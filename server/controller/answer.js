@@ -1,7 +1,6 @@
 const express = require("express");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
-const User = require("../models/users");
 const sanitizeParams = require("../middleware/sanitizeParams");
 const {
   authorization,
@@ -9,6 +8,7 @@ const {
 } = require("../middleware/authorization");
 const { preprocessing } = require("../utils/textpreprocess");
 
+const {ANSWERTYPE} = require("../utils/constants");
 
 const { reportPost } = require("../utils/user");
 
@@ -20,7 +20,8 @@ const addAnswer = async (req, res) => {
   let answer = await Answer.create({
     ...req.body.ans,
     ans_by: req.userId,
-    ans_date_time: new Date(),
+    // ans_date_time: new Date(),
+    // Note: check if this is required or no since in DB already setting Date.now
   });
   res.status(200);
   let qid = req.body.qid;
@@ -52,7 +53,7 @@ const reportAnswer = async (req, res) => {
       return res.status(404).send({ status: 404, message: "Answer not found" });
     }
 
-    let report = await reportPost(req.body.aid, "answer");
+    let report = await reportPost(req.body.aid, ANSWERTYPE);
     let message;
     if(report) {
       message = "Answer reported successfully.";
@@ -71,13 +72,14 @@ const reportAnswer = async (req, res) => {
 
 const resolveAnswer = async (req, res) => {
   try {
-    let answer = await Answer.exists({ _id: req.params.answerId });
+    let aid = preprocessing(req.params.answerId);
+    let answer = await Answer.exists({ _id: aid });
     if (!answer) {
       return res.status(404).send("Answer not found");
     }
 
     await Answer.findByIdAndUpdate(
-      req.params.answerId,
+      aid,
       { flag: false },
       { new: true }
     );
@@ -90,12 +92,13 @@ const resolveAnswer = async (req, res) => {
 
 const deleteAnswer = async (req, res) => {
   try {
-    let answer = await Answer.exists({ _id: req.params.answerId });
+    let aid = preprocessing(req.params.answerId);
+    let answer = await Answer.exists({ _id: aid });
     if (!answer) {
       return res.status(404).send("Answer not found");
     }
 
-    await Answer.findByIdAndDelete(req.params.answerId);
+    await Answer.findByIdAndDelete(aid);
     res.status(200).send("Answer deleted successfully");
   } catch (error) {
     console.error("Error:", error);

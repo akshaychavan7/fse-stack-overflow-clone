@@ -8,6 +8,7 @@ const { validateId } = require("../utils/validator");
 const sanitizeParams = require("../middleware/sanitizeParams");
 const {updateUpvote, updateDownvote} = require("../utils/vote");
 const {updateReputation} = require("../utils/user");
+const {QUESTIONTYPE, ANSWERTYPE, COMMENTTYPE} = require("../utils/constants");
 
 const upvote = async (req, res) => {
   try {
@@ -20,13 +21,13 @@ const upvote = async (req, res) => {
     }
 
     switch (voteType) {
-      case "question":
+      case QUESTIONTYPE:
         voteObject = await Question;
         break;
-      case "answer":
+      case ANSWERTYPE:
         voteObject = await Answer;
         break;
-      case "comment":
+      case COMMENTTYPE:
         voteObject = await Comment;
         break;
       default:
@@ -41,13 +42,13 @@ const upvote = async (req, res) => {
     let post_by;
     let result = await updateUpvote(voteObject, obj, req.userId, id);
     switch (voteType) {
-      case "question":
+      case QUESTIONTYPE:
         post_by = obj.asked_by.toString();
         break;
-      case "answer":
+      case ANSWERTYPE:
         post_by = obj.ans_by.toString();
         break;
-      case "comment":
+      case COMMENTTYPE:
         post_by = obj.commented_by.toString();
         break;
     }
@@ -75,10 +76,10 @@ const downvote = async (req, res) => {
     }
 
     switch (voteType) {
-      case "question":
+      case QUESTIONTYPE:
         voteObject = await Question;
         break;
-      case "answer":
+      case ANSWERTYPE:
         voteObject = await Answer;
         break;
       default:
@@ -94,10 +95,10 @@ const downvote = async (req, res) => {
 
     let post_by;
     switch (voteType) {
-      case "question":
+      case QUESTIONTYPE:
         post_by = obj.asked_by.toString();
         break;
-      case "answer":
+      case ANSWERTYPE:
         post_by = obj.ans_by.toString();
         break;
     }

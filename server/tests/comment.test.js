@@ -10,8 +10,29 @@ const Comment = require("../models/comments");
 // Mock the Comment model
 jest.mock("../models/comments");
 
+jest.mock("../utils/validator");
+let validate = require('../utils/validator');
+
+validate.validateId = jest.fn((id) => {
+  return true;
+})
+
+// Mock authorization
+jest.mock("../middleware/authorization");
+let auth = require('../middleware/authorization');
+
 // Mock the authorization
-jest.mock('../middleware/authorization', () => (req, res, next) => {
+auth.authorization = jest.fn((req, res, next) => {
+  req.userId = "dummyUserId";
+  next();
+});
+
+auth.adminAuthorization = jest.fn((req, res, next) => {
+  next();
+});
+
+
+jest.mock('../middleware/sanitizeParams', () => (req, res, next) => {
   next();
 });
 
@@ -30,12 +51,9 @@ describe("Add Question Comment and Answer Comment", () => {
   it("should add a new comment to the question", async () => {
     // Mocking the request body
     const mockReqBody = {
-      qid: "dummyQuestionId",
-      comment: {
-        description: "This is a test question comment",
-        commented_by: "dummyUserId",
-        comment_date_time: "2024-05-22T16:08:22.613Z"
-      }
+      parentId: "dummyQuestionId",
+      parentType: "question",
+      description: "This is a test question comment"
     };
 
     const mockComment = {
@@ -44,34 +62,36 @@ describe("Add Question Comment and Answer Comment", () => {
       commented_by: "dummyUserId",
       comment_date_time: "2024-05-22T16:08:22.613Z"
     }
+
+    
     // Mock the create method of the Comment model
     Comment.create.mockResolvedValueOnce(mockComment);
 
+    Question.exists = jest.fn().mockResolvedValueOnce(true);
     // Mocking the Question.findOneAndUpdate method
-    Question.findOneAndUpdate = jest.fn().mockResolvedValueOnce({
+    Question.findByIdAndUpdate = jest.fn().mockResolvedValueOnce({
       _id: "dummyQuestionId",
       comments: ["dummyCommentId"]
     });
 
     // Making the request
     const response = await supertest(server)
-      .post("/comment/addQuestionComment")
+      .post("/comment/addComment")
       .send(mockReqBody);
 
     // Asserting the response
     expect(response.status).toBe(200);
-    expect(response.body).toEqual(mockComment);
+    expect(response.body.body).toEqual(mockComment);
 
     // Verifying that Comment.create method was called with the correct arguments
     expect(Comment.create).toHaveBeenCalledWith({
         description: "This is a test question comment",
         commented_by: "dummyUserId",
-        comment_date_time: "2024-05-22T16:08:22.613Z"
     });
 
     // Verifying that Question.findOneAndUpdate method was called with the correct arguments
-    expect(Question.findOneAndUpdate).toHaveBeenCalledWith(
-      { _id: "dummyQuestionId" },
+    expect(Question.findByIdAndUpdate).toHaveBeenCalledWith(
+      "dummyQuestionId",
       { $push: { comments: { $each: ["dummyCommentId"], $position: 0 } } },
       { new: true }
     );
@@ -81,12 +101,9 @@ describe("Add Question Comment and Answer Comment", () => {
   it("should add a new comment to the answer", async () => {
     // Mocking the request body
     const mockReqBody = {
-      aid: "dummyAnswerId",
-      comment: {
-        description: "This is a test answer comment",
-        commented_by: "dummyUserId",
-        comment_date_time: "2024-05-22T16:08:22.613Z"
-      }
+      parentId: "dummyAnswerId",
+      parentType: "answer",
+      description: "This is a test answer comment"
     };
 
     const mockComment = {
@@ -98,31 +115,32 @@ describe("Add Question Comment and Answer Comment", () => {
     // Mock the create method of the Comment model
     Comment.create.mockResolvedValueOnce(mockComment);
 
+    Answer.exists = jest.fn().mockResolvedValueOnce(true);
+
     // Mocking the Answer.findOneAndUpdate method
-    Answer.findOneAndUpdate = jest.fn().mockResolvedValueOnce({
+    Answer.findByIdAndUpdate = jest.fn().mockResolvedValueOnce({
       _id: "dummyAnswerId",
       comments: ["dummyCommentId"]
     });
 
     // Making the request
     const response = await supertest(server)
-      .post("/comment/addAnswerComment")
+      .post("/comment/addComment")
       .send(mockReqBody);
 
     // Asserting the response
     expect(response.status).toBe(200);
-    expect(response.body).toEqual(mockComment);
+    expect(response.body.body).toEqual(mockComment);
 
     // Verifying that Comment.create method was called with the correct arguments
     expect(Comment.create).toHaveBeenCalledWith({
         description: "This is a test answer comment",
         commented_by: "dummyUserId",
-        comment_date_time: "2024-05-22T16:08:22.613Z"
     });
 
     // Verifying that Answer.findOneAndUpdate method was called with the correct arguments
-    expect(Answer.findOneAndUpdate).toHaveBeenCalledWith(
-      { _id: "dummyAnswerId" },
+    expect(Answer.findByIdAndUpdate).toHaveBeenCalledWith(
+      "dummyAnswerId",
       { $push: { comments: { $each: ["dummyCommentId"], $position: 0 } } },
       { new: true }
     );

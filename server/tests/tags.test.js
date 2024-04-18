@@ -6,8 +6,24 @@ const Tag = require("../models/tags");
 const Question = require("../models/questions");
 const { default: mongoose } = require("mongoose");
 
+jest.mock("../models/questions");
+jest.mock("../models/tags");
+
+// Mock authorization
+jest.mock("../middleware/authorization");
+let auth = require('../middleware/authorization');
+
 // Mock the authorization
-jest.mock('../middleware/authorization', () => (req, res, next) => {
+auth.authorization = jest.fn((req, res, next) => {
+  next();
+});
+
+auth.adminAuthorization = jest.fn((req, res, next) => {
+  next();
+});
+
+
+jest.mock('../middleware/sanitizeParams', () => (req, res, next) => {
   next();
 });
 
@@ -28,6 +44,7 @@ describe("GET /getTagsWithQuestionNumber", () => {
   beforeEach(() => {
     server = require("../server");
   });
+
   afterEach(async () => {
     server.close();
     await mongoose.disconnect();
