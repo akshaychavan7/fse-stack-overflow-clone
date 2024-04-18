@@ -63,7 +63,7 @@ const reportAnswer = async (req, res) => {
     }
     res
       .status(200)
-      .send({ status: 200, message: message });
+      .send({ status: 200, message: message, reportBool: report });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
