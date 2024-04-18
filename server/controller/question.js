@@ -2,7 +2,7 @@ const express = require("express");
 const Question = require("../models/questions");
 const { reportPost } = require("../utils/user");
 const sanitizeParams = require("../middleware/sanitizeParams");
-const { preprocessing } = require("../utils/textpreprocess");
+const { preprocessing, textfiltering } = require("../utils/textpreprocess");
 const {
   addTag,
   getQuestionsByOrder,
@@ -19,6 +19,7 @@ const {
   authorization,
   adminAuthorization,
 } = require("../middleware/authorization");
+const { text } = require("body-parser");
 
 // To get Questions by Filter
 const getQuestionsByFilter = async (req, res) => {
@@ -86,12 +87,18 @@ const addQuestion = async (req, res) => {
     })
   );
 
+  let flag = false;
+
+  if(textfiltering(req.body.title) || textfiltering(req.body.description)) {
+    flag = true;
+  }
+
   let question = await Question.create({
     title: req.body.title,
     description: req.body.description,
     asked_by: req.userId,
-    ask_date_time: new Date(),
     tags: tags,
+    flag: flag
   });
   res.json(question);
 };
