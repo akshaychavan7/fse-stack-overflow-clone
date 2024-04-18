@@ -8,6 +8,8 @@ import Login from "./components/Login/Login.js";
 import SignUp from "./components/Login/SignUp/SignUp.js";
 import { ApplicationContextProvider } from "./context/ApplicationContext.js";
 import { AlertContextProvider } from "./context/AlertContext.js";
+import UserProfile from "./components/UserProfile/UserProfile.js";
+import NotFoundPage from "./components/NotFoundPage/NotFoundPage.js";
 function App() {
   const app = new Application(data);
 
@@ -20,6 +22,9 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/home" element={<FakeStackOverflow app={app} />} />
+            <Route path="/userprofile/:_id" element={<UserProfile />} />
+            {/* If no route matches */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>
       </AlertContextProvider>
