@@ -2,10 +2,21 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from config import MONGO_URI
+from fastapi.middleware.cors import CORSMiddleware
 
 from tagsgen import findtags 
 
 app = FastAPI()
+
+origins = ["http://localhost:3000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 client = AsyncIOMotorClient(MONGO_URI)
 
@@ -18,7 +29,7 @@ class tagsGen(BaseModel):
 
 
 # Endpoint to handle POST requests to create a new item
-@app.post("/question/generateTags/")
+@app.post("/tag/generateTags/")
 async def generateTags(item: tagsGen):
     text = item.title.strip() + " " + item.description.strip()
     tags = []

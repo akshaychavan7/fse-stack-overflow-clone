@@ -24,7 +24,7 @@ export default function List({ list, title = "Questions", type = "question" }) {
               key={idx}
               className="list-item"
             >
-              <Typography variant="body1" className="vote-count">
+              <Typography variant="body1" className="vote-count-box">
                 {item?.vote_count}
               </Typography>
               <Typography variant="body1" className="list-text txt">

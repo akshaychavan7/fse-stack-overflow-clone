@@ -1,3 +1,4 @@
+import { useAlert } from "../../../../context/AlertContext";
 import { getMetaData } from "../../../../tool";
 import AuthorMeta from "../../AuthorMeta/AuthorMeta";
 import TagChip from "../../TagChip/TagChip";
@@ -12,12 +13,20 @@ const Question = ({
   setSelected,
   handleUsers,
 }) => {
+  const alert = useAlert();
   const handleProfileClick = (e) => {
-    console.log("profile clicked", setViewUserProfile);
-    e.stopPropagation();
-    setViewUserProfile({ view: true, username: q.asked_by.username });
-    setSelected("u");
-    handleUsers();
+    try {
+      e.stopPropagation();
+      setViewUserProfile({ view: true, username: q.asked_by.username });
+      setSelected("u");
+      handleUsers();
+    } catch (e) {
+      console.error(e);
+      alert.showAlert(
+        "Could not fetch user. Try refreshing the page if the issue persists",
+        "error"
+      );
+    }
   };
 
   return (

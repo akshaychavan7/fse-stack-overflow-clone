@@ -121,6 +121,9 @@ const Main = ({
         clickTag={clickTag}
         handleAnswer={handleAnswer}
         handleNewQuestion={handleNewQuestion}
+        setViewUserProfile={setViewUserProfile}
+        setSelected={setSelected}
+        handleUsers={handleUsers}
       />
     );
   };

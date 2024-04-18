@@ -28,7 +28,8 @@
   color: cornflowerblue;
 }
 
-.vote-count {
+.vote-count-box {
+  text-align: center;
   border: 1px solid lightgray;
   padding: 5px;
   border-radius: 5px;
