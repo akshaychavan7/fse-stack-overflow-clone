@@ -71,8 +71,8 @@ const getQuestionById = async (req, res) => {
       }
     ])
     .exec();
-    let jsonQuestion = JSON.stringify(question);
-    jsonQuestion = showQuesUpDown(req.userId, question);
+    let jsonQuestion = question.toJSON();
+    jsonQuestion = showQuesUpDown(req.userId, jsonQuestion);
     res.status(200).json(jsonQuestion);
   } catch (err) {
     res.status(500);
