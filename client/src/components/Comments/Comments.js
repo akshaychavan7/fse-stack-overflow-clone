@@ -40,7 +40,6 @@ export default function Comments({
         square: true,
         boxShadow: "none",
         borderBottom: "1px solid #e0e0e0",
-        // marginTop: "30px",
       }}
     >
       <AccordionSummary
