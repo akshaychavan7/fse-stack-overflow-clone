@@ -4,20 +4,20 @@ on:
   push:
     branches:
       - vedant
+      - akshay
+      - main
   pull_request:
     branches:
       - main
       - testdev
-      - vedant
-      - akshay
 
 jobs:
   setup:
     runs-on: self-hosted
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Check if Node.js is installed
         run: node --version || echo 'Node.js is not installed'
