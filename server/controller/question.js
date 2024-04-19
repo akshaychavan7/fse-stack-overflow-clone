@@ -69,9 +69,10 @@ const getQuestionById = async (req, res) => {
         //sort by votes
         options: { sort: { vote_count: -1 } },
       }
-    ]).exec();
-    let jsonQuestion = question.toJSON();
-    jsonQuestion = showQuesUpDown(req.userId, jsonQuestion);
+    ])
+    .exec();
+    let jsonQuestion = JSON.stringify(question);
+    jsonQuestion = showQuesUpDown(req.userId, question);
     res.status(200).json(jsonQuestion);
   } catch (err) {
     res.status(500);
