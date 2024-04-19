@@ -2,6 +2,7 @@ const User = require("../models/users");
 const Question = require("../models/questions");
 const Answer = require("../models/answers");
 const Comment = require("../models/comments");
+const { constants } = require("./constants");
 
 const updateReputation = async (upvoteBool, downvoteBool, uid, typeVote) => {
   try {
@@ -21,13 +22,13 @@ const updateReputation = async (upvoteBool, downvoteBool, uid, typeVote) => {
 const reportPost = async (id, type) => {
   let postType;
   switch (type) {
-    case constants.QUESTION:
+    case constants.QUESTIONTYPE:
       postType = await Question;
       break;
-    case constants.ANSWER:
+    case constants.ANSWERTYPE:
       postType = await Answer;
       break;
-    case constants.COMMENT:
+    case constants.COMMENTTYPE:
       postType = await Comment;
       break;
     default:

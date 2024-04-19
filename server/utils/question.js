@@ -95,7 +95,7 @@ const getQuestionsByOrder = async (order = "active") => {
         return questions;
       case constants.ORDER_ACTIVE:
         return sortByActiveOrder(questions);
-      case constants.ORDER_UNANSWEREDs:
+      case constants.ORDER_UNANSWERED:
         questions = questions.filter(
           (question) => question.answers.length == 0
         );
