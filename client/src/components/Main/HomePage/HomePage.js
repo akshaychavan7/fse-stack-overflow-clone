@@ -13,6 +13,9 @@ const HomePage = ({
   handleAnswer,
   handleNewQuestion,
   qlist,
+  setViewUserProfile,
+  setSelected,
+  handleUsers,
 }) => {
   const [filteredQlist, setFilteredQlist] = useState(qlist);
 
@@ -59,6 +62,9 @@ const HomePage = ({
             key={idx}
             clickTag={clickTag}
             handleAnswer={handleAnswer}
+            setViewUserProfile={setViewUserProfile}
+            setSelected={setSelected}
+            handleUsers={handleUsers}
           />
         ))}
         {filteredQlist.length === 0 && (

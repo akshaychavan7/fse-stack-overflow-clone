@@ -13,7 +13,7 @@ import {
 import { addAnswer } from "../../services/answerService";
 import { getTagsWithQuestionNumber } from "../../services/tagService";
 import Users from "./Users/Users";
-import getUsersList from "../../services/userService";
+import { getUsersList } from "../../services/userService";
 import { useAlert } from "../../context/AlertContext";
 import HomePage from "./HomePage/HomePage";
 
@@ -30,6 +30,10 @@ const Main = ({
   const [qid, setQid] = useState("");
   const [selected, setSelected] = useState("h");
   const [qlist, setQlist] = useState([]);
+  const [viewUserProfile, setViewUserProfile] = useState({
+    view: false,
+    username: "",
+  });
   let content = null;
 
   useEffect(() => {
@@ -56,7 +60,7 @@ const Main = ({
         "error"
       );
     });
-  }, []);
+  }, [page]);
 
   const clickTag = (tagName) => {
     setSearch(`[${tagName}]`);
@@ -117,6 +121,9 @@ const Main = ({
         clickTag={clickTag}
         handleAnswer={handleAnswer}
         handleNewQuestion={handleNewQuestion}
+        setViewUserProfile={setViewUserProfile}
+        setSelected={setSelected}
+        handleUsers={handleUsers}
       />
     );
   };
@@ -133,6 +140,9 @@ const Main = ({
           handleAnswer={handleAnswer}
           handleNewQuestion={handleNewQuestion}
           qlist={qlist}
+          setViewUserProfile={setViewUserProfile}
+          setSelected={setSelected}
+          handleUsers={handleUsers}
         />
       );
       break;
@@ -175,7 +185,13 @@ const Main = ({
       break;
     }
     case "user":
-      content = <Users users={users} />;
+      content = (
+        <Users
+          users={users}
+          viewUserProfile={viewUserProfile}
+          setViewUserProfile={setViewUserProfile}
+        />
+      );
       break;
     default:
       content = getQuestionPage(questionOrder.toLowerCase(), search);
@@ -186,11 +202,13 @@ const Main = ({
     <div id="main" className="main">
       <SideBarNav
         selected={selected}
+        setSelected={() => setSelected}
         handleQuestions={handleQuestions}
         handleTags={handleTags}
         handleUsers={handleUsers}
         handleHomePage={handleHomePage}
         setQuestionPage={setQuestionPage}
+        setViewUserProfile={setViewUserProfile}
       />
       <div id="right_main" className="right_main">
         {content}

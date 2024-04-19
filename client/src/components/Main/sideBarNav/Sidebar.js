@@ -98,12 +98,14 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Sidebar({
   selected = "",
+  setSelected,
   handleQuestions,
   handleTags,
   handleUsers,
   handleHomePage,
   setQuestionPage,
   search,
+  setViewUserProfile,
 }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -135,6 +137,12 @@ export default function Sidebar({
     }
   };
 
+  const handleProfileClick = () => {
+    setViewUserProfile({ view: true, username: user.username });
+    setSelected("u");
+    handleUsers();
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -164,7 +172,7 @@ export default function Sidebar({
             title={`${user.firstname} ${user.lastname}`}
             placement="bottom"
           >
-            <div className="header-avatar">
+            <div className="header-avatar" onClick={handleProfileClick}>
               <ProfileAvatar
                 name={user?.firstname + " " + user?.lastname}
                 image={user?.profilePic}
