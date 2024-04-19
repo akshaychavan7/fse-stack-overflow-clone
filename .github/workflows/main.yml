@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build and Test
-    runs-on: [self-hosted, macOS, ARM64, nitin]
+    runs-on: [self-hosted, macOS, X64]
 
     steps:
       - name: Checkout code
