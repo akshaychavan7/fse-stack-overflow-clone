@@ -6,8 +6,6 @@ const { default: mongoose } = require("mongoose");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
 
-const authorization = require("../middleware/authorization");
-
 // Mock the Answer model
 jest.mock("../models/answers");
 
