@@ -1,11 +1,13 @@
-name: Run Cypress on pull request to main
+name: Workflow to run test cases
 
 on:
+  push:
+    branches:
+      - vedant
   pull_request:
     branches:
       - main
       - testdev
-      - vedant
 
 jobs:
   setup:
