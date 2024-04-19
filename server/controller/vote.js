@@ -57,6 +57,7 @@ const upvote = async (req, res) => {
       status: 200, 
       upvote: result['upvote'], 
       downvote: result['downvote'], 
+      vote_count: result['vote_count'],
       message: result['message'] 
     });
   } catch (error) {
@@ -109,6 +110,7 @@ const downvote = async (req, res) => {
       status: 200, 
       upvote: result['upvote'], 
       downvote: result['downvote'], 
+      vote_count: result['vote_count'],
       message: result['message'] 
     });
   
