@@ -47,7 +47,7 @@ const UpvoteDownvote = ({
     const response =
       type === "up" ? await upvote(reqObj) : await downvote(reqObj);
     setVotes(response.vote_count);
-    let voteType = response.upvoted ? "up" : response.downvoted ? "down" : null;
+    let voteType = response.upvote ? "up" : response.downvote ? "down" : null;
     setVoted(voteType);
   };
 
