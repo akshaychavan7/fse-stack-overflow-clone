@@ -122,19 +122,19 @@ export default function Moderator() {
   useEffect(() => {
     setLoading(true);
     switch (type) {
-      case "question":
+      case constants.QUESTION:
         getReportedQuestions().then((res) => {
           setReportedData(res);
           setLoading(false);
         });
         break;
-      case "answer":
+      case constants.ANSWER:
         getReportedAnswers().then((res) => {
           setReportedData(res);
           setLoading(false);
         });
         break;
-      case "comment":
+      case constants.COMMENT:
         getReportedComments().then((res) => {
           setReportedData(res);
           setLoading(false);
@@ -158,17 +158,17 @@ export default function Moderator() {
       profilePic = "",
       date = null;
     switch (type) {
-      case "question":
+      case constants.QUESTION:
         author = data?.asked_by?.firstname + " " + data?.asked_by?.lastname;
         profilePic = data?.asked_by?.profilePic;
         date = data?.ask_date_time;
         break;
-      case "answer":
+      case constants.ANSWER:
         author = data?.ans_by?.firstname + " " + data?.ans_by?.lastname;
         profilePic = data?.ans_by?.profilePic;
         date = data?.ans_date_time;
         break;
-      case "comment":
+      case constants.COMMENT:
         author =
           data?.commented_by?.firstname + " " + data?.commented_by?.lastname;
         profilePic = data?.commented_by?.profilePic;

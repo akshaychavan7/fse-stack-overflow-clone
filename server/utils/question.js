@@ -1,5 +1,6 @@
 const Tag = require("../models/tags");
 const Question = require("../models/questions");
+const { constants } = require("./constants");
 
 const parseTags = (search) => {
   return (search.match(/\[([^\]]+)\]/g) || []).map((word) => word.slice(1, -1));
@@ -90,11 +91,11 @@ const getQuestionsByOrder = async (order = "active") => {
     });
 
     switch (order) {
-      case "newest":
+      case constants.ORDER_NEWEST:
         return questions;
-      case "active":
+      case constants.ORDER_ACTIVE:
         return sortByActiveOrder(questions);
-      case "unanswered":
+      case constants.ORDER_UNANSWEREDs:
         questions = questions.filter(
           (question) => question.answers.length == 0
         );
