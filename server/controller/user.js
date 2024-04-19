@@ -43,9 +43,11 @@ const getUserDetails = async (req, res) => {
       profilePic: user["profilePic"],
       userRole: user["userRole"],
       reputation: user["reputation"],
-      no_questions: questions.length,
-      no_answers: answers.length,
-      no_comments: comments.length,
+      location: user["location"],
+      technologies: user["technologies"],
+      questions: questions,
+      answers: answers,
+      comments: comments,
     };
     res.status(200).json({ userDetails: udetails });
   } catch (err) {

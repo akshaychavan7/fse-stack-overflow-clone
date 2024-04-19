@@ -6,12 +6,17 @@ import {
   Box,
   Button,
   Chip,
+  IconButton,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
 import { useAlert } from "../../../context/AlertContext";
-import { getTagsWithQuestionNumber } from "../../../services/tagService";
+import {
+  getSuggestedTags,
+  getTagsWithQuestionNumber,
+} from "../../../services/tagService";
+import AssistantRoundedIcon from "@mui/icons-material/AssistantRounded";
 
 const NewQuestion = ({ addQuestion }) => {
   const alert = useAlert();
@@ -28,6 +33,13 @@ const NewQuestion = ({ addQuestion }) => {
     };
     fetchTags().catch((e) => console.log(e));
   }, []);
+
+  const handleSuggestTagsClick = async () => {
+    const res = await getSuggestedTags({ title, description });
+    if (res) {
+      setTags(res.data);
+    }
+  };
 
   const postQuestion = () => {
     if (title.length === 0) {
@@ -128,7 +140,7 @@ const NewQuestion = ({ addQuestion }) => {
             placeholder="Limit title to 100 characters or less"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            sx={{ width: "100%" }}
+            sx={{ width: "100%", mt: "10px" }}
             required
           />
           <TextField
@@ -138,25 +150,34 @@ const NewQuestion = ({ addQuestion }) => {
             placeholder="Add a good question description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            sx={{ width: "100%" }}
+            sx={{ width: "100%", mt: "10px" }}
             multiline
             rows={3}
             required
           />
-          <Autocomplete
-            multiple
-            freeSolo
-            required
-            limitTags={5}
-            onChange={handleTagsChange}
-            filterSelectedOptions
-            id="tags"
-            options={tagsList}
-            getOptionLabel={(option) => option}
-            renderTags={handleRenderTags}
-            renderInput={handleTagsRenderInput}
-            sx={{ width: "500px" }}
-          />
+          <div className="tags-div">
+            <Autocomplete
+              multiple
+              freeSolo
+              required
+              value={tags}
+              limitTags={5}
+              onChange={handleTagsChange}
+              filterSelectedOptions
+              id="tags"
+              options={tagsList}
+              getOptionLabel={(option) => option}
+              renderTags={handleRenderTags}
+              renderInput={handleTagsRenderInput}
+              sx={{ width: "100%" }}
+            />
+            <IconButton
+              onClick={handleSuggestTagsClick}
+              title="Suggest AI Generated Tags"
+            >
+              <AssistantRoundedIcon color="primary" sx={{ fontSize: "36px" }} />
+            </IconButton>
+          </div>
         </div>
         <div className="btn_indicator_container">
           <Button

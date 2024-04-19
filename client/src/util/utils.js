@@ -36,6 +36,12 @@ export const getDurationPassed = (date) => {
   return Math.floor(diff / 12) + " years ago";
 };
 
+export const memberSince = (date) => {
+  let duration = getDurationPassed(date);
+  duration = duration.slice(0, duration.length - 4);
+  return duration;
+};
+
 export const sortByActiveOrder = (qList) => {
   // sort each questions answers so that newest answer is at 0th position
   qList = qList.map((question) => {
