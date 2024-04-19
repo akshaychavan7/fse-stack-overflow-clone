@@ -1,47 +1,137 @@
-name: CI
+name: Run Cypress on pull request to main
 
 on:
-  push:
+  pull_request:
     branches:
       - main
       - testdev
       - vedant
 
 jobs:
-  build:
-    name: Build and Test
+  setup:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "20"
+    - name: Check if Node.js is installed
+      run: node --version || echo 'Node.js is not installed'
+      id: check_node_installed
+      continue-on-error: true
 
-      - name: Install dependencies
-        run: |
-          cd client
-          npm install
-          cd ../server
-          npm install
+    - name: Install Node.js and npm
+      if: steps.check_node_installed.outcome == 'failure'
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
 
-      # - name: Run frontend tests
-      #   run: |
-      #     cd client
-      #     npm test -- --watchAll=false
+    - name: Install dependencies in server directory
+      run: npm install
+      working-directory: server/
 
-      - name: Run backend tests
-        run: |
-          cd server
-          npm test
+    - name: Check if mongod is running
+      run: ps aux | grep -v grep | grep mongod || echo 'mongod is not running'
+      id: check_mongod_running
+      continue-on-error: true
 
-      - name: Build frontend
-        run: |
-          cd client
-          npm run build
+    - name: Run mongod if not running
+      if: steps.check_mongod_running.outcome == 'failure'
+      run: mongod --config /opt/homebrew/etc/mongod.conf --fork
+
+    - name: Set DB_URL variable
+      run: echo "DB_URL=mongodb://127.0.0.1:27017/fake_so_fse" >> $GITHUB_ENV
+
+    - name: Run remove_db.js
+      env:
+        DB_URL: ${{ env.DB_URL }}
+      run: node remove_db.js $DB_URL
+      working-directory: server/
+
+    - name: Run init.js
+      env:
+        DB_URL: ${{ env.DB_URL }}
+      run: node init.js $DB_URL
+      working-directory: server/
+
+    # - name: Start the node server
+    #   run: node server.js > server.log 2>&1 &
+    #   working-directory: server/ 
+
+    - name: Install dependencies in client directory
+      run: npm install 
+      working-directory: client/
+
+    - name: Install dependencies in server directory
+      run: npm install 
+      working-directory: server/
+
+    - name: Run backend test cases
+      run: npm test
+      working-directory: server/
+
+    # - name: Start the Client
+    #   run: npm start &
+    #   working-directory: client/
+
+    # - name: Install testing dependencies
+    #   run: npm install cypress
+    #   working-directory: testing/
+
+    # - name: Run e2e tests
+    #   run: npx cypress run --spec cypress/e2e/
+    #   working-directory: testing/
+
+    - name: Kill the node server process
+      run: kill $(lsof -t -i:8000) || true
+
+    - name: Stop the client process
+      run: kill $(lsof -t -i:3000) || true
+
+# name: CI
+
+# on:
+#   push:
+#     branches:
+#       - main
+#       - testdev
+#       - vedant
+
+# jobs:
+#   build:
+#     name: Build and Test
+#     runs-on: self-hosted
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: "20"
+
+#       - name: Install dependencies
+#         run: |
+#           cd client
+#           npm install
+#           cd ../server
+#           npm install
+
+#       # - name: Run frontend tests
+#       #   run: |
+#       #     cd client
+#       #     npm test -- --watchAll=false
+
+#       - name: Run backend tests
+#         run: |
+#           cd server
+#           npm test
+
+#       - name: Build frontend
+#         run: |
+#           cd client
+#           npm run build
 
       # - name: Run linting
       #   run: |
