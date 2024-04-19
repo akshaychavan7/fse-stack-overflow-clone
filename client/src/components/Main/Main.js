@@ -60,7 +60,7 @@ const Main = ({
         "error"
       );
     });
-  }, []);
+  }, [page]);
 
   const clickTag = (tagName) => {
     setSearch(`[${tagName}]`);
