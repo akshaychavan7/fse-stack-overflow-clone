@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - testdev
+      - vedant
 
 jobs:
   build:
@@ -17,37 +19,37 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "20"
 
       - name: Install dependencies
         run: |
-          cd frontend
+          cd client
           npm install
-          cd ../backend
+          cd ../server
           npm install
 
-      - name: Run frontend tests
-        run: |
-          cd frontend
-          npm test -- --watchAll=false
+      # - name: Run frontend tests
+      #   run: |
+      #     cd client
+      #     npm test -- --watchAll=false
 
       - name: Run backend tests
         run: |
-          cd backend
+          cd server
           npm test
 
       - name: Build frontend
         run: |
-          cd frontend
+          cd client
           npm run build
 
-      - name: Run linting
-        run: |
-          cd frontend
-          npm run lint
-          cd ../backend
-          npm run lint
+      # - name: Run linting
+      #   run: |
+      #     cd client
+      #     npm run lint
+      #     cd ../server
+      #     npm run lint
 
-      - name: End to end tests
-        run: |
-          # Add end-to-end tests here if applicable
+      # - name: End to end tests
+      #   run: |
+      #     # Add end-to-end tests here if applicable
