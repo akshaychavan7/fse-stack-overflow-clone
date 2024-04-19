@@ -38,21 +38,17 @@ const UpvoteDownvote = ({
     setFlagged(isFlagged);
   }, [isFlagged]);
 
-  const handleVote = (type) => {
-    if (voted === type) {
-      alert.showAlert("You have already voted", "error");
-      return;
-    }
+  const handleVote = async (type) => {
     // If not already voted, Upvote or downvote accordingly
-    const increment = type === "up" ? 1 : -1;
-    const voteChange = voted ? 2 * increment : increment;
     const reqObj = {
       id: id,
       type: postType,
     };
-    setVotes(votes + voteChange);
-    type === "up" ? upvote(reqObj) : downvote(reqObj);
-    setVoted(type);
+    const response =
+      type === "up" ? await upvote(reqObj) : await downvote(reqObj);
+    setVotes(response.vote_count);
+    let voteType = response.upvoted ? "up" : response.downvoted ? "down" : null;
+    setVoted(voteType);
   };
 
   const handleFlag = () => {
