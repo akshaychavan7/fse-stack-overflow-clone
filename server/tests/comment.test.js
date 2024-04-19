@@ -190,6 +190,7 @@ describe("Flag comment, view flagged comments and delete flagged comments", () =
   // Note: Check how to logically get comments based on flag
   it("Get reported comments", async () => {
     const user1 = {
+      _id: "dummyUserId",
       username: "user1",
       firstname: "name1",
       lastname: "name2",
@@ -198,7 +199,6 @@ describe("Flag comment, view flagged comments and delete flagged comments", () =
     const mockComment1 = {
       _id: "dummyCommentId",
       description: "This is a test answer comment",
-      commented_by: "dummyUserId",
       comment_date_time: "2024-05-22T16:08:22.613Z",
       flag: true,
       commented_by: user1 
