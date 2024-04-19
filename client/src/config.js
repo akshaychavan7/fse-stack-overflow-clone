@@ -2,4 +2,10 @@ const config = {
   serverURL: "http://localhost:8000/",
 };
 
-export default config;
+const constants = {
+  QUESTION: "question",
+  ANSWER: "answer",
+  COMMENT: "comment",
+};
+
+export { config, constants };

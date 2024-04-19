@@ -40,34 +40,19 @@ const UpvoteDownvote = ({
 
   const handleVote = (type) => {
     if (voted === type) {
-      // If already voted
       alert.showAlert("You have already voted", "error");
-    } else {
-      // Upvote or downvote accordingly
-      const reqObj = {
-        id: id,
-        type: postType,
-      };
-      if (voted === null) {
-        if (type === "up") {
-          setVotes(votes + 1);
-          upvote(reqObj);
-        } else {
-          setVotes(votes - 1);
-          downvote(reqObj);
-        }
-        setVoted(type);
-      } else {
-        if (type === "up") {
-          setVotes(votes + 2);
-          upvote(reqObj);
-        } else {
-          setVotes(votes - 2);
-          downvote(reqObj);
-        }
-        setVoted(type);
-      }
+      return;
     }
+    // If not already voted, Upvote or downvote accordingly
+    const increment = type === "up" ? 1 : -1;
+    const voteChange = voted ? 2 * increment : increment;
+    const reqObj = {
+      id: id,
+      type: postType,
+    };
+    setVotes(votes + voteChange);
+    type === "up" ? upvote(reqObj) : downvote(reqObj);
+    setVoted(type);
   };
 
   const handleFlag = () => {

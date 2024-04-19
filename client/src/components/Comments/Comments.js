@@ -44,13 +44,10 @@ export default function Comments({
       }}
     >
       <AccordionSummary
-        expandIcon={<ExpandMoreIcon sx={{ color: "#6399ff" }} />}
+        expandIcon={<ExpandMoreIcon className="expand-more-icon-color" />}
         aria-controls="panel1-content"
         id="panel1-header"
-        sx={{
-          color: "#6399ff",
-          fontWeight: "500",
-        }}
+        className="comments-accordion-summary"
       >
         Comments ({commentsList?.length})
       </AccordionSummary>
@@ -98,7 +95,6 @@ export default function Comments({
           <Button
             variant="contained"
             color="primary"
-            sx={{ marginLeft: "3%" }}
             size="small"
             onClick={handlePostComment}
           >

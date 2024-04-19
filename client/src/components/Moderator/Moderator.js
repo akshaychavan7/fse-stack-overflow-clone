@@ -36,6 +36,7 @@ import { Check, Close, Person2 } from "@mui/icons-material";
 import AuthorMeta from "../Main/AuthorMeta/AuthorMeta";
 import { getMetaData } from "../../tool";
 import Loader from "../Utility/Loader/Loader";
+import { constants } from "../../config";
 
 export default function Moderator() {
   const navigate = useNavigate();
@@ -75,17 +76,17 @@ export default function Moderator() {
 
   const handleDelete = (id) => {
     switch (type) {
-      case "question":
+      case constants.QUESTION:
         deleteQuestion(id).then(() => {
           setReportedData(reportedData.filter((data) => data._id !== id));
         });
         break;
-      case "answer":
+      case constants.ANSWER:
         deleteAnswer(id).then(() => {
           setReportedData(reportedData.filter((data) => data._id !== id));
         });
         break;
-      case "comment":
+      case constants.COMMENT:
         deleteComment(id).then(() => {
           setReportedData(reportedData.filter((data) => data._id !== id));
         });
@@ -97,17 +98,17 @@ export default function Moderator() {
 
   const handleResolve = (id) => {
     switch (type) {
-      case "question":
+      case constants.QUESTION:
         resolveQuestion(id).then(() => {
           setReportedData(reportedData.filter((data) => data._id !== id));
         });
         break;
-      case "answer":
+      case constants.ANSWER:
         resolveAnswer(id).then(() => {
           setReportedData(reportedData.filter((data) => data._id !== id));
         });
         break;
-      case "comment":
+      case constants.COMMENT:
         resolveComment(id).then(() => {
           setReportedData(reportedData.filter((data) => data._id !== id));
         });
