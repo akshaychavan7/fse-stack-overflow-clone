@@ -9,6 +9,7 @@ const {
   getQuestionsByOrder,
   filterQuestionsBySearch,
   showQuesUpDown,
+  getTop10Questions,
 } = require("../utils/question");
 const comments = require("../models/comments");
 
@@ -19,6 +20,7 @@ jest.mock("../utils/question", () => ({
   getQuestionsByOrder: jest.fn(),
   filterQuestionsBySearch: jest.fn(),
   showQuesUpDown: jest.fn(),
+  getTop10Questions: jest.fn(),
 }));
 
 // Mock authorization
@@ -41,6 +43,7 @@ jest.mock('../middleware/sanitizeParams', () => (req, res, next) => {
 
 jest.mock("../utils/user")
 const userutil = require("../utils/user");
+const question = require("../models/schema/question");
 
 let server;
 
@@ -140,37 +143,11 @@ describe("GET /getQuestionById/:qid", () => {
       views: mockQuestions[1].views + 1,
     };
 
-    // mockPopulatedQuestion.toJSON = jest.fn().mockReturnValue(mockPopulatedQuestion);
-    // const mockQuestion = {
-    //   _id: '65e9b5a995b6c7045a30d823',
-    //   answers: [
-    //     mockQuestions.filter((q) => q._id == mockReqParams.qid)[0]["answers"],
-    //   ], // Mock answers
-    //   views: mockQuestions[1].views + 1,
-    //   // Define other properties as needed for your test case
-    //   // populate: jest.fn().mockReturnThis(),
-    //   // exec: jest.fn().mockResolvedValueOnce({ /* Mocked exec result */ }),
-    //   // toJSON: jest.fn().mockReturnValue({ /* Your mocked JSON representation */ })
-    // };
-    // const mockFindOneAndUpdate = jest.fn().mockReturnValue(mockQuestion)
-    // console.log(mockPopulatedQuestion);
-    // Provide mock question data
     const mockToJSON = jest.fn().mockReturnValue(mockQuestion);
     Question.findOneAndUpdate = jest.fn().mockImplementation(() => ({
       populate: jest.fn().mockReturnThis(),
       exec: jest.fn().mockResolvedValue({ toJSON: mockToJSON }),
     }));
-
-    // let objSpy = jest.spyOn(Question, 'findOneAndUpdate').mockResolvedValue({
-    //   populate: jest.fn().mockReturnThis(),
-    //   exec: jest.fn().mockResolvedValue(mockQuestion),
-    // });
-
-    // objSpy.toJSON = jest.fn().mockReturnValueOnce(mockQuestion);
-
-    // Question.findOneAndUpdate = mockFindOneAndUpdate;
-
-    // Question.toJSON = jest.fn().mockReturnValueOnce(mockPopulatedQuestion);
 
     showQuesUpDown.mockResolvedValueOnce(mockQuestion);
 
@@ -336,5 +313,58 @@ describe("Flag question, view flagged question and delete flagged question", () 
     expect(response.status).toBe(200);
     expect(response.text).toEqual(mockResponse);
 
+  });
+});
+
+describe("View trending questions", () => {
+  it("Get trending questions", async () => {
+    const user1 = {
+      _id: "dummyUserId",
+      username: "user1",
+      firstname: "name1",
+      lastname: "name2",
+      profilePic: ""
+    }
+    const user2 = {
+      _id: "dummyUserId2",
+      username: "user2",
+      firstname: "name3",
+      lastname: "name4",
+      profilePic: ""
+    }
+    const mockQuestion1 = {
+      _id: "dummyQuestionId",
+      title: "Demo question",
+      description: "This is a test question",
+      ask_date_time: "2024-05-22T16:08:22.613Z",
+      flag: true,
+      asked_by: user1 
+    }
+    const mockQuestion2 = {
+      _id: "dummyQuestionId2",
+      title: "Demo question 2",
+      description: "This is a test question 2",
+      ask_date_time: "2024-05-22T16:08:22.613Z",
+      flag: false,
+      asked_by: user2
+    }
+
+    let questions = [mockQuestion1,mockQuestion2];
+    getTop10Questions.mockResolvedValueOnce(questions);
+
+    let mockResponse =  "[{\"_id\":\"dummyQuestionId\","+
+    "\"title\":\"Demo question\",\"description\":\"This is a test question\","+
+    "\"ask_date_time\":\"2024-05-22T16:08:22.613Z\",\"flag\":true,\"asked_by\":"+
+    "{\"_id\":\"dummyUserId\",\"username\":\"user1\",\"firstname\":\"name1\",\"lastname\":"+
+    "\"name2\",\"profilePic\":\"\"}},{\"_id\":\"dummyQuestionId2\",\"title\":\"Demo question 2\","+
+    "\"description\":\"This is a test question 2\",\"ask_date_time\":\"2024-05-22T16:08:22.613Z\","+
+    "\"flag\":false,\"asked_by\":{\"_id\":\"dummyUserId2\",\"username\":\"user2\",\"firstname\":"+
+    "\"name3\",\"lastname\":\"name4\",\"profilePic\":\"\"}}]"
+
+    const response = await supertest(server)
+      .get("/question/getTrendingQuestions");
+    
+    expect(response.status).toBe(200);
+    expect(response.text).toEqual(mockResponse);
   });
 });
