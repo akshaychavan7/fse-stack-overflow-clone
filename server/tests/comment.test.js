@@ -13,9 +13,7 @@ jest.mock("../models/comments");
 jest.mock("../utils/validator");
 let validate = require('../utils/validator');
 
-validate.validateId = jest.fn((id) => {
-  return true;
-})
+validate.validateId = jest.fn();
 
 // Mock authorization
 jest.mock("../middleware/authorization");
@@ -67,6 +65,7 @@ describe("Add Question Comment and Answer Comment", () => {
       comment_date_time: "2024-05-22T16:08:22.613Z"
     }
 
+    validate.validateId.mockReturnValue(true);
     
     // Mock the create method of the Comment model
     Comment.create.mockResolvedValueOnce(mockComment);
@@ -117,6 +116,8 @@ describe("Add Question Comment and Answer Comment", () => {
       commented_by: "dummyUserId",
       comment_date_time: "2024-05-22T16:08:22.613Z"
     }
+
+    validate.validateId.mockReturnValue(true);
     // Mock the create method of the Comment model
     Comment.create.mockResolvedValueOnce(mockComment);
 
@@ -150,6 +151,39 @@ describe("Add Question Comment and Answer Comment", () => {
       { $push: { comments: { $each: ["dummyCommentId"], $position: 0 } } },
       { new: true }
     );
+  });
+
+  it("invalid parent id entered", async () => {
+    // Mocking the request body
+    const mockReqBody = {
+      parentId: "dummyQuestionId",
+      parentType: "question",
+      description: "This is a test question comment"
+    };
+
+    const mockComment = {
+      _id: "dummyCommentId",
+      description: "This is a test answer comment",
+      commented_by: "dummyUserId",
+      comment_date_time: "2024-05-22T16:08:22.613Z"
+    }
+
+    const mockResponse = "{\"status\":400,\"message\":\"Invalid parent id\"}";
+
+
+    validate.validateId.mockReturnValue(false);
+    
+    // Mock the create method of the Comment model
+    Comment.create.mockResolvedValueOnce(mockComment);
+
+    // Making the request
+    const response = await supertest(server)
+      .post("/comment/addComment")
+      .send(mockReqBody);
+
+    // Asserting the response
+    expect(response.status).toBe(400);
+    expect(response.text).toEqual(mockResponse);
   });
 });
 

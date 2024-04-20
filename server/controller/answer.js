@@ -8,7 +8,7 @@ const {
 } = require("../middleware/authorization");
 const { preprocessing, textfiltering } = require("../utils/textpreprocess");
 
-const {ANSWERTYPE} = require("../utils/constants");
+const { ANSWERTYPE } = require("../utils/constants");
 
 const { reportPost } = require("../utils/user");
 
@@ -18,26 +18,32 @@ const router = express.Router();
 // Method to add answer to a question.
 const addAnswer = async (req, res) => {
 
-  let flag = false;
+  try {
+    let flag = false;
 
-  if(textfiltering(req.body.ans.description)) {
-    flag = true;
+    if (textfiltering(req.body.ans.description)) {
+      flag = true;
+    }
+    let answer = await Answer.create({
+      ...req.body.ans,
+      ans_by: req.userId,
+      flag: flag
+      // ans_date_time: new Date(),
+      // Note: check if this is required or no since in DB already setting Date.now
+    });
+
+    let qid = req.body.qid;
+    await Question.findOneAndUpdate(
+      { _id: qid },
+      { $push: { answers: { $each: [answer._id], $position: 0 } } },
+      { new: true }
+    );
+    res.status(200).json(answer);
   }
-  let answer = await Answer.create({
-    ...req.body.ans,
-    ans_by: req.userId,
-    flag: flag
-    // ans_date_time: new Date(),
-    // Note: check if this is required or no since in DB already setting Date.now
-  });
-  
-  let qid = req.body.qid;
-  await Question.findOneAndUpdate(
-    { _id: qid },
-    { $push: { answers: { $each: [answer._id], $position: 0 } } },
-    { new: true }
-  );
-  res.status(200).json(answer);
+  catch (err) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+
 };
 
 const getReportedAnswers = async (req, res) => {
@@ -48,7 +54,6 @@ const getReportedAnswers = async (req, res) => {
     });
     res.status(200).json(answers);
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
@@ -62,7 +67,7 @@ const reportAnswer = async (req, res) => {
 
     let report = await reportPost(req.body.aid, ANSWERTYPE);
     let message;
-    if(report) {
+    if (report) {
       message = "Answer reported successfully.";
     }
     else {
@@ -72,7 +77,6 @@ const reportAnswer = async (req, res) => {
       .status(200)
       .send({ status: 200, message: message, reportBool: report });
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
@@ -92,7 +96,6 @@ const resolveAnswer = async (req, res) => {
     );
     res.status(200).send("Answer resolved successfully");
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send("Internal Server Error");
   }
 };
@@ -108,7 +111,6 @@ const deleteAnswer = async (req, res) => {
     await Answer.findByIdAndDelete(aid);
     res.status(200).send("Answer deleted successfully");
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send("Internal Server Error");
   }
 };

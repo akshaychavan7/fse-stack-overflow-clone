@@ -13,8 +13,8 @@ const router = express.Router();
 
 // get list of all users
 const getUsersList = async (req, res) => {
-  let usersList = await User.find({});
-  // remove password from the response
+  try {
+    let usersList = await User.find({});
   usersList = usersList.map((user) => {
     return {
       username: user.username,
@@ -24,7 +24,12 @@ const getUsersList = async (req, res) => {
       technologies: user.technologies,
     };
   });
-  res.json(usersList);
+  res.status(200).json(usersList);
+  }
+  catch(err) {
+    res.status(500).json({ error: `Error in fetching user list : ${err}` });
+  }
+  
 };
 
 const getUserDetails = async (req, res) => {

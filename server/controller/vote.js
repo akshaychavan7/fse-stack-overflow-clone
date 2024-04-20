@@ -66,7 +66,6 @@ const upvote = async (req, res) => {
       message: result["message"],
     });
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
@@ -130,7 +129,6 @@ const downvote = async (req, res) => {
       message: result["message"],
     });
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };

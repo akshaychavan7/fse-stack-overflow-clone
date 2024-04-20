@@ -12,13 +12,6 @@ jest.mock("../models/comments");
 jest.mock("../models/users");
 
 
-jest.mock("../utils/validator");
-let validate = require('../utils/validator');
-
-validate.validateId = jest.fn((id) => {
-  return true;
-})
-
 // Mock authorization
 jest.mock("../middleware/authorization");
 let auth = require('../middleware/authorization');
@@ -138,6 +131,23 @@ describe("Get list of users.", () => {
         expect(response.status).toBe(200);
         expect(response.body).toEqual(mockUsers);
     });
+
+    it("Error in getting list of users", async () => {
+
+      User.find = jest.fn().mockImplementation(() => {
+        throw new Error("Random!");
+      });
+
+      let mockResponse ={
+        error: `Error in fetching user list : Error: Random!`
+      }
+
+      const response = await supertest(server)
+      .post("/user/getUsersList");
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual(mockResponse);
+  });
 });
 
 
@@ -178,6 +188,21 @@ describe("Get info of user", () => {
         expect(response.status).toBe(200);
         expect(response.body).toEqual({userDetails: mockResponse});
     });
+
+    it("Error on fetching one user", async () => {
+      User.findOne = jest.fn().mockImplementation(() => {
+        throw new Error("Random!");
+      });
+
+      let mockResponse ={
+        error: `Error in fetching user details : Error: Random!`
+      }
+
+      const response = await supertest(server)
+      .get("/user/getUserDetails/user1");
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual(mockResponse);
+  });
 });
 
 describe("Get posts of own user", () => {
@@ -207,4 +232,18 @@ describe("Get posts of own user", () => {
         expect(response.status).toBe(200);
         expect(response.body).toEqual(mockResponse);
     });
+
+    it("Error in fetching self contributed posts", async () => {
+
+      userutil.getQuestionsByUser.mockImplementation(() => {
+        throw new Error("Random!");
+      });
+
+      let mockResponse = `Error in fetching user contributed posts: Error: Random!`;
+
+      const response = await supertest(server)
+      .get("/user/getUserPosts");
+      expect(response.status).toBe(500);
+      expect(response.text).toEqual(mockResponse);
+  });
 });

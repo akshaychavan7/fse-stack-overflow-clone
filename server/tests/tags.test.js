@@ -50,7 +50,7 @@ describe("GET /getTagsWithQuestionNumber", () => {
     await mongoose.disconnect();
   });
 
-  it("should return tags with question numbers", async () => {
+  it("Throw error in fetching tag information", async () => {
     // Mocking Tag.find() and Question.find()
     Tag.find = jest.fn().mockResolvedValueOnce(mockTags);
 
@@ -73,5 +73,26 @@ describe("GET /getTagsWithQuestionNumber", () => {
     ]);
     expect(Tag.find).toHaveBeenCalled();
     expect(Question.find).toHaveBeenCalled();
+  });
+
+  it("should return tags with question numbers", async () => {
+
+    Question.find = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    // Making the request
+    const response = await supertest(server).get(
+      "/tag/getTagsWithQuestionNumber"
+    );
+
+    let mockResponse = {
+      error: "Error in getting tags and associated question count."
+    }
+    // Asserting the response
+    expect(response.status).toBe(500);
+
+    // Asserting the response body
+    expect(response.body).toEqual(mockResponse);
   });
 });
