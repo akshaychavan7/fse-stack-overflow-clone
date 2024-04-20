@@ -1,6 +1,9 @@
 const Tag = require("../models/tags");
 const Question = require("../models/questions");
+const Comment = require("../models/comments");
 const { constants } = require("./constants");
+
+const {ansDelete} = require("./answer");
 
 const parseTags = (search) => {
   return (search.match(/\[([^\]]+)\]/g) || []).map((word) => word.slice(1, -1));
@@ -200,10 +203,23 @@ const showCommentUpDown = (uid, comments) => {
   return comments;
 };
 
+const questionDelete = async(qid) => {
+  let question = await Question.findOne({_id: qid});
+  for(let answer in question['answers']) {
+    await ansDelete(qid, question['answers'][answer]);
+  }
+  for(let comment in question['comments']) {
+      await Comment.deleteOne({_id: question['comments'][comment]});
+  }
+  await Question.findByIdAndDelete(qid);
+  return {status: 200, message: "Deleted flagged question."}
+}
+
 module.exports = {
   addTag,
   getQuestionsByOrder,
   filterQuestionsBySearch,
   getTop10Questions,
   showQuesUpDown,
+  questionDelete
 };

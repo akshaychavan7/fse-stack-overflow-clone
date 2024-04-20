@@ -4,11 +4,9 @@ const Answer = require("../models/answers");
 const Comment = require("../models/comments");
 const sanitizeParams = require("../middleware/sanitizeParams");
 const router = express.Router();
+const { commentDelete } = require("../utils/comment");
 const { reportPost } = require("../utils/user");
 const {
-  QUESTIONTYPE,
-  ANSWERTYPE,
-  COMMENTTYPE,
   constants,
 } = require("../utils/constants");
 const { preprocessing, textfiltering } = require("../utils/textpreprocess");
@@ -79,7 +77,7 @@ const reportComment = async (req, res) => {
         .status(404)
         .send({ status: 404, message: "Comment not found" });
     }
-    let report = await reportPost(req.body.cid, COMMENTTYPE);
+    let report = await reportPost(req.body.cid, constants.COMMENTTYPE);
     let message;
     if (report) {
       message = "Comment reported successfully.";
@@ -109,14 +107,19 @@ const getReportedComments = async (req, res) => {
 const deleteComment = async (req, res) => {
   try {
     let cid = preprocessing(req.params.commentId);
-    let comment = await Comment.exists({ _id: cid });
-    console.log(comment);
-    if (!comment) {
-      return res.status(404).send("Comment not found");
-    }
+    let parentType = req.body.parentType;
+    let parentId = req.body.parentId;
 
-    await Comment.findByIdAndDelete(cid);
-    res.status(200).send("Comment deleted successfully");
+    if (!validateId(parentId)) {
+      res.status(404).send("Invalid parent id");
+    }
+    let comment = await Comment.exists({ _id: cid });
+    if (!comment) {
+      res.status(404).send("Comment not found");
+    }
+    let response = await commentDelete(parentId, parentType, cid);
+    console.log(response);
+    res.status(response.status).send(response.message);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Internal Server Error");
@@ -144,7 +147,7 @@ router.post("/addComment", authorization, sanitizeParams, addComment);
 router.post("/reportComment", authorization, sanitizeParams, reportComment);
 router.delete(
   "/deleteComment/:commentId",
-  authorization,
+  adminAuthorization,
   sanitizeParams,
   deleteComment
 );

@@ -10,6 +10,7 @@ const {
   filterQuestionsBySearch,
   showQuesUpDown,
   getTop10Questions,
+  questionDelete,
 } = require("../utils/question");
 const comments = require("../models/comments");
 
@@ -21,6 +22,7 @@ jest.mock("../utils/question", () => ({
   filterQuestionsBySearch: jest.fn(),
   showQuesUpDown: jest.fn(),
   getTop10Questions: jest.fn(),
+  questionDelete: jest.fn(),
 }));
 
 // Mock authorization
@@ -287,16 +289,17 @@ describe("Flag question, view flagged question and delete flagged question", () 
 
   it("Delete question", async () => {
 
-    const mockResponse = "Question deleted successfully";
+    const mockResponse = {status: 200, message: "Question deleted successfully"};
+
+    questionDelete.mockResolvedValueOnce(mockResponse);
 
     Question.exists = jest.fn().mockResolvedValue(true);
-    Question.findByIdAndDelete = jest.fn()
 
     const response = await supertest(server)
       .delete("/question/deleteQuestion/dummyQuestionId");
 
-    expect(response.status).toBe(200);
-    expect(response.text).toEqual(mockResponse);
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
 
   });
 

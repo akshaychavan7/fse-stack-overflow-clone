@@ -9,9 +9,10 @@ const {
   filterQuestionsBySearch,
   showQuesUpDown,
   getTop10Questions,
+  questionDelete,
 } = require("../utils/question");
 
-const {QUESTIONTYPE} = require("../utils/constants");
+const {constants} = require("../utils/constants");
 
 const router = express.Router();
 
@@ -19,7 +20,6 @@ const {
   authorization,
   adminAuthorization,
 } = require("../middleware/authorization");
-const { text } = require("body-parser");
 
 // To get Questions by Filter
 const getQuestionsByFilter = async (req, res) => {
@@ -111,7 +111,7 @@ const reportQuestion = async (req, res) => {
       return res.status(404).send("Question not found");
     }
 
-    let report = await reportPost(req.body.qid, QUESTIONTYPE);
+    let report = await reportPost(req.body.qid, constants.QUESTIONTYPE);
     let message;
     if(report) {
       message = "Question reported successfully.";
@@ -144,11 +144,10 @@ const deleteQuestion = async (req, res) => {
     let qid = preprocessing(req.params.questionId);
     let question = await Question.exists({ _id: qid });
     if (!question) {
-      return res.status(404).send("Question not found");
+      res.status(404).send("Question not found");
     }
-
-    await Question.findByIdAndDelete(qid);
-    res.status(200).send("Question deleted successfully");
+    let response = await questionDelete(qid);
+    res.status(response.status).send(response.message);
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
@@ -200,7 +199,7 @@ router.post(
 );
 router.delete(
   "/deleteQuestion/:questionId",
-  authorization,
+  adminAuthorization,
   sanitizeParams,
   deleteQuestion
 );

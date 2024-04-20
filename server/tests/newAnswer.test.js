@@ -31,6 +31,10 @@ jest.mock('../middleware/sanitizeParams', () => (req, res, next) => {
 jest.mock("../utils/user")
 const userutil = require("../utils/user");
 
+jest.mock("../utils/answer")
+const answerUtil = require("../utils/answer");
+answerUtil.ansDelete = jest.fn();
+
 let server;
 describe("POST /addAnswer", () => {
 
@@ -240,28 +244,31 @@ describe("Delete flagged answers", () => {
 
   it("Delete answer", async () => {
 
-    const mockResponse = "Answer deleted successfully";
+    const mockResponse = {status: 200, message:"Answer deleted successfully"};
 
+    Question.exists = jest.fn().mockResolvedValueOnce(true);
     Answer.exists = jest.fn().mockResolvedValue(true);
-    Answer.findByIdAndDelete = jest.fn()
+    answerUtil.ansDelete.mockResolvedValueOnce(mockResponse);
     
 
     const response = await supertest(server)
-      .delete("/answer/deleteAnswer/dummyAnswerId");
+      .delete("/answer/deleteAnswer/dummyAnswerId")
+      .send({qid: "dummyQuestionId"});
 
 
-    expect(response.status).toBe(200);
-    expect(response.text).toEqual(mockResponse);
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
 
   });
 
-  it("Delete answer", async () => {
+  it("Error in deleting answer", async () => {
 
     const mockResponse = "Internal Server Error";
 
-    Answer.exists = jest.fn().mockImplementation(() => {
+    Question.exists = jest.fn().mockImplementation(() => {
       throw new Error("Random!");
     });
+    
 
     const response = await supertest(server)
       .delete("/answer/deleteAnswer/dummyAnswerId");
