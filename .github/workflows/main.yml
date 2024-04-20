@@ -61,7 +61,7 @@ jobs:
       # run python server
       - name: Run python server
         run: python3 pyserver.py &
-        working-directory: server/
+        working-directory: server/python utils/
 
       # - name: Start the node server
       #   run: node server.js > server.log 2>&1 &
