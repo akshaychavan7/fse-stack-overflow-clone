@@ -37,6 +37,10 @@ jest.mock('../middleware/sanitizeParams', () => (req, res, next) => {
 jest.mock("../utils/user")
 const userutil = require("../utils/user");
 
+jest.mock("../utils/comment")
+const commentUtil = require("../utils/comment");
+commentUtil.commentDelete = jest.fn();
+
 
 let server;
 describe("Add Question Comment and Answer Comment", () => {
@@ -252,16 +256,18 @@ describe("Flag comment, view flagged comments and delete flagged comments", () =
 
   it("Delete comment", async () => {
 
-    const mockResponse = "Comment deleted successfully";
+    const mockResponse = {status: 200, message: "Comment deleted successfully"};
+
+    validate.validateId.mockReturnValue(true);
 
     Comment.exists = jest.fn().mockResolvedValue(true);
-    Comment.findByIdAndDelete = jest.fn()
+    commentUtil.commentDelete.mockResolvedValueOnce(mockResponse);
 
     const response = await supertest(server)
       .delete("/comment/deleteComment/dummyCommentId");
 
-    expect(response.status).toBe(200);
-    expect(response.text).toEqual(mockResponse);
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
 
   });
 

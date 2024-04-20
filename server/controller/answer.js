@@ -1,6 +1,9 @@
 const express = require("express");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
+
+
+const { ansDelete } = require("../utils/answer");
 const sanitizeParams = require("../middleware/sanitizeParams");
 const {
   authorization,
@@ -103,14 +106,21 @@ const resolveAnswer = async (req, res) => {
 const deleteAnswer = async (req, res) => {
   try {
     let aid = preprocessing(req.params.answerId);
+    let qid = req.body.qid;
+    let question = await Question.exists({_id: qid});
+    if(!question) {
+      res.status(404).send("Question of the answer not found");
+    }
+    
     let answer = await Answer.exists({ _id: aid });
     if (!answer) {
-      return res.status(404).send("Answer not found");
+      res.status(404).send("Answer not found");
     }
-
-    await Answer.findByIdAndDelete(aid);
-    res.status(200).send("Answer deleted successfully");
+  
+    let response = await ansDelete(qid, aid);
+    res.status(response.status).send(response.message);
   } catch (error) {
+    console.log(error);
     res.status(500).send("Internal Server Error");
   }
 };
