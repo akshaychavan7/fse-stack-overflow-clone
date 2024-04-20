@@ -1,5 +1,3 @@
-pip3 uninstall pyodbc 
-pip3 install --no-binary :all: pyodbc
 fastapi[all]
 motor
 yake
