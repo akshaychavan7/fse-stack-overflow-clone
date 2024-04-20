@@ -25,6 +25,26 @@ const NewQuestion = ({ addQuestion }) => {
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState([]);
 
+  const paperStyle = {
+    width: "50%",
+    borderRadius: "10px",
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 1,
+    paddingBottom: 3,
+    height: "fit-content",
+  };
+
+  const boxStyle = {
+    display: "flex",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    "& > :not(style)": {
+      m: 1,
+      mt: 5,
+    },
+  };
+
   useEffect(() => {
     const fetchTags = async () => {
       let res = await getTagsWithQuestionNumber();
@@ -107,28 +127,8 @@ const NewQuestion = ({ addQuestion }) => {
     ));
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        flexWrap: "wrap",
-        "& > :not(style)": {
-          m: 1,
-          mt: 5,
-        },
-      }}
-    >
-      <Paper
-        sx={{
-          width: "50%",
-          borderRadius: "10px",
-          paddingLeft: 5,
-          paddingRight: 5,
-          paddingTop: 1,
-          paddingBottom: 3,
-          height: "fit-content",
-        }}
-      >
+    <Box sx={boxStyle}>
+      <Paper sx={paperStyle}>
         <Typography variant="h5" sx={{ textAlign: "center", mb: 2, mt: 2 }}>
           Add New Question
         </Typography>

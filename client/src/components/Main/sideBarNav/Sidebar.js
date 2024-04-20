@@ -143,9 +143,8 @@ export default function Sidebar({
     handleUsers();
   };
 
-  return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
+  const Appbar = () => {
+    return (
       <AppBar position="fixed">
         <Toolbar>
           <IconButton
@@ -181,6 +180,13 @@ export default function Sidebar({
           </Tooltip>
         </Toolbar>
       </AppBar>
+    );
+  };
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <Appbar />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
