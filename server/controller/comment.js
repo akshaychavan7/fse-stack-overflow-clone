@@ -5,7 +5,12 @@ const Comment = require("../models/comments");
 const sanitizeParams = require("../middleware/sanitizeParams");
 const router = express.Router();
 const { reportPost } = require("../utils/user");
-const {QUESTIONTYPE, ANSWERTYPE, COMMENTTYPE} = require("../utils/constants");
+const {
+  QUESTIONTYPE,
+  ANSWERTYPE,
+  COMMENTTYPE,
+  constants,
+} = require("../utils/constants");
 const { preprocessing, textfiltering } = require("../utils/textpreprocess");
 
 const {
@@ -18,13 +23,13 @@ const addComment = async (req, res) => {
   try {
     let flag = false;
 
-  if(textfiltering(req.body.description)) {
-    flag = true;
-  }
+    if (textfiltering(req.body.description)) {
+      flag = true;
+    }
     let comment = await Comment.create({
       description: req.body.description,
       commented_by: req.userId,
-      flag: flag
+      flag: flag,
       // comment_date_time: new Date(),
       // not needed since internally date created for comment schema
     });
@@ -39,16 +44,16 @@ const addComment = async (req, res) => {
     }
 
     let parentModel;
-    if (parentType === QUESTIONTYPE) {
+    if (parentType === constants.QUESTIONTYPE) {
       parentModel = Question;
-    } else if (parentType === ANSWERTYPE) {
+    } else if (parentType === constants.ANSWERTYPE) {
       parentModel = Answer;
     } else {
       return res.status(400).send({ status: 400, message: "Invalid parent" });
     }
 
     let parentObject = await parentModel.exists({ _id: parentId });
-    
+
     if (!parentObject) {
       return res.status(404).send({ status: 404, message: "Parent not found" });
     }
@@ -76,15 +81,12 @@ const reportComment = async (req, res) => {
     }
     let report = await reportPost(req.body.cid, COMMENTTYPE);
     let message;
-    if(report) {
+    if (report) {
       message = "Comment reported successfully.";
+    } else {
+      message = "Successfully removed report from comment.";
     }
-    else {
-      message = "Successfully removed report from comment."
-    }
-    res
-      .status(200)
-      .send({ status: 200, message: message, reportBool: report });
+    res.status(200).send({ status: 200, message: message, reportBool: report });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
@@ -128,11 +130,7 @@ const resolveComment = async (req, res) => {
       return res.status(404).send("Comment not found");
     }
 
-    await Comment.findByIdAndUpdate(
-      cid,
-      { flag: false },
-      { new: true }
-    );
+    await Comment.findByIdAndUpdate(cid, { flag: false }, { new: true });
     res.status(200).send("Comment resolved successfully");
   } catch (error) {
     console.error("Error:", error);
