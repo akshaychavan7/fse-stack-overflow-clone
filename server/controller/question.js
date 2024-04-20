@@ -72,7 +72,7 @@ const getQuestionById = async (req, res) => {
     ])
     .exec();
     let jsonQuestion = question.toJSON();
-    jsonQuestion = showQuesUpDown(req.userId, jsonQuestion);
+    jsonQuestion = await showQuesUpDown(req.userId, jsonQuestion);
     res.status(200).json(jsonQuestion);
   } catch (err) {
     res.status(500);

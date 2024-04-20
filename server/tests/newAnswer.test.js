@@ -90,9 +90,35 @@ describe("POST /addAnswer", () => {
       { new: true }
     );
   });
+
+  it("should throw an error while adding answer", async () => {
+    const mockReqBody = {
+      qid: "dummyQuestionId",
+      ans: {
+        description: "This is a test answer",
+        ans_by: "dummyUserId"
+      }
+    };
+
+    Answer.create.mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    const response = await supertest(server)
+      .post("/answer/addAnswer")
+      .send(mockReqBody);
+    
+    const mockResponse = {
+      message: "Internal Server Error"
+    }
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual(mockResponse);
+
+  });
 });
 
-describe("Flag answer, view flagged answers and delete flagged answers", () => {
+describe("Flag answer", () => {
   beforeEach(() => {
     server = require("../server");
   })
@@ -100,7 +126,7 @@ describe("Flag answer, view flagged answers and delete flagged answers", () => {
   afterEach(async() => {
     server.close();
     await mongoose.disconnect()
-  });
+  })
 
   it("should flag an answer", async () => {
     const mockReqBody = {
@@ -124,4 +150,170 @@ describe("Flag answer, view flagged answers and delete flagged answers", () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockResponse);
   });
+
+  it("throw error on flagging answer", async () => {
+    const mockReqBody = {
+      aid: "dummyAnswerId"
+    };
+
+    const mockResponse = { 
+      status: 500, message: "Internal Server Error" 
+    }
+
+    Answer.exists = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    const response = await supertest(server)
+      .post("/answer/reportAnswer")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual(mockResponse);
+  });
+});
+
+describe("View flagged answers", () => {
+  beforeEach(() => {
+    server = require("../server");
+  })
+
+  afterEach(async() => {
+    server.close();
+    await mongoose.disconnect()
+  });
+
+  it("Get reported answers", async () => {
+    const user1 = {
+      _id: "dummyUserId",
+      username: "user1",
+      firstname: "name1",
+      lastname: "name2",
+      profilePic: ""
+    }
+    const mockAnswer1 = {
+      _id: "dummyAnswerId",
+      description: "This is a test answer",
+      ans_date_time: "2024-05-22T16:08:22.613Z",
+      flag: true,
+      ans_by: user1 
+    }
+    const mockAnswers = [mockAnswer1];
+    Answer.find = jest.fn().mockImplementation(() => ({
+      populate: jest.fn().mockResolvedValue(mockAnswers),
+    }));
+
+    const response = await supertest(server)
+      .get("/answer/getReportedAnswers");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockAnswers);
+
+  });
+
+  it("Error on getting reported answers", async () => {
+    Answer.find = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    const response = await supertest(server)
+      .get("/answer/getReportedAnswers");
+
+
+    const mockResponse = {
+      status: 500, message: "Internal Server Error"
+    }
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual(mockResponse);
+
+  });
+});
+describe("Delete flagged answers", () => {
+  beforeEach(() => {
+    server = require("../server");
+  })
+
+  afterEach(async() => {
+    server.close();
+    await mongoose.disconnect()
+  });
+
+  it("Delete answer", async () => {
+
+    const mockResponse = "Answer deleted successfully";
+
+    Answer.exists = jest.fn().mockResolvedValue(true);
+    Answer.findByIdAndDelete = jest.fn()
+    
+
+    const response = await supertest(server)
+      .delete("/answer/deleteAnswer/dummyAnswerId");
+
+
+    expect(response.status).toBe(200);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  it("Delete answer", async () => {
+
+    const mockResponse = "Internal Server Error";
+
+    Answer.exists = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    const response = await supertest(server)
+      .delete("/answer/deleteAnswer/dummyAnswerId");
+
+    expect(response.status).toBe(500);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+});
+
+describe("Resolve flagged answers", () => {
+  beforeEach(() => {
+    server = require("../server");
+  })
+
+  afterEach(async() => {
+    server.close();
+    await mongoose.disconnect()
+  });
+
+
+  it("Resolve answer", async () => {
+
+    const mockResponse = "Answer resolved successfully";
+
+    Answer.exists = jest.fn().mockResolvedValue(true);
+    Answer.findByIdAndUpdate = jest.fn()
+
+    const response = await supertest(server)
+      .post("/answer/resolveAnswer/dummyAnswerId");
+
+    expect(response.status).toBe(200);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  it("Resolve answer", async () => {
+
+    const mockResponse = "Internal Server Error";
+
+    Answer.exists = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    const response = await supertest(server)
+      .post("/answer/resolveAnswer/dummyAnswerId");
+
+    expect(response.status).toBe(500);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  
 });

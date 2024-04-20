@@ -110,6 +110,7 @@ const deleteComment = async (req, res) => {
   try {
     let cid = preprocessing(req.params.commentId);
     let comment = await Comment.exists({ _id: cid });
+    console.log(comment);
     if (!comment) {
       return res.status(404).send("Comment not found");
     }

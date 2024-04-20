@@ -7,7 +7,8 @@ const sanitizeParams = require("../middleware/sanitizeParams");
 const router = express.Router();
 
 const getTagsWithQuestionNumber = async (req, res) => {
-  let questions = await Question.find({}).populate("tags");
+  try {
+    let questions = await Question.find({}).populate("tags");
   let tags = await Tag.find({});
 
   let resp = [];
@@ -24,7 +25,12 @@ const getTagsWithQuestionNumber = async (req, res) => {
     resp.push({ name: tag.name, qcnt: count });
   }
 
-  res.json(resp);
+  res.status(200).json(resp);
+  }
+  catch(err) {
+    res.status(500).json({error: "Error in getting tags and associated question count."});
+  }
+  
 };
 // add appropriate HTTP verbs and their endpoints to the router.
 router.get(

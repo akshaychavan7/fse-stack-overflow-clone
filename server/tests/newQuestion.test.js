@@ -9,6 +9,7 @@ const {
   getQuestionsByOrder,
   filterQuestionsBySearch,
   showQuesUpDown,
+  getTop10Questions,
 } = require("../utils/question");
 const comments = require("../models/comments");
 
@@ -19,6 +20,7 @@ jest.mock("../utils/question", () => ({
   getQuestionsByOrder: jest.fn(),
   filterQuestionsBySearch: jest.fn(),
   showQuesUpDown: jest.fn(),
+  getTop10Questions: jest.fn(),
 }));
 
 // Mock authorization
@@ -38,6 +40,10 @@ auth.adminAuthorization = jest.fn((req, res, next) => {
 jest.mock('../middleware/sanitizeParams', () => (req, res, next) => {
   next();
 });
+
+jest.mock("../utils/user")
+const userutil = require("../utils/user");
+const question = require("../models/schema/question");
 
 let server;
 
@@ -124,39 +130,37 @@ describe("GET /getQuestionById/:qid", () => {
     await mongoose.disconnect();
   });
 
-  // it("should return a question by id and increment its views by 1", async () => {
-  //   // Mock request parameters
-  //   const mockReqParams = {
-  //     qid: "65e9b5a995b6c7045a30d823",
-  //   };
+  it("should return a question by id and increment its views by 1", async () => {
+    // Mock request parameters
+    const mockReqParams = {
+      qid: "65e9b5a995b6c7045a30d823",
+    };
 
-  //   const mockPopulatedQuestion = {
-  //     answers: [
-  //       mockQuestions.filter((q) => q._id == mockReqParams.qid)[0]["answers"],
-  //     ], // Mock answers
-  //     views: mockQuestions[1].views + 1,
-  //   };
+    const mockQuestion = {
+      answers: [
+        mockQuestions.filter((q) => q._id == mockReqParams.qid)[0]["answers"],
+      ], // Mock answers
+      views: mockQuestions[1].views + 1,
+    };
 
+    const mockToJSON = jest.fn().mockReturnValue(mockQuestion);
+    Question.findOneAndUpdate = jest.fn().mockImplementation(() => ({
+      populate: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue({ toJSON: mockToJSON }),
+    }));
 
-  //   console.log(mockPopulatedQuestion);
-  //   // Provide mock question data
-  //   Question.findOneAndUpdate = jest.fn().mockImplementation(() => ({
-  //     populate: jest.fn().mockReturnThis(),
-  //     exec: jest.fn().mockResolvedValue(mockPopulatedQuestion),
-  //   }));
+    showQuesUpDown.mockResolvedValueOnce(mockQuestion);
 
-  //   showQuesUpDown.mockResolvedValueOnce(mockPopulatedQuestion);
+    // Making the request
+    const response = await supertest(server).get(
+      `/question/getQuestionById/${mockReqParams.qid}`
+    );
 
-  //   // Making the request
-  //   const response = await supertest(server).get(
-  //     `/question/getQuestionById/${mockReqParams.qid}`
-  //   );
-
-  //   console.log(response);
-  //   // Asserting the response
-  //   expect(response.status).toBe(200);
-  //   expect(response.body).toEqual(mockPopulatedQuestion);
-  // });
+    console.log(response.body);
+    // Asserting the response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockQuestion);
+  });
 
   // Note Add Test case for getQuestionById
 
@@ -216,5 +220,151 @@ describe("POST /addQuestion", () => {
     // Asserting the response
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockQuestion);
+  });
+});
+
+describe("Flag question, view flagged question and delete flagged question", () => {
+  beforeEach(() => {
+    server = require("../server");
+  })
+
+  afterEach(async() => {
+    server.close();
+    await mongoose.disconnect()
+  });
+
+  it("should flag a question", async () => {
+    const mockReqBody = {
+      qid: "dummyQuestionId"
+    };
+
+    const mockResponse = {
+      status: 200,
+      message: "Question reported successfully.",
+      reportBool: true
+    }
+
+    userutil.reportPost.mockResolvedValue(true);
+
+    Question.exists = jest.fn().mockResolvedValue(true);
+
+    const response = await supertest(server)
+      .post("/question/reportQuestion")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+  });
+
+  it("Get reported questions", async () => {
+    const user1 = {
+      _id: "dummyUserId",
+      username: "user1",
+      firstname: "name1",
+      lastname: "name2",
+      profilePic: ""
+    }
+    const mockQuestion1 = {
+      _id: "dummyQuestionId",
+      title: "Demo question",
+      description: "This is a test question",
+      ask_date_time: "2024-05-22T16:08:22.613Z",
+      flag: true,
+      asked_by: user1 
+    }
+    const mockQuestions = [mockQuestion1];
+    Question.find = jest.fn().mockImplementation(() => ({
+      populate: jest.fn().mockResolvedValue(mockQuestions),
+    }));
+
+    const response = await supertest(server)
+      .get("/question/getReportedQuestions");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockQuestions);
+
+  });
+
+  it("Delete question", async () => {
+
+    const mockResponse = "Question deleted successfully";
+
+    Question.exists = jest.fn().mockResolvedValue(true);
+    Question.findByIdAndDelete = jest.fn()
+
+    const response = await supertest(server)
+      .delete("/question/deleteQuestion/dummyQuestionId");
+
+    expect(response.status).toBe(200);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  it("Resolve question", async () => {
+
+    const mockResponse = "Question resolved successfully";
+
+    Question.exists = jest.fn().mockResolvedValue(true);
+    Question.findByIdAndUpdate = jest.fn()
+
+    const response = await supertest(server)
+      .post("/question/resolveQuestion/dummyQuestionId");
+
+    expect(response.status).toBe(200);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+});
+
+describe("View trending questions", () => {
+  it("Get trending questions", async () => {
+    const user1 = {
+      _id: "dummyUserId",
+      username: "user1",
+      firstname: "name1",
+      lastname: "name2",
+      profilePic: ""
+    }
+    const user2 = {
+      _id: "dummyUserId2",
+      username: "user2",
+      firstname: "name3",
+      lastname: "name4",
+      profilePic: ""
+    }
+    const mockQuestion1 = {
+      _id: "dummyQuestionId",
+      title: "Demo question",
+      description: "This is a test question",
+      ask_date_time: "2024-05-22T16:08:22.613Z",
+      flag: true,
+      asked_by: user1 
+    }
+    const mockQuestion2 = {
+      _id: "dummyQuestionId2",
+      title: "Demo question 2",
+      description: "This is a test question 2",
+      ask_date_time: "2024-05-22T16:08:22.613Z",
+      flag: false,
+      asked_by: user2
+    }
+
+    let questions = [mockQuestion1,mockQuestion2];
+    getTop10Questions.mockResolvedValueOnce(questions);
+
+    let mockResponse =  "[{\"_id\":\"dummyQuestionId\","+
+    "\"title\":\"Demo question\",\"description\":\"This is a test question\","+
+    "\"ask_date_time\":\"2024-05-22T16:08:22.613Z\",\"flag\":true,\"asked_by\":"+
+    "{\"_id\":\"dummyUserId\",\"username\":\"user1\",\"firstname\":\"name1\",\"lastname\":"+
+    "\"name2\",\"profilePic\":\"\"}},{\"_id\":\"dummyQuestionId2\",\"title\":\"Demo question 2\","+
+    "\"description\":\"This is a test question 2\",\"ask_date_time\":\"2024-05-22T16:08:22.613Z\","+
+    "\"flag\":false,\"asked_by\":{\"_id\":\"dummyUserId2\",\"username\":\"user2\",\"firstname\":"+
+    "\"name3\",\"lastname\":\"name4\",\"profilePic\":\"\"}}]"
+
+    const response = await supertest(server)
+      .get("/question/getTrendingQuestions");
+    
+    expect(response.status).toBe(200);
+    expect(response.text).toEqual(mockResponse);
   });
 });

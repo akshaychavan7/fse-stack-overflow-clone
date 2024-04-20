@@ -106,3 +106,9 @@ dist
 
 # Pycache files
 *.pyc
+
+#ignore  venv
+pyvenv.cfg
+Scripts/
+Lib/
+Include/

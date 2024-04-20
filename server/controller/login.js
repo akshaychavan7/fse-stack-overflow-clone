@@ -46,7 +46,7 @@ const authenticateCredentials = async (req, res) => {
         },
       });
   } catch (error) {
-    console.error(`Error while calling authenticate API: ${error}`);
+    // console.error(`Error while calling authenticate API: ${error}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -61,20 +61,19 @@ const registerUser = async (req, res) => {
         .status(400)
         .json({ status: 400, message: "User already exists" });
     } else {
-      const user = new User({
-        username,
-        password,
-        firstname,
-        lastname,
-        profilePic,
+      const user = await User.create({
+        username: username,
+        password: password,
+        firstname: firstname,
+        lastname: lastname,
+        profilePic: profilePic,
       });
-      await user.save();
       res
         .status(200)
         .json({ status: 200, message: "User registered successfully" });
     }
   } catch (error) {
-    console.error(`Error while calling register API: ${error}`);
+    // console.error(`Error while calling register API: ${error}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

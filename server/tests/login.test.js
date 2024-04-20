@@ -83,4 +83,144 @@ describe("POST /authenticate", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockReqResponse);
     });
+
+    it("should deny login due to incorrect credentials", async () => {
+      // Mock request query parameter
+      const mockReq = {
+        username: "user1",
+        password: "password"
+      }
+      
+
+      User.findOne = jest.fn().mockResolvedValueOnce(false);
+
+      const response = await supertest(server).post(
+        '/login/authenticate'
+      ).send(mockReq);
+
+      const mockResponse = {
+        status: 401, message: "Invalid username or password"
+      }
+
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual(mockResponse);
+    });
+
+    it("should throw error on login", async () => {
+      // Mock request query parameter
+      const mockReq = {
+        username: "user1",
+        password: "password"
+      }
+      
+
+      User.findOne = jest.fn().mockImplementation(() => {
+        throw new Error("Random!");
+      });
+
+      const response = await supertest(server).post(
+        '/login/authenticate'
+      ).send(mockReq);
+
+      const mockResponse = {
+        message: "Internal Server Error"
+      }
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual(mockResponse);
+    });
+
+    
+  });
+
+  describe("POST /register", () => {
+    beforeEach(() => {
+      server = require("../server");
+    });
+  
+    afterEach(async () => {
+      server.close();
+      await mongoose.disconnect();
+    });
+  
+    it("should register the user", async () => {
+      // Mock request query parameters
+      const mockReq = {
+        firstname: "fn1",
+        lastname: "ln1",
+        password: "password",
+        profilePic: "",
+        username: "user1",
+      };
+      
+
+      User.findOne = jest.fn().mockResolvedValueOnce(false);
+      User.create = jest.fn().mockResolvedValueOnce(mockReq);
+
+      const response = await supertest(server).post(
+        '/login/register'
+      ).send(mockReq);
+
+      const mockResponse = {
+        status: 200, message: "User registered successfully"
+      }
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockResponse);
+
+    });
+
+    it("stop a pre-registered user from registering", async () => {
+      // Mock request query parameters
+      const mockReq = {
+        firstname: "fn1",
+        lastname: "ln1",
+        password: "password",
+        profilePic: "",
+        username: "user1",
+      };
+      
+
+      User.findOne = jest.fn().mockResolvedValueOnce(true);
+
+      const response = await supertest(server).post(
+        '/login/register'
+      ).send(mockReq);
+
+      const mockResponse = {
+        status: 400, message: "User already exists"
+      }
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual(mockResponse);
+
+    });
+
+    it("throw an error while registering", async () => {
+      // Mock request query parameters
+      const mockReq = {
+        firstname: "fn1",
+        lastname: "ln1",
+        password: "password",
+        profilePic: "",
+        username: "user1",
+      };
+      
+
+      User.findOne = jest.fn().mockImplementation(() => {
+        throw new Error("Random!");
+      });
+
+      const response = await supertest(server).post(
+        '/login/register'
+      ).send(mockReq);
+
+      const mockResponse = {
+        message: "Internal Server Error"
+      }
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual(mockResponse);
+
+    });
   });
