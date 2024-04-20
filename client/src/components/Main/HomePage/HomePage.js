@@ -1,3 +1,4 @@
+import { constants } from "../../../config";
 import { sortByActiveOrder } from "../../../util/utils";
 import QuestionHeader from "../questionPage/header";
 import Question from "../questionPage/question";
@@ -24,7 +25,7 @@ const HomePage = ({
   }, [qlist]);
 
   useEffect(() => {
-    if (search === "" && order === "newest") {
+    if (search === "" && order === constants.ORDER_NEWEST) {
       setFilteredQlist(qlist);
       return;
     }
@@ -32,15 +33,15 @@ const HomePage = ({
       return q.title.toLowerCase().includes(search.toLowerCase());
     });
     switch (order) {
-      case "newest":
+      case constants.ORDER_NEWEST:
         list.sort((a, b) => {
           return new Date(b.ask_date_time) - new Date(a.ask_date_time);
         });
         break;
-      case "active":
+      case constants.ORDER_ACTIVE:
         list = sortByActiveOrder(list);
         break;
-      case "unanswered":
+      case constants.ORDER_UNANSWERED:
         list = list.filter((q) => q.answers.length === 0);
         break;
     }

@@ -6,9 +6,9 @@ const router = express.Router();
 const { authorization } = require("../middleware/authorization");
 const { validateId } = require("../utils/validator");
 const sanitizeParams = require("../middleware/sanitizeParams");
-const {updateUpvote, updateDownvote} = require("../utils/vote");
-const {updateReputation} = require("../utils/user");
-const {QUESTIONTYPE, ANSWERTYPE, COMMENTTYPE} = require("../utils/constants");
+const { updateUpvote, updateDownvote } = require("../utils/vote");
+const { updateReputation } = require("../utils/user");
+const { constants } = require("../utils/constants");
 
 const upvote = async (req, res) => {
   try {
@@ -21,13 +21,13 @@ const upvote = async (req, res) => {
     }
 
     switch (voteType) {
-      case QUESTIONTYPE:
+      case constants.QUESTIONTYPE:
         voteObject = await Question;
         break;
-      case ANSWERTYPE:
+      case constants.ANSWERTYPE:
         voteObject = await Answer;
         break;
-      case COMMENTTYPE:
+      case constants.COMMENTTYPE:
         voteObject = await Comment;
         break;
       default:
@@ -38,27 +38,32 @@ const upvote = async (req, res) => {
     if (!obj) {
       return res.status(404).send({ status: 404, message: "Object not found" });
     }
-    
+
     let post_by;
     let result = await updateUpvote(voteObject, obj, req.userId, id);
     switch (voteType) {
-      case QUESTIONTYPE:
+      case constants.QUESTIONTYPE:
         post_by = obj.asked_by.toString();
         break;
-      case ANSWERTYPE:
+      case constants.ANSWERTYPE:
         post_by = obj.ans_by.toString();
         break;
-      case COMMENTTYPE:
+      case constants.COMMENTTYPE:
         post_by = obj.commented_by.toString();
         break;
     }
-    await updateReputation(result['upvote'], result['downvote'], post_by, "upvote");
-    res.status(200).send({ 
-      status: 200, 
-      upvote: result['upvote'], 
-      downvote: result['downvote'], 
-      vote_count: result['vote_count'],
-      message: result['message'] 
+    await updateReputation(
+      result["upvote"],
+      result["downvote"],
+      post_by,
+      "upvote"
+    );
+    res.status(200).send({
+      status: 200,
+      upvote: result["upvote"],
+      downvote: result["downvote"],
+      vote_count: result["vote_count"],
+      message: result["message"],
     });
   } catch (error) {
     console.error("Error:", error);
@@ -77,10 +82,10 @@ const downvote = async (req, res) => {
     }
 
     switch (voteType) {
-      case QUESTIONTYPE:
+      case constants.QUESTIONTYPE:
         voteObject = await Question;
         break;
-      case ANSWERTYPE:
+      case constants.ANSWERTYPE:
         voteObject = await Answer;
         break;
       default:
@@ -96,24 +101,28 @@ const downvote = async (req, res) => {
 
     let post_by;
     switch (voteType) {
-      case QUESTIONTYPE:
+      case constants.QUESTIONTYPE:
         post_by = obj.asked_by.toString();
         break;
-      case ANSWERTYPE:
+      case constants.ANSWERTYPE:
         post_by = obj.ans_by.toString();
         break;
     }
-    
-    await updateReputation(result['upvote'], result['downvote'], post_by, "downvote");
 
-    res.status(200).send({ 
-      status: 200, 
-      upvote: result['upvote'], 
-      downvote: result['downvote'], 
-      vote_count: result['vote_count'],
-      message: result['message'] 
+    await updateReputation(
+      result["upvote"],
+      result["downvote"],
+      post_by,
+      "downvote"
+    );
+
+    res.status(200).send({
+      status: 200,
+      upvote: result["upvote"],
+      downvote: result["downvote"],
+      vote_count: result["vote_count"],
+      message: result["message"],
     });
-  
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send({ status: 500, message: "Internal Server Error" });
