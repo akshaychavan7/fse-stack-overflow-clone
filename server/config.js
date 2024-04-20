@@ -6,9 +6,6 @@ const generateSecretKey = () => {
   return secretKey;
 };
 
-// uncomment for MONGO_URL for docker
-// const MONGO_URL = "mongodb://mongodb:27017/fake_so";
-// config for local testing, that is, without docker.
 // const MONGO_URL = "mongodb://mongodb:27017/fake_so_fse"; // enable this for docker
 const MONGO_URL = "mongodb://localhost:27017/fake_so_fse"; // enable this for local testing
 
