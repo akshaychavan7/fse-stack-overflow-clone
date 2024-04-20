@@ -3,16 +3,16 @@ import { Container, Typography, Button, Box, Grid } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 const UnauthorizedAccess = () => {
+  const boxStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+  };
+
   return (
     <Container maxWidth="sm">
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
+      <Box sx={boxStyle}>
         <Box sx={{ textAlign: "center" }}>
           <LockOutlinedIcon sx={{ fontSize: "4rem", mb: 2 }} />
           <Typography variant="h4" component="h1" gutterBottom>

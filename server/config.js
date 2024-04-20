@@ -1,7 +1,8 @@
 const generateSecretKey = () => {
-  const secretKey =
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15);
+  // const secretKey =
+  //   Math.random().toString(36).substring(2, 15) +
+  //   Math.random().toString(36).substring(2, 15);
+  const secretKey = "SECRET_KEY";
   return secretKey;
 };
 

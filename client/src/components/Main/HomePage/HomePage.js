@@ -6,7 +6,6 @@ import "./HomePage.css";
 import { useEffect, useState } from "react";
 
 const HomePage = ({
-  title_text = "Trending Questions",
   order,
   search,
   setQuestionOrder,
@@ -48,6 +47,24 @@ const HomePage = ({
     setFilteredQlist(list);
   }, [order, search]);
 
+  const getQuestionsList = () => {
+    if (filteredQlist.length === 0) {
+      return <h2 className="center">No questions found</h2>;
+    }
+
+    return filteredQlist.map((q, idx) => (
+      <Question
+        q={q}
+        key={idx}
+        clickTag={clickTag}
+        handleAnswer={handleAnswer}
+        setViewUserProfile={setViewUserProfile}
+        setSelected={setSelected}
+        handleUsers={handleUsers}
+      />
+    ));
+  };
+
   return (
     <>
       <QuestionHeader
@@ -57,24 +74,8 @@ const HomePage = ({
         handleNewQuestion={handleNewQuestion}
       />
       <div id="question_list" className="question_list">
-        {filteredQlist.map((q, idx) => (
-          <Question
-            q={q}
-            key={idx}
-            clickTag={clickTag}
-            handleAnswer={handleAnswer}
-            setViewUserProfile={setViewUserProfile}
-            setSelected={setSelected}
-            handleUsers={handleUsers}
-          />
-        ))}
-        {filteredQlist.length === 0 && (
-          <h2 className="center">No questions found</h2>
-        )}
+        {getQuestionsList()}
       </div>
-      {title_text === "Search Results" && !filteredQlist.length && (
-        <div className="bold_title right_padding">No Questions Found</div>
-      )}
     </>
   );
 };
