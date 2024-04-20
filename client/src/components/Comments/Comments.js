@@ -18,6 +18,7 @@ export default function Comments({
 }) {
   const alert = useAlert();
   const [description, setDescription] = React.useState("");
+
   const handlePostComment = async () => {
     let data = {
       description: description,
@@ -32,6 +33,38 @@ export default function Comments({
     } else {
       alert.showAlert("Failed to post comment", "error");
     }
+  };
+
+  const getCommentsList = () => {
+    return commentsList?.map((comment, idx) => {
+      return (
+        <div
+          key={idx}
+          style={
+            idx === commentsList.length - 1
+              ? {}
+              : { borderBottom: "1px solid #efefef" }
+          }
+        >
+          <UserResponse
+            description={comment?.description}
+            profilePic={comment?.commented_by?.profilePic}
+            author={
+              comment?.commented_by?.firstname +
+              " " +
+              comment?.commented_by?.lastname
+            }
+            date={comment?.comment_date_time}
+            voteCount={comment?.vote_count}
+            isUpvoted={comment?.upvote}
+            isDownvoted={comment?.downvote}
+            postType={"comment"}
+            isFlagged={comment?.flag}
+            id={comment?._id}
+          />
+        </div>
+      );
+    });
   };
 
   return (
@@ -51,35 +84,7 @@ export default function Comments({
         Comments ({commentsList?.length})
       </AccordionSummary>
       <AccordionDetails>
-        {commentsList?.map((comment, idx) => {
-          return (
-            <div
-              key={idx}
-              style={
-                idx === commentsList.length - 1
-                  ? {}
-                  : { borderBottom: "1px solid #efefef" }
-              }
-            >
-              <UserResponse
-                description={comment?.description}
-                profilePic={comment?.commented_by?.profilePic}
-                author={
-                  comment?.commented_by?.firstname +
-                  " " +
-                  comment?.commented_by?.lastname
-                }
-                date={comment?.comment_date_time}
-                voteCount={comment?.vote_count}
-                isUpvoted={comment?.upvote}
-                isDownvoted={comment?.downvote}
-                postType={"comment"}
-                isFlagged={comment?.flag}
-                id={comment?._id}
-              />
-            </div>
-          );
-        })}
+        {getCommentsList()}
         <div className="add-comment-container">
           <TextField
             id="comment-input"
@@ -96,6 +101,7 @@ export default function Comments({
             color="primary"
             size="small"
             onClick={handlePostComment}
+            sx={{ ml: 3 }}
           >
             Post Comment
           </Button>
