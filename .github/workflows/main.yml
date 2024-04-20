@@ -58,6 +58,11 @@ jobs:
         run: node init.js $DB_URL
         working-directory: server/
 
+      # install python dependencies
+      - name: Install python dependencies
+        run: pip3 install -r requirements.txt
+        working-directory: server/python utils/
+
       # run python server
       - name: Run python server
         run: python3 pyserver.py &
