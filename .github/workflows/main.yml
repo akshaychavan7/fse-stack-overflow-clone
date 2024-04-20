@@ -58,7 +58,7 @@ jobs:
         run: node init.js $DB_URL
         working-directory: server/
 
-      # remove pyodbc and install it again
+      # remove pyodbc and install it again to avoid error
       - name: Remove pyodbc
         run: pip3 uninstall pyodbc
         working-directory: server/python utils/
