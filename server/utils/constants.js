@@ -1,5 +1,10 @@
-const QUESTIONTYPE = "question";
-const ANSWERTYPE = "answer";
-const COMMENTTYPE = "comment";
+const constants = {
+  QUESTIONTYPE: "question",
+  ANSWERTYPE: "answer",
+  COMMENTTYPE: "comment",
+  ORDER_NEWEST: "newest",
+  ORDER_ACTIVE: "active",
+  ORDER_UNANSWERED: "unanswered",
+};
 
-module.exports = {QUESTIONTYPE, ANSWERTYPE, COMMENTTYPE};
+module.exports = { constants };
