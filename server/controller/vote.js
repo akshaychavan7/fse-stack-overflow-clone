@@ -88,6 +88,9 @@ const downvote = async (req, res) => {
       case constants.ANSWERTYPE:
         voteObject = await Answer;
         break;
+      case constants.COMMENTTYPE:
+        voteObject = await Comment;
+        break;
       default:
         throw new Error("Invalid type");
     }
@@ -107,6 +110,9 @@ const downvote = async (req, res) => {
       case constants.ANSWERTYPE:
         post_by = obj.ans_by.toString();
         break;
+      case constants.COMMENTTYPE:
+      post_by = obj.commented_by.toString();
+      break;
     }
 
     await updateReputation(
