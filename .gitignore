@@ -112,3 +112,6 @@ pyvenv.cfg
 Scripts/
 Lib/
 Include/
+
+#ignore pytest cache
+.pytest_cache
