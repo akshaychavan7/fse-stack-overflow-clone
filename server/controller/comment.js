@@ -17,6 +17,21 @@ const {
 } = require("../middleware/authorization");
 const { validateId } = require("../utils/validator");
 
+/**
+ * Adds a comment and updates the corresponding parent object.
+ * 
+ * This function creates a comment in the database. 
+ * It flags the comment if the description contains any profanity.
+ * The associated parent object is updated with the comment id.
+ * 
+ * The callback function for the POST route comment/addComment.
+ * 
+ * @param {Object} req - The HTTP request object containing the comment data in the body.
+ * @param {Object} res - The HTTP response object used to send the result of adding the comment.
+ * @returns {Promise<void>} - The function does not return a value directly, but sends an HTTP response.
+ * 
+ * @throws {Error} - If an unexpected error occurs during the comment addition process.
+ */
 const addComment = async (req, res) => {
   try {
     let flag = false;
@@ -28,8 +43,6 @@ const addComment = async (req, res) => {
       description: req.body.description,
       commented_by: req.userId,
       flag: flag,
-      // comment_date_time: new Date(),
-      // not needed since internally date created for comment schema
     });
 
     let parentId = req.body.parentId;
@@ -69,6 +82,22 @@ const addComment = async (req, res) => {
   }
 };
 
+/**
+ * Flags a comment.
+ * 
+ * This function reports a comment identified by its ID.
+ * It checks if the comment exists in the database, and if found,
+ * it reports the comment using the 'reportPost' function.
+ * It sends a success message indicating whether the comment was successfully reported or the report was removed.
+ * 
+ * The callback function for the POST route comment/reportComment.
+ * 
+ * @param {Object} req - The HTTP request object containing the comment ID in the body.
+ * @param {Object} res - The HTTP response object used to send the result of reporting the comment.
+ * @returns {Promise<void>} - The function does not return a value directly, but sends an HTTP response.
+ * 
+ * @throws {Error} - If an unexpected error occurs during the reporting process.
+ */
 const reportComment = async (req, res) => {
   try {
     let comment = await Comment.exists({ _id: req.body.cid });
@@ -90,6 +119,21 @@ const reportComment = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves reported comments from the database.
+ * 
+ * This function retrieves comments that have been flagged as reported from the database.
+ * It populates additional information about the comment's author, including their username,
+ * firstname, lastname, and profile picture. Only accessible by the moderators.
+ * 
+ * The callback function for the GET route comment/getReportedComments.
+ * 
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object used to send the reported comments.
+ * @returns {Promise<void>} - The function does not return a value directly, but sends an HTTP response.
+ * 
+ * @throws {Error} - If an unexpected error occurs during the retrieval process.
+ */
 const getReportedComments = async (req, res) => {
   try {
     let comments = await Comment.find({ flag: true }).populate({
@@ -98,25 +142,72 @@ const getReportedComments = async (req, res) => {
     });
     return res.status(200).json(comments);
   } catch (error) {
-    // console.error("Error:", error);
     return res.status(500).send("Internal Server Error");
   }
 };
 
+/**
+ * Resolution of a false positive flag by the moderator.
+ * 
+ * This function resolves a comment by setting its flag status to false,
+ * indicating that the reported issue has been resolved. Only accessible by
+ * the moderators.
+ * 
+ * The callback function for the POST route comment/resolveComment.
+ * 
+ * @param {Object} req - The HTTP request object containing the comment ID in the URL parameters.
+ * @param {Object} res - The HTTP response object used to send the result of resolving the comment.
+ * @returns {Promise<void>} - The function does not return a value directly, but sends an HTTP response.
+ * 
+ * @throws {Error} - If an unexpected error occurs during the resolution process.
+ */
+const resolveComment = async (req, res) => {
+  try {
+    let cid = preprocessing(req.params.commentId);
+    let comment = await Comment.exists({ _id: cid });
+    if (!comment) {
+      return res.status(404).send("Comment not found");
+    }
+
+    await Comment.findByIdAndUpdate(cid, { flag: false }, { new: true });
+    return res.status(200).send("Comment resolved successfully");
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+/**
+ * Deletes a comment.
+ * 
+ * This function deletes a comment identified by its ID.
+ * It first determines the parent object of the comment,
+ * validates the comment existence, and then deletes the comment.
+ * Also updates the parent object's comments field.
+ * Accessible only by the moderators.
+ * 
+ * The callback function for the DELETE route comment/deleteComment.
+ * 
+ * @param {Object} req - The HTTP request object containing the comment ID in the URL parameters.
+ * @param {Object} res - The HTTP response object used to send the result of deleting the comment.
+ * @returns {Promise<void>} - The function does not return a value directly, but sends an HTTP response.
+ * 
+ * @throws {Error} - If an unexpected error occurs during the deletion process.
+ */
 const deleteComment = async (req, res) => {
   try {
     let cid = preprocessing(req.params.commentId);
     let parentType;
 
-    let question = await Question.exists({comments: cid});
-    let answer = await Answer.exists({comments: cid});
+    let question = await Question.exists({ comments: cid });
+    let answer = await Answer.exists({ comments: cid });
     let parentObj;
-    if(question) {
-      parentObj = await Question.findOne({comments: cid});
+    if (question) {
+      parentObj = await Question.findOne({ comments: cid });
       parentType = constants.QUESTIONTYPE;
     }
-    else if(answer) {
-      parentObj = await Answer.findOne({comments: cid});
+    else if (answer) {
+      parentObj = await Answer.findOne({ comments: cid });
       parentType = constants.ANSWERTYPE;
     }
     else {
@@ -134,36 +225,24 @@ const deleteComment = async (req, res) => {
   }
 };
 
-const resolveComment = async (req, res) => {
-  try {
-    let cid = preprocessing(req.params.commentId);
-    let comment = await Comment.exists({ _id: cid });
-    if (!comment) {
-      return res.status(404).send("Comment not found");
-    }
-
-    await Comment.findByIdAndUpdate(cid, { flag: false }, { new: true });
-    return res.status(200).send("Comment resolved successfully");
-  } catch (error) {
-    console.error("Error:", error);
-    return res.status(500).send("Internal Server Error");
-  }
-};
-
-router.get("/getReportedComments", authorization, getReportedComments);
 router.post("/addComment", authorization, sanitizeParams, addComment);
 router.post("/reportComment", authorization, sanitizeParams, reportComment);
-router.delete(
-  "/deleteComment/:commentId",
+router.get(
+  "/getReportedComments",
   adminAuthorization,
-  sanitizeParams,
-  deleteComment
+  getReportedComments
 );
 router.post(
   "/resolveComment/:commentId",
   adminAuthorization,
   sanitizeParams,
   resolveComment
+);
+router.delete(
+  "/deleteComment/:commentId",
+  adminAuthorization,
+  sanitizeParams,
+  deleteComment
 );
 
 module.exports = router;
