@@ -107,18 +107,28 @@ const getReportedComments = async (req, res) => {
 const deleteComment = async (req, res) => {
   try {
     let cid = preprocessing(req.params.commentId);
-    let parentType = req.body.parentType;
-    let parentId = req.body.parentId;
+    let parentType;
 
-    if (!validateId(parentId)) {
+    let question = await Question.exists({comments: cid});
+    let answer = await Answer.exists({comments: cid});
+    let parentObj;
+    if(question) {
+      parentObj = await Question.findOne({comments: cid});
+      parentType = constants.QUESTIONTYPE;
+    }
+    else if(answer) {
+      parentObj = await Answer.findOne({comments: cid});
+      parentType = constants.ANSWERTYPE;
+    }
+    else {
       res.status(404).send("Invalid parent id");
     }
     let comment = await Comment.exists({ _id: cid });
     if (!comment) {
       res.status(404).send("Comment not found");
     }
+    let parentId = parentObj._id.toString()
     let response = await commentDelete(parentId, parentType, cid);
-    console.log(response);
     res.status(response.status).send(response.message);
   } catch (error) {
     console.error("Error:", error);
