@@ -120,10 +120,10 @@ const init = async () => {
   const users = [
     {
       username: "akshay",
-      password: "$2b$10$ai5DvtSJZ9v8N7flii2f4unKMUHROUaiMoEgufocl/jnkD7MEQ/tS",
+      password: "password",
       firstName: "Akshay",
       lastName: "Chavan",
-      role: "moderator",
+      role: "general",
       profilePic:
         "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI",
       technologies: ["JavaScript", "React", "TypeScript"],
@@ -212,6 +212,17 @@ const init = async () => {
       technologies: ["Typescript", "React"],
       location: "Pune, India",
     },
+    {
+      username: "moderator",
+      password: "password",
+      firstName: "Moderator",
+      lastName: "M1",
+      role: "moderator",
+      profilePic:
+        "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI",
+      technologies: ["JavaScript", "React", "TypeScript"],
+      location: "Boston, MA",
+    },
   ];
 
   let t1 = await tagCreate("react");
@@ -228,6 +239,9 @@ const init = async () => {
   let user5 = await userCreate(users[4]);
   let user6 = await userCreate(users[5]);
   let user7 = await userCreate(users[6]);
+  let user8 = await userCreate(users[7]);
+  let user9 = await userCreate(users[8]);
+  let user10 = await userCreate(users[9]);
 
   let comment1 = await commentCreate(
     "Nice!",

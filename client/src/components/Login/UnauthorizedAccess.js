@@ -24,7 +24,12 @@ const UnauthorizedAccess = () => {
           </Typography>
           <Grid container justifyContent="center">
             <Grid item>
-              <Button variant="contained" color="primary" href="/login">
+              <Button
+                id="login-btn"
+                variant="contained"
+                color="primary"
+                href="/login"
+              >
                 Log In
               </Button>
             </Grid>

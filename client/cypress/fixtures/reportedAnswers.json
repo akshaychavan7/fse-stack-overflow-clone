@@ -1,0 +1,23 @@
+[
+    {
+      "_id": "answer1",
+      "description": "This is a reported answer 1",
+      "ans_by": {
+        "firstname": "Bob",
+        "lastname": "Johnson",
+        "profilePic": "https://example.com/profile3.jpg"
+      },
+      "ans_date_time": "2024-04-18T08:00:00Z"
+    },
+    {
+      "_id": "answer2",
+      "description": "This is a reported answer 2",
+      "ans_by": {
+        "firstname": "Emma",
+        "lastname": "Davis",
+        "profilePic": "https://example.com/profile4.jpg"
+      },
+      "ans_date_time": "2024-04-17T06:00:00Z"
+    }
+  ]
+  
