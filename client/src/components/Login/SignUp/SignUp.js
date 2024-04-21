@@ -191,6 +191,7 @@ export default function SignUp() {
                 {/* Location */}
                 <Grid item xs={12}>
                   <AutoComplete
+                    id="location"
                     options={citiesList}
                     value={location}
                     setValue={(value) => setLocation(value)}
