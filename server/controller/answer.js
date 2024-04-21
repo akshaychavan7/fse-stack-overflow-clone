@@ -106,18 +106,18 @@ const resolveAnswer = async (req, res) => {
 const deleteAnswer = async (req, res) => {
   try {
     let aid = preprocessing(req.params.answerId);
-    let qid = req.body.qid;
-    let question = await Question.exists({_id: qid});
+    
+    let question = await Question.exists({answers: aid})
     if(!question) {
       res.status(404).send("Question of the answer not found");
     }
-    
+    question = await Question.findOne({answers: aid});
     let answer = await Answer.exists({ _id: aid });
     if (!answer) {
       res.status(404).send("Answer not found");
     }
   
-    let response = await ansDelete(qid, aid);
+    let response = await ansDelete(question._id.toString(), aid);
     res.status(response.status).send(response.message);
   } catch (error) {
     console.log(error);
