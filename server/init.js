@@ -239,6 +239,9 @@ const init = async () => {
   let user5 = await userCreate(users[4]);
   let user6 = await userCreate(users[5]);
   let user7 = await userCreate(users[6]);
+  let user8 = await userCreate(users[7]);
+  let user9 = await userCreate(users[8]);
+  let user10 = await userCreate(users[9]);
 
   let comment1 = await commentCreate(
     "Nice!",

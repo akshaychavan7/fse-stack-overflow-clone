@@ -1,0 +1,23 @@
+[
+    {
+      "_id": "comment1",
+      "description": "This is a reported comment 1",
+      "commented_by": {
+        "firstname": "Michael",
+        "lastname": "Brown",
+        "profilePic": "https://example.com/profile5.jpg"
+      },
+      "comment_date_time": "2024-04-16T04:00:00Z"
+    },
+    {
+      "_id": "comment2",
+      "description": "This is a reported comment 2",
+      "commented_by": {
+        "firstname": "Sophia",
+        "lastname": "Wilson",
+        "profilePic": "https://example.com/profile6.jpg"
+      },
+      "comment_date_time": "2024-04-15T02:00:00Z"
+    }
+  ]
+  
