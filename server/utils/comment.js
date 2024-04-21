@@ -17,10 +17,6 @@ const commentDelete = async(parentId, parentType, cid) => {
           } else {
             return {status: 400, message: "Invalid parent"};
           }
-          let parentObject = await parentModel.exists({ _id: parentId });
-          if (!parentObject) {
-            return {status: 404, message: "Parent not found"};
-          }
       
           await parentModel.findByIdAndUpdate(
             parentId,

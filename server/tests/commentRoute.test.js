@@ -257,9 +257,9 @@ describe("Flag comment, view flagged comments and delete flagged comments", () =
   it("Delete comment", async () => {
 
     const mockResponse = {status: 200, message: "Comment deleted successfully"};
-
-    validate.validateId.mockReturnValue(true);
-
+    let question = {_id: "dummyQuesId", comments: ["dummyCommentId"]};
+    Question.exists = jest.fn().mockResolvedValue(true);
+    Question.findOne = jest.fn().mockResolvedValue(question);
     Comment.exists = jest.fn().mockResolvedValue(true);
     commentUtil.commentDelete.mockResolvedValueOnce(mockResponse);
 

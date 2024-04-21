@@ -14,14 +14,17 @@ const updateReputation = async (upvoteBool, downvoteBool, uid, typeVote) => {
       user["reputation"] =
         user["reputation"] <= 10 ? 0 : user["reputation"] - 10;
     }
+    
     await user.save();
+    return {reputation: user["reputation"]};
   } catch (err) {
     return new Error(`Error in updating reputation of user: ${err}`);
   }
 };
 
 const reportPost = async (id, type) => {
-  let postType;
+  try {
+    let postType;
   switch (type) {
     case constants.QUESTIONTYPE:
       postType = await Question;
@@ -40,6 +43,11 @@ const reportPost = async (id, type) => {
   post["flag"] = !post["flag"];
   post.save();
   return post["flag"];
+  }
+  catch(err) {
+    return Error(err);
+  }
+  
 };
 
 const getQuestionsByUser = async (uid) => {

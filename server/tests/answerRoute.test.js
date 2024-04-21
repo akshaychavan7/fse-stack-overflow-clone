@@ -245,8 +245,9 @@ describe("Delete flagged answers", () => {
   it("Delete answer", async () => {
 
     const mockResponse = {status: 200, message:"Answer deleted successfully"};
-
+    let question = {_id: "dummyQuesId", answers: ["dummyAnsId"]};
     Question.exists = jest.fn().mockResolvedValueOnce(true);
+    Question.findOne = jest.fn().mockResolvedValueOnce(question);
     Answer.exists = jest.fn().mockResolvedValue(true);
     answerUtil.ansDelete.mockResolvedValueOnce(mockResponse);
     

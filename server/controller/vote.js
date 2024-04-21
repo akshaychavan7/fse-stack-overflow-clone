@@ -52,7 +52,7 @@ const upvote = async (req, res) => {
         post_by = obj.commented_by.toString();
         break;
     }
-    await updateReputation(
+    let userrep = await updateReputation(
       result["upvote"],
       result["downvote"],
       post_by,
@@ -114,7 +114,7 @@ const downvote = async (req, res) => {
       break;
     }
 
-    await updateReputation(
+    let userrep = await updateReputation(
       result["upvote"],
       result["downvote"],
       post_by,
