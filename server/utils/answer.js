@@ -4,6 +4,18 @@ const Comment = require("../models/comments");
 
 const {showCommentUpDown} = require("../utils/comment");
 
+/**
+ * Function to delete an answer and its associated comments from a question.
+ * 
+ * This function deletes the specified answer and removes its reference from
+ * the corresponding question's list of answers. It also deletes all comments
+ * associated with the answer.
+ * 
+ * @param {string} qid - The ID of the question containing the answer.
+ * @param {string} aid - The ID of the answer to be deleted.
+ * @returns {Object} - An object containing the status and message of the deletion operation.
+ *                    - If an error occurs during the deletion process, it returns an Error object.
+ */
 const ansDelete = async(qid, aid) => {
     try {
         await Question.updateOne(
@@ -26,6 +38,18 @@ const ansDelete = async(qid, aid) => {
     
 }
 
+/**
+ * Function to set upvote and downvote status for each answer in a list.
+ * 
+ * This function iterates through each answer in the provided list and sets the upvote
+ * and downvote status based on the given user ID. It also calls the `showCommentUpDown`
+ * function to set upvote and downvote status for comments within each answer.
+ * 
+ * @param {string} uid - The ID of the user for whom the upvote/downvote status is to be determined.
+ * @param {Array} answers - An array containing answers for which the upvote/downvote status needs to be set.
+ * @returns {Array} - An array containing the updated answers with upvote/downvote status set for each answer.
+ *                    - If an error occurs during the process, it returns an Error object.
+ */
 const showAnsUpDown = (uid, answers) => {
     try {
       for (let answer in answers) {

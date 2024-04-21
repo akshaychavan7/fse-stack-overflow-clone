@@ -1,14 +1,10 @@
 const express = require("express");
-const Comment = require("../models/comments");
-const Question = require("../models/questions");
-const Answer = require("../models/answers");
 const router = express.Router();
 const { authorization } = require("../middleware/authorization");
 const { validateId } = require("../utils/validator");
 const sanitizeParams = require("../middleware/sanitizeParams");
-const { updateUpvote, updateDownvote } = require("../utils/vote");
+const { updateUpvote, updateDownvote, assignVoteObject, assignPostBy } = require("../utils/vote");
 const { updateReputation } = require("../utils/user");
-const { constants } = require("../utils/constants");
 
 /**
  * Handles the upvoting of a post (question, answer, or comment).
@@ -36,39 +32,17 @@ const upvote = async (req, res) => {
       return res.status(400).send({ status: 400, message: "Invalid id" });
     }
 
-    switch (voteType) {
-      case constants.QUESTIONTYPE:
-        voteObject = await Question;
-        break;
-      case constants.ANSWERTYPE:
-        voteObject = await Answer;
-        break;
-      case constants.COMMENTTYPE:
-        voteObject = await Comment;
-        break;
-      default:
-        return res.status(400).send({ status: 400, message: "Invalid type" });
-    }
+    voteObject = await assignVoteObject(voteType);
 
     const obj = await voteObject.findById(id);
     if (!obj) {
       return res.status(404).send({ status: 404, message: "Object not found" });
     }
 
-    let post_by;
+
     let result = await updateUpvote(voteObject, obj, req.userId, id);
-    switch (voteType) {
-      case constants.QUESTIONTYPE:
-        post_by = obj.asked_by.toString();
-        break;
-      case constants.ANSWERTYPE:
-        post_by = obj.ans_by.toString();
-        break;
-      case constants.COMMENTTYPE:
-        post_by = obj.commented_by.toString();
-        break;
-    }
-    let userrep = await updateReputation(
+    let post_by = assignPostBy(voteType, obj);
+    await updateReputation(
       result["upvote"],
       result["downvote"],
       post_by,
@@ -112,19 +86,9 @@ const downvote = async (req, res) => {
       return res.status(400).send({ status: 400, message: "Invalid id" });
     }
 
-    switch (voteType) {
-      case constants.QUESTIONTYPE:
-        voteObject = await Question;
-        break;
-      case constants.ANSWERTYPE:
-        voteObject = await Answer;
-        break;
-      case constants.COMMENTTYPE:
-        voteObject = await Comment;
-        break;
-      default:
-        throw new Error("Invalid type");
-    }
+    voteObject = await assignVoteObject(voteType);
+
+    await assignVoteObject(voteType);
 
     const obj = await voteObject.findById(id);
     if (!obj) {
@@ -133,20 +97,9 @@ const downvote = async (req, res) => {
 
     let result = await updateDownvote(voteObject, obj, req.userId, id);
 
-    let post_by;
-    switch (voteType) {
-      case constants.QUESTIONTYPE:
-        post_by = obj.asked_by.toString();
-        break;
-      case constants.ANSWERTYPE:
-        post_by = obj.ans_by.toString();
-        break;
-      case constants.COMMENTTYPE:
-      post_by = obj.commented_by.toString();
-      break;
-    }
+    let post_by = assignPostBy(voteType, obj);
 
-    let userrep = await updateReputation(
+    await updateReputation(
       result["upvote"],
       result["downvote"],
       post_by,
