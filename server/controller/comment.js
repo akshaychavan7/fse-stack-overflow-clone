@@ -77,7 +77,6 @@ const addComment = async (req, res) => {
 
     return res.status(200).json({ status: 200, body: comment });
   } catch (error) {
-    console.error("Error:", error);
     return res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
@@ -172,7 +171,6 @@ const resolveComment = async (req, res) => {
     await Comment.findByIdAndUpdate(cid, { flag: false }, { new: true });
     return res.status(200).send("Comment resolved successfully");
   } catch (error) {
-    console.error("Error:", error);
     return res.status(500).send("Internal Server Error");
   }
 };
