@@ -11,7 +11,7 @@ const {
 } = require("../middleware/authorization");
 const { preprocessing, textfiltering } = require("../utils/textpreprocess");
 
-const { ANSWERTYPE } = require("../utils/constants");
+const { constants } = require("../utils/constants");
 
 const { reportPost } = require("../utils/user");
 
@@ -68,7 +68,7 @@ const reportAnswer = async (req, res) => {
       return res.status(404).send({ status: 404, message: "Answer not found" });
     }
 
-    let report = await reportPost(req.body.aid, ANSWERTYPE);
+    let report = await reportPost(req.body.aid, constants.ANSWERTYPE);
     let message;
     if (report) {
       message = "Answer reported successfully.";
