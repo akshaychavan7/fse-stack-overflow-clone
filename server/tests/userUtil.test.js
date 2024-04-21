@@ -196,7 +196,9 @@ describe('test on getQuestionsByUser of user utils', () => {
             populate: jest.fn().mockReturnThis(),
             populate: jest.fn().mockReturnThis(),
             populate: jest.fn().mockReturnThis(),
-            exec: jest.fn().mockResolvedValueOnce(new Error("error"))
+            exec: jest.fn().mockImplementation(() => {
+                throw new Error("Random!");
+              })
         }));
     
         const result = await getQuestionsByUser(uid);
@@ -244,7 +246,9 @@ describe('test on getAnswersByUser of user utils', () => {
             populate: jest.fn().mockReturnThis(),
             populate: jest.fn().mockReturnThis(),
             populate: jest.fn().mockReturnThis(),
-            exec: jest.fn().mockResolvedValueOnce(new Error("error"))
+            exec: jest.fn().mockImplementation(() => {
+                throw new Error("Random!");
+              })
         }));
         // mockingoose(Question).toReturn(mockQuestions, 'find');
     
@@ -289,7 +293,9 @@ describe('test on getCommentsByUser of user utils', () => {
         Comment.find = jest.fn().mockImplementation(() => ({
             populate: jest.fn().mockReturnThis(),
             populate: jest.fn().mockReturnThis(),
-            exec: jest.fn().mockResolvedValueOnce(new Error("error"))
+            exec: jest.fn().mockImplementation(() => {
+                throw new Error("Random!");
+              })
         }));
     
         const result = await getCommentsByUser(uid);

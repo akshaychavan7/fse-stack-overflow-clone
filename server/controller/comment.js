@@ -62,10 +62,10 @@ const addComment = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json({ status: 200, body: comment });
+    return res.status(200).json({ status: 200, body: comment });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).send({ status: 500, message: "Internal Server Error" });
+    return res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
 
@@ -84,10 +84,9 @@ const reportComment = async (req, res) => {
     } else {
       message = "Successfully removed report from comment.";
     }
-    res.status(200).send({ status: 200, message: message, reportBool: report });
+    return res.status(200).send({ status: 200, message: message, reportBool: report });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send({ status: 500, message: "Internal Server Error" });
+    return res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
 
@@ -97,10 +96,10 @@ const getReportedComments = async (req, res) => {
       path: "commented_by",
       select: "username firstname lastname profilePic",
     });
-    res.status(200).json(comments);
+    return res.status(200).json(comments);
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Internal Server Error");
+    // console.error("Error:", error);
+    return res.status(500).send("Internal Server Error");
   }
 };
 
@@ -121,18 +120,17 @@ const deleteComment = async (req, res) => {
       parentType = constants.ANSWERTYPE;
     }
     else {
-      res.status(404).send("Invalid parent id");
+      return res.status(404).send("Invalid parent id");
     }
     let comment = await Comment.exists({ _id: cid });
     if (!comment) {
-      res.status(404).send("Comment not found");
+      return res.status(404).send("Comment not found");
     }
     let parentId = parentObj._id.toString()
     let response = await commentDelete(parentId, parentType, cid);
-    res.status(response.status).send(response.message);
+    return res.status(response.status).send(response.message);
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Internal Server Error");
+    return res.status(500).send("Internal Server Error");
   }
 };
 
@@ -145,10 +143,10 @@ const resolveComment = async (req, res) => {
     }
 
     await Comment.findByIdAndUpdate(cid, { flag: false }, { new: true });
-    res.status(200).send("Comment resolved successfully");
+    return res.status(200).send("Comment resolved successfully");
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).send("Internal Server Error");
+    return res.status(500).send("Internal Server Error");
   }
 };
 

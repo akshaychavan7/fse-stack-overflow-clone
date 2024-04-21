@@ -27,9 +27,9 @@ const getQuestionsByFilter = async (req, res) => {
     let questions = await getQuestionsByOrder(req.query.order);
     questions = filterQuestionsBySearch(questions, req.query.search);
 
-    res.status(200).json(questions);
+    return res.status(200).json(questions);
   } catch (error) {
-    res.status(500).send(`Internal Server Error ${error}`);
+    return res.status(500).send(`Internal Server Error ${error}`);
   }
 };
 
@@ -73,35 +73,40 @@ const getQuestionById = async (req, res) => {
     .exec();
     let jsonQuestion = question.toJSON();
     jsonQuestion = await showQuesUpDown(req.userId, jsonQuestion);
-    res.status(200).json(jsonQuestion);
+    return res.status(200).json(jsonQuestion);
   } catch (err) {
-    res.status(500);
-    res.json({ error: "Something went wrong", details: err.message });
+    return res.status(500).json({ error: "Something went wrong", details: err.message })
   }
 };
 
 // To add Question
 const addQuestion = async (req, res) => {
-  let tags = await Promise.all(
-    req.body.tags.map(async (tag) => {
-      return await addTag(tag);
-    })
-  );
-
-  let flag = false;
-
-  if(textfiltering(req.body.title) || textfiltering(req.body.description)) {
-    flag = true;
+  try {
+    let tags = await Promise.all(
+      req.body.tags.map(async (tag) => {
+        return await addTag(tag);
+      })
+    );
+  
+    let flag = false;
+  
+    if(textfiltering(req.body.title) || textfiltering(req.body.description)) {
+      flag = true;
+    }
+  
+    let question = await Question.create({
+      title: req.body.title,
+      description: req.body.description,
+      asked_by: req.userId,
+      tags: tags,
+      flag: flag
+    });
+    return res.status(200).json(question);
   }
-
-  let question = await Question.create({
-    title: req.body.title,
-    description: req.body.description,
-    asked_by: req.userId,
-    tags: tags,
-    flag: flag
-  });
-  res.json(question);
+  catch(err) {
+    return res.status(500).json({error: "Internal server error."});
+  }
+  
 };
 
 const reportQuestion = async (req, res) => {
@@ -119,11 +124,11 @@ const reportQuestion = async (req, res) => {
     else {
       message = "Successfully removed report from question."
     }
-    res
+    return res
       .status(200)
       .send({ status: 200, message: message, reportBool: report });
   } catch (error) {
-    res.status(500).send({ status: 500, message: `Internal Server Error ${error}` });
+    return res.status(500).send({ status: 500, message: `Internal Server Error ${error}` });
   }
 };
 
@@ -133,9 +138,9 @@ const getReportedQuestions = async (req, res) => {
       path: "asked_by",
       select: "username firstname lastname profilePic",
     });
-    res.status(200).json(questions);
+    return res.status(200).json(questions);
   } catch (error) {
-    res.status(500).send({ status: 500, message: "Internal Server Error" });
+    return res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
 
@@ -144,21 +149,21 @@ const deleteQuestion = async (req, res) => {
     let qid = preprocessing(req.params.questionId);
     let question = await Question.exists({ _id: qid });
     if (!question) {
-      res.status(404).send("Question not found");
+      return res.status(404).send("Question not found");
     }
     let response = await questionDelete(qid);
-    res.status(response.status).send(response.message);
+    return res.status(response.status).send(response.message);
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    return res.status(500).send("Internal Server Error");
   }
 };
 
 const getTrendingQuestions = async (req, res) => {
   try {
     let questions = await getTop10Questions();
-    res.status(200).json(questions);
+    return res.status(200).json(questions);
   } catch (err) {
-    res.status(500).json({ error: `Cannot fetch treding questions: ${err}` });
+    return res.status(500).json({ error: `Cannot fetch trending questions: ${err}` });
   }
 };
 
@@ -175,9 +180,9 @@ const resolveQuestion = async (req, res) => {
       { flag: false },
       { new: true }
     );
-    res.status(200).send("Question resolved successfully");
+    return res.status(200).send("Question resolved successfully");
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    return res.status(500).send("Internal Server Error");
   }
 };
 

@@ -41,10 +41,10 @@ const addAnswer = async (req, res) => {
       { $push: { answers: { $each: [answer._id], $position: 0 } } },
       { new: true }
     );
-    res.status(200).json(answer);
+    return res.status(200).json(answer);
   }
   catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 
 };
@@ -55,9 +55,9 @@ const getReportedAnswers = async (req, res) => {
       path: "ans_by",
       select: "username firstname lastname profilePic",
     });
-    res.status(200).json(answers);
+    return res.status(200).json(answers);
   } catch (error) {
-    res.status(500).send({ status: 500, message: "Internal Server Error" });
+    return res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
 
@@ -76,11 +76,11 @@ const reportAnswer = async (req, res) => {
     else {
       message = "Successfully removed report from answer."
     }
-    res
+    return res
       .status(200)
       .send({ status: 200, message: message, reportBool: report });
   } catch (error) {
-    res.status(500).send({ status: 500, message: "Internal Server Error" });
+    return res.status(500).send({ status: 500, message: "Internal Server Error" });
   }
 };
 
@@ -97,9 +97,9 @@ const resolveAnswer = async (req, res) => {
       { flag: false },
       { new: true }
     );
-    res.status(200).send("Answer resolved successfully");
+    return res.status(200).send("Answer resolved successfully");
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    return res.status(500).send("Internal Server Error");
   }
 };
 
@@ -109,19 +109,19 @@ const deleteAnswer = async (req, res) => {
     
     let question = await Question.exists({answers: aid})
     if(!question) {
-      res.status(404).send("Question of the answer not found");
+      return res.status(404).send("Question of the answer not found");
     }
     question = await Question.findOne({answers: aid});
     let answer = await Answer.exists({ _id: aid });
     if (!answer) {
-      res.status(404).send("Answer not found");
+      return res.status(404).send("Answer not found");
     }
   
     let response = await ansDelete(question._id.toString(), aid);
-    res.status(response.status).send(response.message);
+    return res.status(response.status).send(response.message);
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    return res.status(500).send("Internal Server Error");
   }
 };
 

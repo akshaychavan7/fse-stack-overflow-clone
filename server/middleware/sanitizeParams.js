@@ -4,7 +4,6 @@ const { preprocessing, textfiltering } = require("../utils/textpreprocess");
 function sanitizeParams(req, res, next) {
   try {
     req.body = sanitizer(req.body);
-    // if(req.body['isProfane']) return res.status(403).json({error: "Profanity is not tolerated."});
     next();
   }
   catch(err) {

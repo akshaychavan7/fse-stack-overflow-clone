@@ -33,6 +33,33 @@ const commentDelete = async(parentId, parentType, cid) => {
     
 }
 
+const showCommentUpDown = (uid, comments) => {
+  try {
+    for (let comment in comments) {
+      comments[comment].upvote = false;
+      comments[comment].downvote = false;
+      let com_upvoteBy = comments[comment]["upvoted_by"].map((objectId) =>
+        objectId.toString()
+      );
+      let com_downvoteBy = comments[comment]["downvoted_by"].map((objectId) =>
+        objectId.toString()
+      );
+      if (com_upvoteBy.includes(uid)) {
+        comments[comment].upvote = true;
+      }
+      else if (com_downvoteBy.includes(uid)) {
+        comments[comment].downvote = true;
+      }
+    }
+    return comments;
+  }
+  catch (err) {
+    return new Error("Error in setting upvote downvote of comment.");
+  }
+
+};
+
 module.exports = {
-    commentDelete
+    commentDelete,
+    showCommentUpDown
 }

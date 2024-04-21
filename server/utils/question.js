@@ -3,7 +3,8 @@ const Question = require("../models/questions");
 const Comment = require("../models/comments");
 const { constants } = require("./constants");
 
-const {ansDelete} = require("./answer");
+const { ansDelete, showAnsUpDown } = require("./answer");
+const {showCommentUpDown} = require("../utils/comment");
 
 const parseTags = (search) => {
   return (search.match(/\[([^\]]+)\]/g) || []).map((word) => word.slice(1, -1));
@@ -105,114 +106,95 @@ const getQuestionsByOrder = async (order = "active") => {
         return questions;
     }
   } catch (err) {
-    console.error("err", err);
-    return null;
+    return Error("Error in getting questions by order.");
   }
 };
 
 const filterQuestionsBySearch = (qlist = [], search = "") => {
-  let searchTags = parseTags(search);
-  let searchKeyword = parseKeyword(search);
-  const res = qlist.filter((q) => {
-    if (searchKeyword.length == 0 && searchTags.length == 0) {
-      return true;
-    } else if (searchKeyword.length == 0) {
-      return checkTagInQuestion(q, searchTags);
-    } else if (searchTags.length == 0) {
-      return checkKeywordInQuestion(q, searchKeyword);
-    } else {
-      return (
-        checkKeywordInQuestion(q, searchKeyword) ||
-        checkTagInQuestion(q, searchTags)
-      );
-    }
-  });
+  try {
+    let searchTags = parseTags(search);
+    let searchKeyword = parseKeyword(search);
+    const res = qlist.filter((q) => {
+      if (searchKeyword.length == 0 && searchTags.length == 0) {
+        return true;
+      } else if (searchKeyword.length == 0) {
+        return checkTagInQuestion(q, searchTags);
+      } else if (searchTags.length == 0) {
+        return checkKeywordInQuestion(q, searchKeyword);
+      } else {
+        return (
+          checkKeywordInQuestion(q, searchKeyword) ||
+          checkTagInQuestion(q, searchTags)
+        );
+      }
+    });
 
-  return res;
+    return res;
+  }
+  catch (err) {
+    return Error("Error in filtering questions by search");
+  }
+
 };
 
 const getTop10Questions = async () => {
-  return await Question.find()
-    .populate("tags")
-    .populate("asked_by")
-    .populate("answers")
-    .sort({ views: -1 })
-    .limit(10)
-    .exec();
+  try {
+    return await Question.find()
+      .populate("tags")
+      .populate("asked_by")
+      .populate("answers")
+      .sort({ views: -1 })
+      .limit(10)
+      .exec();
+  }
+  catch (err) {
+    return Error("Unable to get questions")
+  }
+
 };
 
 const showQuesUpDown = (uid, question) => {
-  question.upvote = false;
-  question.downvote = false;
-  let ques_upvoteBy = question["upvoted_by"].map((objectId) =>
-    objectId.toString()
-  );
-  let ques_downvoteBy = question["downvoted_by"].map((objectId) =>
-    objectId.toString()
-  );
-  if (ques_upvoteBy.includes(uid)) {
-    question.upvote = true;
-  } else if (ques_downvoteBy.includes(uid)) {
-    question.downvote = true;
+  try {
+    question.upvote = false;
+    question.downvote = false;
+    let ques_upvoteBy = question["upvoted_by"].map((objectId) =>
+      objectId.toString()
+    );
+    let ques_downvoteBy = question["downvoted_by"].map((objectId) =>
+      objectId.toString()
+    );
+    if (ques_upvoteBy.includes(uid)) {
+      question.upvote = true;
+    } else if (ques_downvoteBy.includes(uid)) {
+      question.downvote = true;
+    }
+    question["answers"] = showAnsUpDown(uid, question["answers"]);
+    question["comments"] = showCommentUpDown(uid, question["comments"]);
+    return question;
   }
-  question["answers"] = showAnsUpDown(uid, question["answers"]);
-  question["comments"] = showCommentUpDown(uid, question["comments"]);
-  return question;
+  catch (err) {
+    return new Error("Error in setting upvote downvote of question.");
+  }
+
 };
 
-const showAnsUpDown = (uid, answers) => {
-  for (let answer in answers) {
-    answers[answer].upvote = false;
-    answers[answer].downvote = false;
-    let ans_upvoteBy = answers[answer]["upvoted_by"].map((objectId) =>
-      objectId.toString()
-    );
-    let ans_downvoteBy = answers[answer]["downvoted_by"].map((objectId) =>
-      objectId.toString()
-    );
-    if (ans_upvoteBy.includes(uid)) {
-      answers[answer].upvote = true;
-    } else if (ans_downvoteBy.includes(uid)) {
-      answers[answer].downvote = true;
-    }
-    answers[answer]["comments"] = showCommentUpDown(
-      uid,
-      answers[answer]["comments"]
-    );
-  }
-  return answers;
-};
 
-const showCommentUpDown = (uid, comments) => {
-  for (let comment in comments) {
-    comments[comment].upvote = false;
-    comments[comment].downvote = false;
-    let com_upvoteBy = comments[comment]["upvoted_by"].map((objectId) =>
-      objectId.toString()
-    );
-    let com_downvoteBy = comments[comment]["downvoted_by"].map((objectId) =>
-      objectId.toString()
-    );
-    if (com_upvoteBy.includes(uid)) {
-      comments[comment].upvote = true;
+const questionDelete = async (qid) => {
+  try {
+    let question = await Question.findOne({ _id: qid });
+    for (let answer in question['answers']) {
+      await ansDelete(qid, question['answers'][answer]);
     }
-    else if (com_downvoteBy.includes(uid)) {
-      comments[comment].downvote = true;
+    for (let comment in question['comments']) {
+      await Comment.deleteOne({ _id: question['comments'][comment] });
     }
+    await Question.findByIdAndDelete(qid);
+    return { status: 200, message: "Deleted flagged question." }
   }
-  return comments;
-};
+  catch (err) {
+    return new Error("Error in deleting question.");
+  }
 
-const questionDelete = async(qid) => {
-  let question = await Question.findOne({_id: qid});
-  for(let answer in question['answers']) {
-    await ansDelete(qid, question['answers'][answer]);
-  }
-  for(let comment in question['comments']) {
-      await Comment.deleteOne({_id: question['comments'][comment]});
-  }
-  await Question.findByIdAndDelete(qid);
-  return {status: 200, message: "Deleted flagged question."}
 }
 
 module.exports = {

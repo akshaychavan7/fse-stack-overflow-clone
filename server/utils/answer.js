@@ -2,6 +2,7 @@ const Question = require("../models/questions");
 const Answer = require("../models/answers");
 const Comment = require("../models/comments");
 
+const {showCommentUpDown} = require("../utils/comment");
 
 const ansDelete = async(qid, aid) => {
     try {
@@ -25,6 +26,36 @@ const ansDelete = async(qid, aid) => {
     
 }
 
+const showAnsUpDown = (uid, answers) => {
+    try {
+      for (let answer in answers) {
+        answers[answer].upvote = false;
+        answers[answer].downvote = false;
+        let ans_upvoteBy = answers[answer]["upvoted_by"].map((objectId) =>
+          objectId.toString()
+        );
+        let ans_downvoteBy = answers[answer]["downvoted_by"].map((objectId) =>
+          objectId.toString()
+        );
+        if (ans_upvoteBy.includes(uid)) {
+          answers[answer].upvote = true;
+        } else if (ans_downvoteBy.includes(uid)) {
+          answers[answer].downvote = true;
+        }
+        answers[answer]["comments"] = showCommentUpDown(
+          uid,
+          answers[answer]["comments"]
+        );
+      }
+      return answers;
+    }
+    catch (err) {
+      return new Error("Error in setting upvote downvote of answer.");
+    }
+  
+  };
+
 module.exports = {
-    ansDelete
+    ansDelete,
+    showAnsUpDown
 }
