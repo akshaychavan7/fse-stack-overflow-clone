@@ -2,6 +2,7 @@
 const mockingoose = require("mockingoose");
 const Tag = require("../models/tags");
 const Question = require("../models/questions");
+const Comment = require("../models/comments");
 const {
   addTag,
   getQuestionsByOrder,
@@ -61,6 +62,13 @@ describe("question util module", () => {
 
     const result = await addTag("javascript");
     expect(result.toString()).toEqual(_tags[1]._id);
+  });
+
+  test("addTag returns error", async () => {
+    mockingoose(Tag).toReturn(new Error(), "findOne");
+
+    const result = await addTag("error tag");
+    expect(result).toBeInstanceOf(Error);
   });
 
   // filterQuestionsBySearch
@@ -185,4 +193,116 @@ describe("question util module", () => {
     expect(result[1]._id.toString()).toEqual("65e9b716ff0e892116b2de01");
     expect(result[2]._id.toString()).toEqual("65e9b716ff0e892116b2de05");
   });
+
+  test("getQuestionsByOrder returns error", async () => {
+    mockingoose(Question).toReturn(new Error("Error"), "find");
+
+    const result = await getQuestionsByOrder("newest");
+    expect(result).toBeInstanceOf(Error);
+  });
+
+  test("getTop10Questions", async () => {
+
+    let questions = _questions;
+    jest.mock("../models/questions");
+    Question.find = jest.fn().mockImplementation(() => ({
+      populate: jest.fn().mockReturnThis(),
+      populate: jest.fn().mockReturnThis(),
+      populate: jest.fn().mockReturnThis(),
+      sort: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue(questions),
+    }));
+
+    let result = await getTop10Questions();
+    expect(result).toEqual(questions);
+  });
+
+  test("getTop10Questions error", async () => {
+
+    jest.mock("../models/questions");
+    Question.find = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    let result = await getTop10Questions();
+    expect(result).toBeInstanceOf(Error);
+  });
+
+  test("showQuesUpDown uid in upvote", async () => {
+    let question1 = {
+      upvote: false,
+      downvote: false,
+      upvoted_by: ["dummyUser1", "dummyUser2"],
+      downvoted_by: ["dummyUser3"],
+      answers: [],
+      comments: []
+    }
+
+    uid = "dummyUser1";
+
+    let result = showQuesUpDown(uid, question1);
+    expect(result.upvote).toBe(true);
+    expect(result.downvote).toBe(false);
+  });
+
+  test("showQuesUpDown uid in downvote", async () => {
+    let question1 = {
+      upvote: false,
+      downvote: false,
+      upvoted_by: ["dummyUser1", "dummyUser2"],
+      downvoted_by: ["dummyUser3"],
+      answers: [],
+      comments: []
+    }
+
+    uid = "dummyUser3";
+
+    let result = showQuesUpDown(uid, question1);
+    expect(result.upvote).toBe(false);
+    expect(result.downvote).toBe(true);
+  });
+
+  test("showQuesUpDown uid in none of them", async () => {
+    let question1 = {
+      upvote: false,
+      downvote: false,
+      upvoted_by: ["dummyUser1", "dummyUser2"],
+      downvoted_by: ["dummyUser3"],
+      answers: [],
+      comments: []
+    }
+
+    uid = "dummyUser4";
+
+    let result = showQuesUpDown(uid, question1);
+    expect(result.upvote).toBe(false);
+    expect(result.downvote).toBe(false);
+  });
+
+  test("showQuesUpDown error", async () => {
+    let question1 = {
+    }
+
+    uid = "dummyUser4";
+
+    let result = showQuesUpDown(uid, question1);
+    expect(result).toBeInstanceOf(Error);
+  });
+
+  test("questionDelete to delete a question", async () => {
+    mockingoose(Question).toReturn(_questions[3], 'findOne');
+    mockingoose(Comment).toReturn(null, 'deleteOne');
+    mockingoose(Question).toReturn(null, 'findByIdAndDelete')
+    let result = await questionDelete(_questions[3]._id);
+    expect(result.status).toBe(200);
+    expect(result.message).toBe("Deleted flagged question.");
+  });
+
+  test("questionDelete encounters error", async () => {
+    mockingoose(Question).toReturn(new Error("Error"), 'findOne');
+    let result = await questionDelete(_questions[3]._id);
+    expect(result).toBeInstanceOf(Error);
+  });
+
 });

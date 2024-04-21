@@ -1,4 +1,4 @@
-const {ansDelete} = require('../utils/answer');
+const {ansDelete, showAnsUpDown} = require('../utils/answer');
 
 const Question = require('../models/questions');
 const Answer = require('../models/answers');
@@ -42,4 +42,87 @@ describe('test on ansDelete of answer utils', () => {
 
         expect(result).toBeInstanceOf(Error);
     });
+});
+
+describe('test on showAnsUpDown of answer utils', () => {
+    test('showAnsUpDown is upvote uid', async () => {
+        let answer1 = {
+            upvote: false,
+            downvote: false,
+            upvoted_by: ["dummyUser1", "dummyUser2"],
+            downvoted_by: ["dummyUser3", "dummyUser4"],
+            comments: []
+        }
+        let answers = [answer1];
+        let uid = "dummyUser1";
+
+        let responseAns = [{
+            upvote: true,
+            downvote: false,
+            upvoted_by: ["dummyUser1", "dummyUser2"],
+            downvoted_by: ["dummyUser3", "dummyUser4"],
+            comments: []
+        }]
+
+        let result = showAnsUpDown(uid, answers);
+        expect(result).toStrictEqual(responseAns);
+    });
+
+    test('showAnsUpDown is downvote uid', async () => {
+        let answer1 = {
+            upvote: false,
+            downvote: false,
+            upvoted_by: ["dummyUser1", "dummyUser2"],
+            downvoted_by: ["dummyUser3", "dummyUser4"],
+            comments: []
+        }
+        let answers = [answer1];
+        let uid = "dummyUser3";
+
+        let responseAns = [{
+            upvote: false,
+            downvote: true,
+            upvoted_by: ["dummyUser1", "dummyUser2"],
+            downvoted_by: ["dummyUser3", "dummyUser4"],
+            comments: []
+        }]
+
+        let result = showAnsUpDown(uid, answers);
+        expect(result).toStrictEqual(responseAns);
+    });
+
+    test('showAnsUpDown is no vote uid', async () => {
+        let answer1 = {
+            upvote: false,
+            downvote: false,
+            upvoted_by: ["dummyUser1", "dummyUser2"],
+            downvoted_by: ["dummyUser3", "dummyUser4"],
+            comments: []
+        }
+        let answers = [answer1];
+        let uid = "dummyUser5";
+
+        let responseAns = [{
+            upvote: false,
+            downvote: false,
+            upvoted_by: ["dummyUser1", "dummyUser2"],
+            downvoted_by: ["dummyUser3", "dummyUser4"],
+            comments: []
+        }]
+
+        let result = showAnsUpDown(uid, answers);
+        expect(result).toStrictEqual(responseAns);
+    });
+
+    test('showAnsUpDown has error', async () => {
+        let answer1 = {
+        }
+        let answers = [answer1];
+        let uid = "dummyUser3";
+
+        let result = showAnsUpDown(uid, answers);
+        expect(result).toBeInstanceOf(Error);
+    });
+
+
 });

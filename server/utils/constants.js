@@ -1,3 +1,4 @@
+// The constants to be used across all functions.
 const constants = {
   QUESTIONTYPE: "question",
   ANSWERTYPE: "answer",

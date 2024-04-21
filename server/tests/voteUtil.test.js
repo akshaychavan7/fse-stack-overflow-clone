@@ -2,8 +2,9 @@ const mockingoose = require("mockingoose");
 const Tag = require("../models/tags");
 const Question = require("../models/questions");
 const Answer = require("../models/answers");
+const {constants} = require("../utils/constants");
 
-const {updateUpvote, updateDownvote} = require("../utils/vote");
+const {updateUpvote, updateDownvote, assignVoteObject, assignPostBy} = require("../utils/vote");
 
 
 jest.mock("../middleware/authorization");
@@ -142,5 +143,53 @@ describe("updateDownvote of the vote util module", () => {
       message: "Downvoted successfully."
     });
 
+  });
+});
+
+describe("assignVoteObject of the vote util module", () => {
+  test('should return Question model for voteType QUESTIONTYPE', async () => {
+    const voteType = constants.QUESTIONTYPE;
+    const voteObj = await assignVoteObject(voteType);
+    expect(voteObj.modelName).toBe('Question');
+  });
+
+  test('should return Answer model for voteType ANSWERTYPE', async () => {
+    const voteType = constants.ANSWERTYPE;
+    const voteObj = await assignVoteObject(voteType);
+    expect(voteObj.modelName).toBe('Answer');
+  });
+
+  test('should return Comment model for voteType COMMENTTYPE', async () => {
+    const voteType = constants.COMMENTTYPE;
+    const voteObj = await assignVoteObject(voteType);
+    expect(voteObj.modelName).toBe('Comment');
+  });
+
+  test('should throw an error for invalid voteType', async () => {
+    const voteType = 'invalid vote';
+    await expect(assignVoteObject(voteType)).rejects.toThrow('Invalid type');
+  });
+});
+
+describe("assignPostBy of the vote util module", () => {
+  test('should return the ID of the user who asked the question for QUESTIONTYPE', () => {
+    const voteType = constants.QUESTIONTYPE;
+    const obj = { asked_by: { toString: () => 'dummyUserId' } };
+    const result = assignPostBy(voteType, obj);
+    expect(result).toBe('dummyUserId');
+  });
+
+  test('should return the ID of the user who answered the question for ANSWERTYPE', () => {
+    const voteType = constants.ANSWERTYPE;
+    const obj = { ans_by: { toString: () => 'dummyUserId' } };
+    const result = assignPostBy(voteType, obj);
+    expect(result).toBe('dummyUserId');
+  });
+
+  test('should return the ID of the user who commented for COMMENTTYPE', () => {
+    const voteType = constants.COMMENTTYPE;
+    const obj = { commented_by: { toString: () => 'dummyUserId' } };
+    const result = assignPostBy(voteType, obj);
+    expect(result).toBe('dummyUserId');
   });
 });

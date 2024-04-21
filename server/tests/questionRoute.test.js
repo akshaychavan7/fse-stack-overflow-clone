@@ -119,7 +119,29 @@ describe("GET /getQuestion", () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockQuestions);
   });
+
+  it("should return error on questions by filter", async () => {
+    // Mock request query parameters
+    const mockReqQuery = {
+      order: "someOrder",
+      search: "someSearch",
+    };
+
+    getQuestionsByOrder.mockImplementation(() => {
+      throw new Error("Random!");
+    });
+    // Making the request
+    const response = await supertest(server)
+      .get("/question/getQuestion")
+      .query(mockReqQuery);
+    const mockResponse = "Internal Server Error Error: Random!"
+    // Asserting the response
+    expect(response.status).toBe(500);
+    expect(response.text).toEqual(mockResponse);
+  });
 });
+
+
 
 // Note: Figure out getQuestionById mock
 describe("GET /getQuestionById/:qid", () => {
@@ -223,6 +245,61 @@ describe("POST /addQuestion", () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockQuestion);
   });
+
+  it("should add a new question with content flagged", async () => {
+    // Mock request body
+
+    const mockTags = [tag1, tag2];
+
+    const mockQuestion = {
+      _id: "65e9b58910afe6e94fc6e6fe",
+      title: "Question 3 Title",
+      description: "ass",
+      asked_by: "question3_user",
+      tags: ['tag1', 'tag2'],
+      ask_date_time: "2024-05-22T16:08:22.613Z"
+    };
+
+    addTag.mockResolvedValueOnce(mockTags);
+    Question.create.mockResolvedValueOnce(mockQuestion);
+
+    // Making the request
+    const response = await supertest(server)
+      .post("/question/addQuestion")
+      .send(mockQuestion);
+    // Asserting the response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockQuestion);
+  });
+
+  it("throw error while adding question", async () => {
+    // Mock request body
+
+    const mockTags = [tag1, tag2];
+
+    const mockQuestion = {
+      _id: "65e9b58910afe6e94fc6e6fe",
+      title: "Question 3 Title",
+      description: "Question 3 Text",
+      asked_by: "question3_user",
+      tags: ['tag1', 'tag2'],
+      ask_date_time: "2024-05-22T16:08:22.613Z"
+    };
+
+    addTag.mockResolvedValueOnce(mockTags);
+    Question.create.mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    // Making the request
+    const response = await supertest(server)
+      .post("/question/addQuestion")
+      .send(mockQuestion);
+    // Asserting the response
+    const mockResponse = {error: "Internal server error."};
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual(mockResponse);
+  });
 });
 
 describe("Flag question, view flagged question and delete flagged question", () => {
@@ -258,6 +335,65 @@ describe("Flag question, view flagged question and delete flagged question", () 
     expect(response.body).toEqual(mockResponse);
   });
 
+  it("should remove flag of a question", async () => {
+    const mockReqBody = {
+      qid: "dummyQuestionId"
+    };
+
+    const mockResponse = {
+      status: 200,
+      message: "Successfully removed report from question.",
+      reportBool: false
+    }
+
+    userutil.reportPost.mockResolvedValue(false);
+
+    Question.exists = jest.fn().mockResolvedValue(true);
+
+    const response = await supertest(server)
+      .post("/question/reportQuestion")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+  });
+
+  it("reportQuestion question not found", async () => {
+    const mockReqBody = {
+      qid: "dummyQuestionId"
+    };
+
+    const mockResponse = "Question not found";
+
+    Question.exists = jest.fn().mockResolvedValue(false);
+
+    const response = await supertest(server)
+      .post("/question/reportQuestion")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(404);
+    expect(response.text).toEqual(mockResponse);
+  });
+
+  it("reportQuestion error", async () => {
+    const mockReqBody = {
+      qid: "dummyQuestionId"
+    };
+
+    const mockResponse = "{\"status\":500,\"message\":\"Internal Server Error Error: Random!\"}";
+
+    Question.exists = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    const response = await supertest(server)
+      .post("/question/reportQuestion")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(500);
+    expect(response.text).toEqual(mockResponse);
+  });
+
   it("Get reported questions", async () => {
     const user1 = {
       _id: "dummyUserId",
@@ -278,12 +414,35 @@ describe("Flag question, view flagged question and delete flagged question", () 
     Question.find = jest.fn().mockImplementation(() => ({
       populate: jest.fn().mockResolvedValue(mockQuestions),
     }));
+    
+    const mockResponse = 
+    "[{\"_id\":\"dummyQuestionId\",\"title\":\"Demo question\","+
+    "\"description\":\"This is a test question\",\"ask_date_time\":"+
+    "\"2024-05-22T16:08:22.613Z\",\"flag\":true,\"asked_by\":{\"_id\":"+
+    "\"dummyUserId\",\"username\":\"user1\",\"firstname\":\"name1\","+
+    "\"lastname\":\"name2\",\"profilePic\":\"\"}}]"
 
     const response = await supertest(server)
       .get("/question/getReportedQuestions");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockQuestions);
+
+  });
+
+  it("Get reported questions server error", async () => {
+
+    Question.find = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+    
+    const mockResponse = "{\"status\":500,\"message\":\"Internal Server Error\"}";
+
+    const response = await supertest(server)
+      .get("/question/getReportedQuestions");
+
+    expect(response.status).toBe(500);
+    expect(response.text).toEqual(mockResponse);
 
   });
 
@@ -294,6 +453,38 @@ describe("Flag question, view flagged question and delete flagged question", () 
     questionDelete.mockResolvedValueOnce(mockResponse);
 
     Question.exists = jest.fn().mockResolvedValue(true);
+
+    const response = await supertest(server)
+      .delete("/question/deleteQuestion/dummyQuestionId");
+
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
+
+  });
+
+  it("Delete question, question not found", async () => {
+
+    const mockResponse = {status: 404, message: "Question not found"};
+
+    Question.exists = jest.fn().mockResolvedValue(false);
+
+    const response = await supertest(server)
+      .delete("/question/deleteQuestion/dummyQuestionId");
+
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
+
+  });
+
+  it("Error in deleting question", async () => {
+
+    const mockResponse = {status: 500, message: "Internal Server Error"};
+
+    questionDelete.mockResolvedValueOnce(mockResponse);
+
+    Question.exists = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
 
     const response = await supertest(server)
       .delete("/question/deleteQuestion/dummyQuestionId");
@@ -314,6 +505,36 @@ describe("Flag question, view flagged question and delete flagged question", () 
       .post("/question/resolveQuestion/dummyQuestionId");
 
     expect(response.status).toBe(200);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  it("Resolve question, question not found", async () => {
+
+    const mockResponse = "Question not found";
+
+    Question.exists = jest.fn().mockResolvedValue(false);
+
+    const response = await supertest(server)
+      .post("/question/resolveQuestion/dummyQuestionId");
+
+    expect(response.status).toBe(404);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  it("Resolve question server error", async () => {
+
+    const mockResponse = "Internal Server Error";
+
+    Question.exists = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    const response = await supertest(server)
+      .post("/question/resolveQuestion/dummyQuestionId");
+
+    expect(response.status).toBe(500);
     expect(response.text).toEqual(mockResponse);
 
   });
@@ -355,19 +576,24 @@ describe("View trending questions", () => {
     let questions = [mockQuestion1,mockQuestion2];
     getTop10Questions.mockResolvedValueOnce(questions);
 
-    let mockResponse =  "[{\"_id\":\"dummyQuestionId\","+
-    "\"title\":\"Demo question\",\"description\":\"This is a test question\","+
-    "\"ask_date_time\":\"2024-05-22T16:08:22.613Z\",\"flag\":true,\"asked_by\":"+
-    "{\"_id\":\"dummyUserId\",\"username\":\"user1\",\"firstname\":\"name1\",\"lastname\":"+
-    "\"name2\",\"profilePic\":\"\"}},{\"_id\":\"dummyQuestionId2\",\"title\":\"Demo question 2\","+
-    "\"description\":\"This is a test question 2\",\"ask_date_time\":\"2024-05-22T16:08:22.613Z\","+
-    "\"flag\":false,\"asked_by\":{\"_id\":\"dummyUserId2\",\"username\":\"user2\",\"firstname\":"+
-    "\"name3\",\"lastname\":\"name4\",\"profilePic\":\"\"}}]"
-
     const response = await supertest(server)
       .get("/question/getTrendingQuestions");
     
     expect(response.status).toBe(200);
-    expect(response.text).toEqual(mockResponse);
+    expect(response.body).toEqual(questions);
+  });
+
+  it("Get trending questions error", async () => {
+    getTop10Questions.mockImplementation(() => {
+      throw new Error("Random!");
+    });;
+
+    let mockResponse =  { error: `Cannot fetch trending questions: Error: Random!` }
+
+    const response = await supertest(server)
+      .get("/question/getTrendingQuestions");
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual(mockResponse);
   });
 });
