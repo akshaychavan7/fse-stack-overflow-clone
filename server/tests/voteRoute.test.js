@@ -15,6 +15,8 @@ let vote = require('../utils/vote');
 
 vote.updateUpvote = jest.fn();
 vote.updateDownvote = jest.fn();
+vote.assignVoteObject = jest.fn();
+vote.assignPostBy = jest.fn();
 
 jest.mock("../utils/validator");
 let validate = require('../utils/validator');
@@ -73,6 +75,8 @@ describe("Upvote question", () => {
     validate.validateId.mockReturnValueOnce(true);
     Question.findById = jest.fn().mockResolvedValueOnce(mockQuestion);
     vote.updateUpvote.mockResolvedValueOnce(mockResult);
+    vote.assignVoteObject.mockResolvedValueOnce(Question);
+    vote.assignPostBy.mockResolvedValueOnce(mockQuestion.asked_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -104,6 +108,8 @@ describe("Upvote question", () => {
     validate.validateId.mockReturnValueOnce(true);
     Question.findById = jest.fn().mockResolvedValueOnce(mockQuestion);
     vote.updateUpvote.mockResolvedValueOnce(mockResult);
+    vote.assignVoteObject.mockResolvedValueOnce(Question);
+    vote.assignPostBy.mockResolvedValueOnce(mockQuestion.asked_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -147,6 +153,7 @@ describe("Upvote question", () => {
       asked_by: "dummyUserID"
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Question);
     Question.findById = jest.fn().mockResolvedValueOnce(null);
 
     const mockResponse =
@@ -186,8 +193,10 @@ describe("Upvote answer", () => {
       message: "Upvoted successfully."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Answer);
     Answer.findById = jest.fn().mockResolvedValueOnce(mockAnswer);
     vote.updateUpvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockAnswer.ans_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -216,8 +225,10 @@ describe("Upvote answer", () => {
       message: "Removed previous upvote."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Answer);
     Answer.findById = jest.fn().mockResolvedValueOnce(mockAnswer);
     vote.updateUpvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockAnswer.ans_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -259,6 +270,7 @@ describe("Upvote answer", () => {
       ans_by: "dummyUserID"
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Answer);
     Answer.findById = jest.fn().mockResolvedValueOnce(null);
 
     const mockResponse =
@@ -299,8 +311,10 @@ describe("Upvote comment", () => {
       message: "Upvoted successfully."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Comment);
     Comment.findById = jest.fn().mockResolvedValueOnce(mockComment);
     vote.updateUpvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockComment.commented_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -329,8 +343,10 @@ describe("Upvote comment", () => {
       message: "Removed previous upvote."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Comment);
     Comment.findById = jest.fn().mockResolvedValueOnce(mockComment);
     vote.updateUpvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockComment.commented_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -372,6 +388,7 @@ describe("Upvote comment", () => {
       commented_by: "dummyUserID"
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Comment);
     Comment.findById = jest.fn().mockResolvedValueOnce(null);
 
     const mockResponse =
@@ -412,8 +429,10 @@ describe("Downvote question", () => {
       message: "Downvoted successfully."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Question);
     Question.findById = jest.fn().mockResolvedValueOnce(mockQuestion);
     vote.updateDownvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockQuestion.asked_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -443,8 +462,10 @@ describe("Downvote question", () => {
       message: "Removed previous downvote."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Question);
     Question.findById = jest.fn().mockResolvedValueOnce(mockQuestion);
     vote.updateDownvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockQuestion.asked_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -488,6 +509,7 @@ describe("Downvote question", () => {
       asked_by: "dummyUserID"
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Question);
     Question.findById = jest.fn().mockResolvedValueOnce(null);
 
     const mockResponse =
@@ -527,8 +549,10 @@ describe("Downvote answer", () => {
       message: "Downvoted successfully."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Answer);
     Answer.findById = jest.fn().mockResolvedValueOnce(mockAnswer);
     vote.updateDownvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockAnswer.ans_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -557,8 +581,10 @@ describe("Downvote answer", () => {
       message: "Removed previous downvote."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Answer);
     Answer.findById = jest.fn().mockResolvedValueOnce(mockAnswer);
     vote.updateDownvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockAnswer.ans_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -600,6 +626,7 @@ describe("Downvote answer", () => {
       ans_by: "dummyUserID"
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Answer);
     Answer.findById = jest.fn().mockResolvedValueOnce(null);
 
     const mockResponse =
@@ -640,8 +667,10 @@ describe("Downvote comment", () => {
       message: "Downvoted successfully."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Comment);
     Comment.findById = jest.fn().mockResolvedValueOnce(mockComment);
     vote.updateDownvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockComment.commented_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -670,8 +699,10 @@ describe("Downvote comment", () => {
       message: "Removed previous downvote."
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Comment);
     Comment.findById = jest.fn().mockResolvedValueOnce(mockComment);
     vote.updateDownvote.mockResolvedValueOnce(mockResult);
+    vote.assignPostBy.mockResolvedValueOnce(mockComment.commented_by);
     userutil.updateReputation.mockResolvedValueOnce(mockResult);
 
     const mockResponse =
@@ -713,6 +744,7 @@ describe("Downvote comment", () => {
       commented_by: "dummyUserID"
     }
     validate.validateId.mockReturnValueOnce(true);
+    vote.assignVoteObject.mockResolvedValueOnce(Comment);
     Comment.findById = jest.fn().mockResolvedValueOnce(null);
 
     const mockResponse =

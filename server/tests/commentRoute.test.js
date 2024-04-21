@@ -225,6 +225,65 @@ describe("Flag comment, view flagged comments and delete flagged comments", () =
     expect(response.body).toEqual(mockResponse);
   });
 
+  it("should remove flag of a comment", async () => {
+    const mockReqBody = {
+      cid: "dummyCommentId"
+    };
+
+    const mockResponse = {
+      status: 200,
+      message: "Successfully removed report from comment.",
+      reportBool: false
+    }
+
+    userutil.reportPost.mockResolvedValue(false);
+
+    Comment.exists = jest.fn().mockResolvedValue(true);
+
+    const response = await supertest(server)
+      .post("/comment/reportComment")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+  });
+
+  it("reportComment comment not found", async () => {
+    const mockReqBody = {
+      cid: "dummyCommentId"
+    };
+
+    const mockResponse = {"message": "Comment not found", "status": 404};
+
+    Comment.exists = jest.fn().mockResolvedValue(false)
+
+    const response = await supertest(server)
+      .post("/comment/reportComment")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual(mockResponse);
+  });
+
+  it("reportComment gives error", async () => {
+    const mockReqBody = {
+      cid: "dummyCommentId"
+    };
+
+    const mockResponse = {"message": "Internal Server Error", "status": 500};
+
+    Comment.exists = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    const response = await supertest(server)
+      .post("/comment/reportComment")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual(mockResponse);
+  });
+
   // Note: Check how to logically get comments based on flag
   it("Get reported comments", async () => {
     const user1 = {
@@ -254,7 +313,24 @@ describe("Flag comment, view flagged comments and delete flagged comments", () =
 
   });
 
-  it("Delete comment", async () => {
+  it("getReportedComments server error", async () => {
+
+    Comment.find = jest.fn().mockImplementation(() => ({
+      populate: jest.fn().mockImplementation(() => {
+        throw new Error("Random!");
+      })
+    }));
+
+    const response = await supertest(server)
+      .get("/comment/getReportedComments");
+
+    const mockResponse = "Internal Server Error";
+    expect(response.status).toBe(500);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  it("Delete comment of a question", async () => {
 
     const mockResponse = {status: 200, message: "Comment deleted successfully"};
     let question = {_id: "dummyQuesId", comments: ["dummyCommentId"]};
@@ -262,6 +338,53 @@ describe("Flag comment, view flagged comments and delete flagged comments", () =
     Question.findOne = jest.fn().mockResolvedValue(question);
     Comment.exists = jest.fn().mockResolvedValue(true);
     commentUtil.commentDelete.mockResolvedValueOnce(mockResponse);
+
+    const response = await supertest(server)
+      .delete("/comment/deleteComment/dummyCommentId");
+
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
+
+  });
+
+  it("Delete comment of an answer", async () => {
+
+    const mockResponse = {status: 200, message: "Comment deleted successfully"};
+    let answer = {_id: "dummyAnsId", comments: ["dummyCommentId"]};
+    Answer.exists = jest.fn().mockResolvedValue(true);
+    Answer.findOne = jest.fn().mockResolvedValue(answer);
+    Comment.exists = jest.fn().mockResolvedValue(true);
+    commentUtil.commentDelete.mockResolvedValueOnce(mockResponse);
+
+    const response = await supertest(server)
+      .delete("/comment/deleteComment/dummyCommentId");
+
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
+
+  });
+
+  it("Delete comment invalid parent id", async () => {
+
+    const mockResponse = {status: 404, message: "Invalid parent id"};
+    let answer = {_id: "dummyAnsId", comments: ["dummyCommentId"]};
+    Question.exists = jest.fn().mockResolvedValue(false);
+    Answer.exists = jest.fn().mockResolvedValue(false);
+
+    const response = await supertest(server)
+      .delete("/comment/deleteComment/dummyCommentId");
+
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
+
+  });
+
+  it("Delete comment throws error", async () => {
+
+    const mockResponse = {status: 500, message: "Internal Server Error"};
+    Question.exists = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
 
     const response = await supertest(server)
       .delete("/comment/deleteComment/dummyCommentId");
@@ -282,6 +405,36 @@ describe("Flag comment, view flagged comments and delete flagged comments", () =
       .post("/comment/resolveComment/dummyCommentId");
 
     expect(response.status).toBe(200);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  it("Resolve comment not found", async () => {
+
+    const mockResponse = "Comment not found";
+
+    Comment.exists = jest.fn().mockResolvedValue(false);
+
+    const response = await supertest(server)
+      .post("/comment/resolveComment/dummyCommentId");
+
+    expect(response.status).toBe(404);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  it("Resolve comment not found", async () => {
+
+    const mockResponse = "Internal Server Error";
+
+    Comment.exists = jest.fn().mockImplementation(() => {
+      throw new Error("Random!");
+    });
+
+    const response = await supertest(server)
+      .post("/comment/resolveComment/dummyCommentId");
+
+    expect(response.status).toBe(500);
     expect(response.text).toEqual(mockResponse);
 
   });
