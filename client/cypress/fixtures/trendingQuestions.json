@@ -1,0 +1,318 @@
+[
+    {
+        "_id": "6625bcb85f23c76f7040ff11",
+        "title": "Object storage for a web application",
+        "description": "I am currently working on a website where, roughly 40 million documents and images should be served to its users. I need suggestions on which method is the most suitable for storing content with subject to these requirements.",
+        "asked_by": {
+            "_id": "6625bcb85f23c76f7040fee1",
+            "username": "akshay",
+            "password": "$2b$10$2N4QGZ4tOpNBy3GTqiEOW.dj0XdtixHs0Cnd3zOgWoCivltnJTwiW",
+            "firstname": "Akshay",
+            "lastname": "Chavan",
+            "profilePic": "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI",
+            "userRole": "general",
+            "technologies": [
+                "JavaScript",
+                "React",
+                "TypeScript"
+            ],
+            "location": "Boston, MA",
+            "reputation": 0,
+            "joiningDate": "2024-04-22T01:26:16.014Z",
+            "__v": 0
+        },
+        "ask_date_time": "2023-02-18T06:02:15.000Z",
+        "views": 200,
+        "tags": [
+            {
+                "_id": "6625bcb85f23c76f7040fedd",
+                "name": "storage",
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb85f23c76f7040fedf",
+                "name": "website",
+                "__v": 0
+            }
+        ],
+        "answers": [
+            {
+                "_id": "6625bcb85f23c76f7040ff07",
+                "description": "Storing content as BLOBs in databases.",
+                "ans_by": "6625bcb85f23c76f7040fee5",
+                "ans_date_time": "2023-11-24T13:50:00.000Z",
+                "comments": [],
+                "vote_count": -1,
+                "upvoted_by": [],
+                "downvoted_by": [
+                    "6625bcb85f23c76f7040fee1"
+                ],
+                "flag": false,
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb85f23c76f7040ff09",
+                "description": "Using GridFS to chunk and store content.",
+                "ans_by": "6625bcb85f23c76f7040fee3",
+                "ans_date_time": "2023-11-25T13:24:00.000Z",
+                "comments": [],
+                "vote_count": 0,
+                "upvoted_by": [],
+                "downvoted_by": [],
+                "flag": false,
+                "__v": 0
+            }
+        ],
+        "comments": [],
+        "vote_count": -1,
+        "upvoted_by": [],
+        "downvoted_by": [
+            "6625bcb85f23c76f7040fee9"
+        ],
+        "flag": false,
+        "__v": 0
+    },
+    {
+        "_id": "6625bcb85f23c76f7040ff13",
+        "title": "Quick question about storage on android",
+        "description": "I would like to know the best way to go about storing an array on an android phone so that even when the app/activity ended the data remains",
+        "asked_by": {
+            "_id": "6625bcb85f23c76f7040fee3",
+            "username": "hamkalo",
+            "password": "$2b$10$WKf0boaPLjz2A6mcGnFRaeCP.QxCfD.UnUHGipNAlEQcnsUCodZqK",
+            "firstname": "John",
+            "lastname": "Doe",
+            "profilePic": null,
+            "userRole": "general",
+            "technologies": [
+                "Java",
+                "Python"
+            ],
+            "location": "Stony Brook, NY",
+            "reputation": 0,
+            "joiningDate": "2024-04-22T01:26:16.084Z",
+            "__v": 0
+        },
+        "ask_date_time": "2023-03-10T19:28:01.000Z",
+        "views": 103,
+        "tags": [
+            {
+                "_id": "6625bcb85f23c76f7040fed9",
+                "name": "android-studio",
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb85f23c76f7040fedb",
+                "name": "shared-preferences",
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb85f23c76f7040fedd",
+                "name": "storage",
+                "__v": 0
+            }
+        ],
+        "answers": [
+            {
+                "_id": "6625bcb85f23c76f7040ff0b",
+                "description": "Store data in a SQLLite database.",
+                "ans_by": "6625bcb85f23c76f7040fee1",
+                "ans_date_time": "2023-11-25T16:24:00.000Z",
+                "comments": [],
+                "vote_count": 0,
+                "upvoted_by": [],
+                "downvoted_by": [],
+                "flag": false,
+                "__v": 0
+            }
+        ],
+        "comments": [],
+        "vote_count": 0,
+        "upvoted_by": [],
+        "downvoted_by": [],
+        "flag": false,
+        "__v": 0
+    },
+    {
+        "_id": "6625bcb85f23c76f7040ff0f",
+        "title": "android studio save string shared preference, start activity and load the saved string",
+        "description": "I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.",
+        "asked_by": {
+            "_id": "6625bcb85f23c76f7040fee1",
+            "username": "akshay",
+            "password": "$2b$10$2N4QGZ4tOpNBy3GTqiEOW.dj0XdtixHs0Cnd3zOgWoCivltnJTwiW",
+            "firstname": "Akshay",
+            "lastname": "Chavan",
+            "profilePic": "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI",
+            "userRole": "general",
+            "technologies": [
+                "JavaScript",
+                "React",
+                "TypeScript"
+            ],
+            "location": "Boston, MA",
+            "reputation": 0,
+            "joiningDate": "2024-04-22T01:26:16.014Z",
+            "__v": 0
+        },
+        "ask_date_time": "2023-01-10T16:24:30.000Z",
+        "views": 55,
+        "tags": [
+            {
+                "_id": "6625bcb85f23c76f7040fed9",
+                "name": "android-studio",
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb85f23c76f7040fedb",
+                "name": "shared-preferences",
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb75f23c76f7040fed7",
+                "name": "javascript",
+                "__v": 0
+            }
+        ],
+        "answers": [
+            {
+                "_id": "6625bcb85f23c76f7040ff01",
+                "description": "Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background.",
+                "ans_by": "6625bcb85f23c76f7040fee5",
+                "ans_date_time": "2023-11-23T08:03:00.000Z",
+                "comments": [],
+                "vote_count": 0,
+                "upvoted_by": [],
+                "downvoted_by": [],
+                "flag": false,
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb85f23c76f7040ff03",
+                "description": "YourPreference yourPrefrence = YourPreference.getInstance(context); yourPreference.saveData(YOUR_KEY,YOUR_VALUE);",
+                "ans_by": "6625bcb85f23c76f7040fee7",
+                "ans_date_time": "2023-11-23T08:24:00.000Z",
+                "comments": [],
+                "vote_count": 0,
+                "upvoted_by": [],
+                "downvoted_by": [],
+                "flag": false,
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb85f23c76f7040ff05",
+                "description": "I just found all the above examples just too confusing, so I wrote my own. ",
+                "ans_by": "6625bcb85f23c76f7040fee9",
+                "ans_date_time": "2023-11-23T09:24:00.000Z",
+                "comments": [],
+                "vote_count": 0,
+                "upvoted_by": [],
+                "downvoted_by": [],
+                "flag": false,
+                "__v": 0
+            }
+        ],
+        "comments": [],
+        "vote_count": 2,
+        "upvoted_by": [
+            "6625bcb85f23c76f7040fee1",
+            "6625bcb85f23c76f7040fee3"
+        ],
+        "downvoted_by": [],
+        "flag": false,
+        "__v": 0
+    },
+    {
+        "_id": "6625bcb85f23c76f7040ff0d",
+        "title": "Programmatically navigate using React router",
+        "description": "the alert shows the proper index for the li clicked, and when I alert the variable within the last function Im calling, moveToNextImage(stepClicked), the same value shows but the animation isnt happening. This works many other ways, but Im trying to pass the index value of the list item clicked to use for the math to calculate.",
+        "asked_by": {
+            "_id": "6625bcb85f23c76f7040fee5",
+            "username": "shawn",
+            "password": "$2b$10$HNe3fxsbtPrk6tWY6rx43O2Ngj/dQ/IwHWu1rkpV0ZT15WixP1Ose",
+            "firstname": "Shiu",
+            "lastname": "Chen",
+            "profilePic": "https://media.licdn.com/dms/image/D5635AQF6RnnnfLnHKg/profile-framedphoto-shrink_800_800/0/1704817671459?e=1714165200&v=beta&t=STJUAJEaYCvHKYJuD9TuopdJyv5duHQyBcRSFnan3Ck",
+            "userRole": "general",
+            "technologies": [
+                "Angular",
+                "Android",
+                "Swift"
+            ],
+            "location": "Boston, MA",
+            "reputation": 0,
+            "joiningDate": "2024-04-22T01:26:16.139Z",
+            "__v": 0
+        },
+        "ask_date_time": "2022-01-20T08:00:00.000Z",
+        "views": 23,
+        "tags": [
+            {
+                "_id": "6625bcb75f23c76f7040fed3",
+                "name": "react",
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb75f23c76f7040fed7",
+                "name": "javascript",
+                "__v": 0
+            }
+        ],
+        "answers": [
+            {
+                "_id": "6625bcb85f23c76f7040fefd",
+                "description": "React Router is mostly a wrapper around the history library. history handles interaction with the browser's window.history for you with its browser and hash histories. It also provides a memory history which is useful for environments that don't have a global history. This is particularly useful in mobile app development (react-native) and unit testing with Node.",
+                "ans_by": "6625bcb85f23c76f7040fee1",
+                "ans_date_time": "2023-11-23T06:02:00.000Z",
+                "comments": [
+                    "6625bcb85f23c76f7040fef7",
+                    "6625bcb85f23c76f7040fef9"
+                ],
+                "vote_count": 2,
+                "upvoted_by": [
+                    "6625bcb85f23c76f7040fee3",
+                    "6625bcb85f23c76f7040fee5",
+                    "6625bcb85f23c76f7040fee7",
+                    "6625bcb85f23c76f7040fee9"
+                ],
+                "downvoted_by": [
+                    "6625bcb85f23c76f7040fee9"
+                ],
+                "flag": false,
+                "__v": 0
+            },
+            {
+                "_id": "6625bcb85f23c76f7040feff",
+                "description": "On my end, I like to have a single history object that I can carry even outside components. I like to have a single history.js file that I import on demand, and just manipulate it. You just have to change BrowserRouter to Router, and specify the history prop. This doesn't change anything for you, except that you have your own history object that you can manipulate as you want. You need to install history, the library used by react-router.",
+                "ans_by": "6625bcb85f23c76f7040fee3",
+                "ans_date_time": "2023-11-23T06:02:00.000Z",
+                "comments": [
+                    "6625bcb85f23c76f7040fef5"
+                ],
+                "vote_count": 3,
+                "upvoted_by": [
+                    "6625bcb85f23c76f7040fee1",
+                    "6625bcb85f23c76f7040fee5",
+                    "6625bcb85f23c76f7040fee7",
+                    "6625bcb85f23c76f7040feeb"
+                ],
+                "downvoted_by": [],
+                "flag": false,
+                "__v": 0
+            }
+        ],
+        "comments": [
+            "6625bcb85f23c76f7040fefb"
+        ],
+        "vote_count": 1,
+        "upvoted_by": [
+            "6625bcb85f23c76f7040fee1",
+            "6625bcb85f23c76f7040fee3"
+        ],
+        "downvoted_by": [
+            "6625bcb85f23c76f7040fee7"
+        ],
+        "flag": false,
+        "__v": 0
+    }
+]
