@@ -213,15 +213,28 @@ const init = async () => {
       location: "Pune, India",
     },
     {
+      username: "general",
+      password: "test",
+      firstName: "general",
+      lastName: "general",
+      role: "general",
+      profilePic:
+        "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI",
+      technologies: ["JavaScript", "React", "TypeScript"],
+      location: "Boston, MA",
+      userId: "6622f5d28b534861b8fe7272",
+    },
+    {
       username: "moderator",
-      password: "password",
-      firstName: "Moderator",
-      lastName: "M1",
+      password: "test",
+      firstName: "moderator",
+      lastName: "moderator",
       role: "moderator",
       profilePic:
         "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI",
       technologies: ["JavaScript", "React", "TypeScript"],
       location: "Boston, MA",
+      userId: "6622f4902b45c4a06975c82a",
     },
   ];
 
@@ -242,6 +255,7 @@ const init = async () => {
   let user8 = await userCreate(users[7]);
   let user9 = await userCreate(users[8]);
   let user10 = await userCreate(users[9]);
+  let user11 = await userCreate(users[10]);
 
   let comment1 = await commentCreate(
     "Nice!",
@@ -259,7 +273,7 @@ const init = async () => {
     0,
     [],
     [],
-    false
+    true
   );
   let comment3 = await commentCreate(
     "Thank you! this helps a lot",
@@ -278,6 +292,26 @@ const init = async () => {
     [],
     [],
     false
+  );
+
+  let comment5 = await commentCreate(
+    "This is great",
+    user5,
+    new Date("2023-11-23T08:24:00"),
+    0,
+    [],
+    [],
+    false
+  );
+
+  let comment6 = await commentCreate(
+    "This is so helpful",
+    user6,
+    new Date("2023-11-23T08:24:00"),
+    0,
+    [],
+    [],
+    true
   );
 
   let a1 = await answerCreate(
@@ -318,7 +352,7 @@ const init = async () => {
     0,
     [],
     [],
-    false
+    true
   );
   let a5 = await answerCreate(
     "I just found all the above examples just too confusing, so I wrote my own. ",
@@ -373,7 +407,7 @@ const init = async () => {
     1,
     [user1, user2],
     [user4],
-    false
+    true
   );
   await questionCreate(
     "android studio save string shared preference, start activity and load the saved string",
@@ -397,7 +431,7 @@ const init = async () => {
     200,
     [t5, t6],
     [a6, a7],
-    [],
+    [comment6],
     -1,
     [],
     [user5],
@@ -411,7 +445,7 @@ const init = async () => {
     103,
     [t3, t4, t5],
     [a8],
-    [],
+    [comment5],
     0,
     [],
     [],
