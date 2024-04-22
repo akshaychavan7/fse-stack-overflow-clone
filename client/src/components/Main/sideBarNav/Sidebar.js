@@ -160,7 +160,6 @@ export default function Sidebar({
           </Typography>
           <input
             id="searchBar"
-            autoFocus={true}
             className="search-bar"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -212,6 +211,7 @@ export default function Sidebar({
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              id="sideBarHome"
             >
               <ListItemIcon
                 sx={{
@@ -238,6 +238,7 @@ export default function Sidebar({
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              id="sideBarQuestions"
             >
               <ListItemIcon
                 sx={{
