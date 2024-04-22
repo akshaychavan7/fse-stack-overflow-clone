@@ -73,7 +73,7 @@ const NewQuestion = ({ addQuestion }) => {
     }
 
     if (tags.length === 0) {
-      alert.showAlert("Please add atleast one tag", "error");
+      alert.showAlert("Please add at least one tag", "error");
       return;
     }
 
@@ -175,7 +175,11 @@ const NewQuestion = ({ addQuestion }) => {
               onClick={handleSuggestTagsClick}
               title="Suggest AI Generated Tags"
             >
-              <AssistantRoundedIcon color="primary" sx={{ fontSize: "36px" }} />
+              <AssistantRoundedIcon
+                color="primary"
+                sx={{ fontSize: "36px" }}
+                id="suggestTagsButton"
+              />
             </IconButton>
           </div>
         </div>
@@ -185,6 +189,7 @@ const NewQuestion = ({ addQuestion }) => {
             onClick={() => {
               postQuestion();
             }}
+            id="postQuestionButton"
           >
             Post Question
           </Button>

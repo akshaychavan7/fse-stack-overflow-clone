@@ -52,6 +52,7 @@ export default function ProfilePage({ username, setViewUserProfile }) {
             fontSize: "2rem",
             color: "darkgray",
           }}
+          id="closeProfile"
         />
       </Tooltip>
       <Stack direction="row" alignItems="center" spacing={4}>

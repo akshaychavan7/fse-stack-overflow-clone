@@ -62,6 +62,7 @@ const NewAnswer = ({ handleAddAnswer }) => {
             onClick={() => {
               postAnswer();
             }}
+            id="postAnswerBtn"
           >
             Post Answer
           </Button>

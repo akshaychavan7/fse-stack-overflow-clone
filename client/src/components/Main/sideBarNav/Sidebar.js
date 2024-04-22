@@ -143,8 +143,9 @@ export default function Sidebar({
     handleUsers();
   };
 
-  const Appbar = () => {
-    return (
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
       <AppBar position="fixed">
         <Toolbar>
           <IconButton
@@ -153,14 +154,13 @@ export default function Sidebar({
             onClick={() => setOpen(!open)}
             edge="start"
           >
-            <MenuIcon />
+            <MenuIcon id="menuIcon" />
           </IconButton>
           <Typography variant="h5" noWrap component="div">
             Stack Overflow
           </Typography>
           <input
             id="searchBar"
-            autoFocus={true}
             className="search-bar"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -181,13 +181,6 @@ export default function Sidebar({
           </Tooltip>
         </Toolbar>
       </AppBar>
-    );
-  };
-
-  return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <Appbar />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
@@ -212,6 +205,7 @@ export default function Sidebar({
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              id="sideBarHome"
             >
               <ListItemIcon
                 sx={{
@@ -238,6 +232,7 @@ export default function Sidebar({
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              id="sideBarQuestions"
             >
               <ListItemIcon
                 sx={{
@@ -269,6 +264,7 @@ export default function Sidebar({
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              id="sideBarTags"
             >
               <ListItemIcon
                 sx={{
@@ -295,6 +291,7 @@ export default function Sidebar({
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              id="sideBarUsers"
             >
               <ListItemIcon
                 sx={{
@@ -323,6 +320,7 @@ export default function Sidebar({
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              id="sideBarLogout"
             >
               <ListItemIcon
                 sx={{
