@@ -273,7 +273,7 @@ const init = async () => {
     0,
     [],
     [],
-    true
+    false
   );
   let comment3 = await commentCreate(
     "Thank you! this helps a lot",
