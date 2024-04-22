@@ -1,5 +1,9 @@
 describe("Search Question", () => {
   before(() => {
+    // clear local storage, cache, and cookies
+    cy.clearLocalStorage();
+    cy.clearCookies();
+
     // Seed the database before each test
     cy.exec("node ../server/destroy.js mongodb://127.0.0.1:27017/fake_so");
     cy.exec("node ../server/init.js mongodb://127.0.0.1:27017/fake_so");
