@@ -20,7 +20,7 @@ const app = express();
 // Define rate limiting options
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // limit each IP to 300 requests per windowMs
+  max: 10000, // limit each IP to 300 requests per windowMs
   message: "Too many requests from this IP, please try again later",
 });
 
@@ -61,7 +61,6 @@ app.use("/register", loginController);
 app.use("/user", userController);
 app.use("/comment", commentController);
 app.use("/vote", voteController);
-
 
 let server = app.listen(port, () => {
   console.log(`Server starts at http://localhost:${port}`);

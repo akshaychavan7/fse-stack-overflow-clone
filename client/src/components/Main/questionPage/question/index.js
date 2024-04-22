@@ -51,10 +51,12 @@ const Question = ({
       </div>
       <div className="lastActivity" onClick={handleProfileClick}>
         <Stack direction="column" spacing={1}>
-          <AuthorMeta
-            name={q.asked_by.firstname + " " + q.asked_by.lastname}
-            profilePic={q.asked_by.profilePic}
-          />
+          <div id="profilePic">
+            <AuthorMeta
+              name={q.asked_by.firstname + " " + q.asked_by.lastname}
+              profilePic={q.asked_by.profilePic}
+            />
+          </div>
           <div className="question_meta">
             asked {getMetaData(new Date(q.ask_date_time))}
           </div>

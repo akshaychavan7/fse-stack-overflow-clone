@@ -204,6 +204,7 @@ export default function SignUp() {
                     variant="outlined"
                     tabIndex={-1}
                     startIcon={<AccountCircle />}
+                    id="uploadProfilePic"
                   >
                     Upload Profile Picture
                     <VisuallyHiddenInput
@@ -221,6 +222,7 @@ export default function SignUp() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                id="signUpButton"
               >
                 Sign Up
               </Button>

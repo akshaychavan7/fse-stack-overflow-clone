@@ -26,7 +26,7 @@ export default function Comments({
       parentType: parentType,
     };
     const response = await postComment(data);
-    if (response.status === 200) {
+    if (response && response.status === 200) {
       alert.showAlert("Comment posted successfully", "success");
       setDescription("");
       setUpdateState((prev) => prev + 1);
@@ -78,8 +78,8 @@ export default function Comments({
       <AccordionSummary
         expandIcon={<ExpandMoreIcon className="expand-more-icon-color" />}
         aria-controls="panel1-content"
-        id="panel1-header"
         className="comments-accordion-summary"
+        id={`panel1-header-${parentType}`}
       >
         Comments ({commentsList?.length})
       </AccordionSummary>
@@ -87,7 +87,7 @@ export default function Comments({
         {getCommentsList()}
         <div className="add-comment-container">
           <TextField
-            id="comment-input"
+            id={`comment-input-${parentType}`}
             label="Add a comment"
             variant="outlined"
             sx={{ width: "80%" }}
@@ -102,6 +102,7 @@ export default function Comments({
             size="small"
             onClick={handlePostComment}
             sx={{ ml: 3 }}
+            id={`postCommentBtn-${parentType}`}
           >
             Post Comment
           </Button>

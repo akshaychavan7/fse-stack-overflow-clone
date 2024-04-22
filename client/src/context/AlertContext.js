@@ -28,6 +28,7 @@ export const AlertContextProvider = ({ children }) => {
             severity={severity}
             action={
               <IconButton
+                id="alert-close"
                 aria-label="close"
                 color="inherit"
                 size="small"
