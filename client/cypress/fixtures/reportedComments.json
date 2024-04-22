@@ -1,23 +1,70 @@
 [
     {
-      "_id": "comment1",
-      "description": "This is a reported comment 1",
-      "commented_by": {
-        "firstname": "Michael",
-        "lastname": "Brown",
-        "profilePic": "https://example.com/profile5.jpg"
-      },
-      "comment_date_time": "2024-04-16T04:00:00Z"
+        "_id": "66259216f3ec42cd2b463951",
+        "description": "Nice!",
+        "commented_by": {
+            "_id": "66259215f3ec42cd2b46393c",
+            "username": "akshay",
+            "firstname": "Akshay",
+            "lastname": "Chavan",
+            "profilePic": "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI"
+        },
+        "comment_date_time": "2023-11-23T13:24:00.000Z",
+        "vote_count": 0,
+        "upvoted_by": [],
+        "downvoted_by": [],
+        "flag": true,
+        "__v": 0
     },
     {
-      "_id": "comment2",
-      "description": "This is a reported comment 2",
-      "commented_by": {
-        "firstname": "Sophia",
-        "lastname": "Wilson",
-        "profilePic": "https://example.com/profile6.jpg"
-      },
-      "comment_date_time": "2024-04-15T02:00:00Z"
+        "_id": "66259216f3ec42cd2b463953",
+        "description": "This is very helpful",
+        "commented_by": {
+            "_id": "66259215f3ec42cd2b46393f",
+            "username": "hamkalo",
+            "firstname": "John",
+            "lastname": "Doe",
+            "profilePic": null
+        },
+        "comment_date_time": "2023-11-23T13:24:00.000Z",
+        "vote_count": 0,
+        "upvoted_by": [],
+        "downvoted_by": [],
+        "flag": true,
+        "__v": 0
+    },
+    {
+        "_id": "66259216f3ec42cd2b463955",
+        "description": "Thank you! this helps a lot",
+        "commented_by": {
+            "_id": "66259216f3ec42cd2b463941",
+            "username": "shawn",
+            "firstname": "Shiu",
+            "lastname": "Chen",
+            "profilePic": "https://media.licdn.com/dms/image/D5635AQF6RnnnfLnHKg/profile-framedphoto-shrink_800_800/0/1704817671459?e=1714165200&v=beta&t=STJUAJEaYCvHKYJuD9TuopdJyv5duHQyBcRSFnan3Ck"
+        },
+        "comment_date_time": "2023-11-23T13:24:00.000Z",
+        "vote_count": 0,
+        "upvoted_by": [],
+        "downvoted_by": [],
+        "flag": true,
+        "__v": 0
+    },
+    {
+        "_id": "66259216f3ec42cd2b463957",
+        "description": "Does this works?",
+        "commented_by": {
+            "_id": "66259216f3ec42cd2b463943",
+            "username": "vedant",
+            "firstname": "Vedant Rishi",
+            "lastname": "Das",
+            "profilePic": "https://media.licdn.com/dms/image/D4E35AQG8Yfomd408IA/profile-framedphoto-shrink_800_800/0/1704981593017?e=1714165200&v=beta&t=W8J-02hAfyb8l0z1khNtJerEefjOo2Ytuq2Q7YLbZrc"
+        },
+        "comment_date_time": "2023-11-23T13:24:00.000Z",
+        "vote_count": 0,
+        "upvoted_by": [],
+        "downvoted_by": [],
+        "flag": true,
+        "__v": 0
     }
-  ]
-  
+]
