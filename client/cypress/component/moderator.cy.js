@@ -5,6 +5,10 @@ import Moderator from "../../src/components/Moderator/Moderator";
 
 describe("Moderator Component", () => {
   beforeEach(() => {
+    localStorage.setItem(
+      "user_details",
+      '{"firstname":"Moderator","lastname":"M1","username":"moderator","profilePic":"https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI"}'
+    );
     cy.intercept(
       {
         method: "GET",
@@ -12,7 +16,7 @@ describe("Moderator Component", () => {
       },
       {
         statusCode: 200,
-        fixture: "reportedQuestions.json", // Adjust the fixture name as per your data
+        fixture: "reportedQuestions.json",
       }
     ).as("getReportedQuestions");
 
@@ -23,7 +27,7 @@ describe("Moderator Component", () => {
       },
       {
         statusCode: 200,
-        fixture: "reportedAnswers.json", // Adjust the fixture name as per your data
+        fixture: "reportedAnswers.json",
       }
     ).as("getReportedAnswers");
 
@@ -34,24 +38,22 @@ describe("Moderator Component", () => {
       },
       {
         statusCode: 200,
-        fixture: "reportedComments.json", // Adjust the fixture name as per your data
+        fixture: "reportedComments.json",
       }
     ).as("getReportedComments");
 
     cy.intercept(
       {
-        method: "POST",
-        url: "/question/deleteQuestion",
+        method: "DELETE",
+        url: "/question/deleteQuestion/*",
       },
-      {
-        statusCode: 200,
-      }
+      "Deleted flagged question."
     ).as("deleteQuestion");
 
     cy.intercept(
       {
-        method: "POST",
-        url: "/answer/deleteAnswer",
+        method: "DELETE",
+        url: "/answer/deleteAnswer/*",
       },
       {
         statusCode: 200,
@@ -60,8 +62,8 @@ describe("Moderator Component", () => {
 
     cy.intercept(
       {
-        method: "POST",
-        url: "/comment/deleteComment",
+        method: "DELETE",
+        url: "/comment/deleteComment/*",
       },
       {
         statusCode: 200,
@@ -71,7 +73,7 @@ describe("Moderator Component", () => {
     cy.intercept(
       {
         method: "POST",
-        url: "/question/resolveQuestion",
+        url: "/question/resolveQuestion/*",
       },
       {
         statusCode: 200,
@@ -81,7 +83,7 @@ describe("Moderator Component", () => {
     cy.intercept(
       {
         method: "POST",
-        url: "/answer/resolveAnswer",
+        url: "/answer/resolveAnswer/*",
       },
       {
         statusCode: 200,
@@ -91,7 +93,7 @@ describe("Moderator Component", () => {
     cy.intercept(
       {
         method: "POST",
-        url: "/comment/resolveComment",
+        url: "/comment/resolveComment/*",
       },
       {
         statusCode: 200,
@@ -132,27 +134,29 @@ describe("Moderator Component", () => {
     cy.wait("@getReportedQuestions");
     cy.get(".icons").eq(0).find("button").eq(0).click();
     cy.wait("@deleteQuestion");
-    cy.get(".icons").should("have.length", 1); // Assuming there's only one reported question in the fixture
+    cy.get(".icons").should("have.length", 1);
   });
 
   it("allows resolving reported answers", () => {
+    cy.get(".controls").contains("Answers").click();
     cy.wait("@getReportedAnswers");
     cy.get(".icons").eq(0).find("button").eq(1).click();
     cy.wait("@resolveAnswer");
-    cy.get(".icons").should("have.length", 1); // Assuming there's only one reported answer in the fixture
+    cy.get(".icons").should("have.length", 3);
   });
 
   it("allows deleting reported comments", () => {
+    cy.get(".controls").contains("Comments").click();
     cy.wait("@getReportedComments");
     cy.get(".icons").eq(0).find("button").eq(0).click();
     cy.wait("@deleteComment");
-    cy.get(".icons").should("have.length", 1); // Assuming there's only one reported comment in the fixture
+    cy.get(".icons").should("have.length", 3);
   });
 
   it("allows resolving reported questions", () => {
     cy.wait("@getReportedQuestions");
     cy.get(".icons").eq(0).find("button").eq(1).click();
     cy.wait("@resolveQuestion");
-    cy.get(".icons").should("have.length", 1); // Assuming there's only one reported question in the fixture
+    cy.get(".icons").should("have.length", 1);
   });
 });

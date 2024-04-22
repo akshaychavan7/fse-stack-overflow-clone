@@ -160,6 +160,7 @@ export default function Sidebar({
           </Typography>
           <input
             id="searchBar"
+            autoFocus={true}
             className="search-bar"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
