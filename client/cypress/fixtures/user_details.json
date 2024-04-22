@@ -1,0 +1,354 @@
+{
+    "username": "akshay",
+    "firstname": "Akshay",
+    "lastname": "Chavan",
+    "joiningDate": "2024-04-22T00:48:30.567Z",
+    "profilePic": "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI",
+    "userRole": "general",
+    "reputation": 0,
+    "location": "Boston, MA",
+    "technologies": [
+        "JavaScript",
+        "React",
+        "TypeScript"
+    ],
+    "questions": [
+        {
+            "_id": "6625b3df0695a6e0237d6872",
+            "title": "android studio save string shared preference, start activity and load the saved string",
+            "description": "I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.",
+            "asked_by": {
+                "username": "akshay"
+            },
+            "ask_date_time": "2023-01-10T16:24:30.000Z",
+            "views": 55,
+            "tags": [
+                {
+                    "_id": "6625b3de0695a6e0237d683c",
+                    "name": "android-studio",
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3de0695a6e0237d683e",
+                    "name": "shared-preferences",
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3de0695a6e0237d683a",
+                    "name": "javascript",
+                    "__v": 0
+                }
+            ],
+            "answers": [
+                {
+                    "_id": "6625b3df0695a6e0237d6864",
+                    "description": "Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background.",
+                    "ans_by": "6625b3de0695a6e0237d6848",
+                    "ans_date_time": "2023-11-23T08:03:00.000Z",
+                    "comments": [],
+                    "vote_count": 0,
+                    "upvoted_by": [],
+                    "downvoted_by": [],
+                    "flag": false,
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3df0695a6e0237d6866",
+                    "description": "YourPreference yourPrefrence = YourPreference.getInstance(context); yourPreference.saveData(YOUR_KEY,YOUR_VALUE);",
+                    "ans_by": "6625b3de0695a6e0237d684a",
+                    "ans_date_time": "2023-11-23T08:24:00.000Z",
+                    "comments": [],
+                    "vote_count": 0,
+                    "upvoted_by": [],
+                    "downvoted_by": [],
+                    "flag": false,
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3df0695a6e0237d6868",
+                    "description": "I just found all the above examples just too confusing, so I wrote my own. ",
+                    "ans_by": "6625b3de0695a6e0237d684c",
+                    "ans_date_time": "2023-11-23T09:24:00.000Z",
+                    "comments": [],
+                    "vote_count": 0,
+                    "upvoted_by": [],
+                    "downvoted_by": [],
+                    "flag": false,
+                    "__v": 0
+                }
+            ],
+            "comments": [],
+            "vote_count": 2,
+            "upvoted_by": [
+                {
+                    "_id": "6625b3de0695a6e0237d6844",
+                    "username": "akshay",
+                    "password": "$2b$10$u9.9oZ2So9IUKuqWbjJrQO3UWSEKnDCMcWODC/MSPzgXvg6ChrKxq",
+                    "firstname": "Akshay",
+                    "lastname": "Chavan",
+                    "profilePic": "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI",
+                    "userRole": "general",
+                    "technologies": [
+                        "JavaScript",
+                        "React",
+                        "TypeScript"
+                    ],
+                    "location": "Boston, MA",
+                    "reputation": 0,
+                    "joiningDate": "2024-04-22T00:48:30.567Z",
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3de0695a6e0237d6846",
+                    "username": "hamkalo",
+                    "password": "$2b$10$Qh0ley3bNVclNsNkoERkU.5t9PiUrous9lZMei0dRt78eRxK/vUpO",
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "profilePic": null,
+                    "userRole": "general",
+                    "technologies": [
+                        "Java",
+                        "Python"
+                    ],
+                    "location": "Stony Brook, NY",
+                    "reputation": 0,
+                    "joiningDate": "2024-04-22T00:48:30.639Z",
+                    "__v": 0
+                }
+            ],
+            "downvoted_by": [],
+            "flag": false,
+            "__v": 0
+        },
+        {
+            "_id": "6625b3df0695a6e0237d6874",
+            "title": "Object storage for a web application",
+            "description": "I am currently working on a website where, roughly 40 million documents and images should be served to its users. I need suggestions on which method is the most suitable for storing content with subject to these requirements.",
+            "asked_by": {
+                "username": "akshay"
+            },
+            "ask_date_time": "2023-02-18T06:02:15.000Z",
+            "views": 200,
+            "tags": [
+                {
+                    "_id": "6625b3de0695a6e0237d6840",
+                    "name": "storage",
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3de0695a6e0237d6842",
+                    "name": "website",
+                    "__v": 0
+                }
+            ],
+            "answers": [
+                {
+                    "_id": "6625b3df0695a6e0237d686a",
+                    "description": "Storing content as BLOBs in databases.",
+                    "ans_by": "6625b3de0695a6e0237d6848",
+                    "ans_date_time": "2023-11-24T13:50:00.000Z",
+                    "comments": [],
+                    "vote_count": -1,
+                    "upvoted_by": [],
+                    "downvoted_by": [
+                        "6625b3de0695a6e0237d6844"
+                    ],
+                    "flag": false,
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3df0695a6e0237d686c",
+                    "description": "Using GridFS to chunk and store content.",
+                    "ans_by": "6625b3de0695a6e0237d6846",
+                    "ans_date_time": "2023-11-25T13:24:00.000Z",
+                    "comments": [],
+                    "vote_count": 0,
+                    "upvoted_by": [],
+                    "downvoted_by": [],
+                    "flag": false,
+                    "__v": 0
+                }
+            ],
+            "comments": [],
+            "vote_count": -1,
+            "upvoted_by": [],
+            "downvoted_by": [
+                {
+                    "_id": "6625b3de0695a6e0237d684c",
+                    "username": "sam",
+                    "password": "$2b$10$xIwViUiVNnCIVzKXNfuJNOvdilRg.mRYfi447aYXsQ6LRAWvTDE.q",
+                    "firstname": "Sameer",
+                    "lastname": "Ahire",
+                    "profilePic": "https://media.licdn.com/dms/image/D4D03AQEuWmah1ZwmqQ/profile-displayphoto-shrink_800_800/0/1702163845668?e=1718236800&v=beta&t=jmnYmqQXxwOt9CJxdDIL-Br8yPt_fk67M64XT2Q9mTo",
+                    "userRole": "general",
+                    "technologies": [
+                        "SQL",
+                        "Flutter"
+                    ],
+                    "location": "San Francisco, CA",
+                    "reputation": 0,
+                    "joiningDate": "2024-04-22T00:48:30.846Z",
+                    "__v": 0
+                }
+            ],
+            "flag": false,
+            "__v": 0
+        }
+    ],
+    "answers": [
+        {
+            "_id": "6625b3df0695a6e0237d6860",
+            "description": "React Router is mostly a wrapper around the history library. history handles interaction with the browser's window.history for you with its browser and hash histories. It also provides a memory history which is useful for environments that don't have a global history. This is particularly useful in mobile app development (react-native) and unit testing with Node.",
+            "ans_by": {
+                "username": "akshay"
+            },
+            "ans_date_time": "2023-11-23T06:02:00.000Z",
+            "comments": [
+                {
+                    "_id": "6625b3df0695a6e0237d685a",
+                    "description": "This is very helpful",
+                    "commented_by": "6625b3de0695a6e0237d6846",
+                    "comment_date_time": "2023-11-23T13:24:00.000Z",
+                    "vote_count": 0,
+                    "upvoted_by": [],
+                    "downvoted_by": [],
+                    "flag": false,
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3df0695a6e0237d685c",
+                    "description": "Thank you! this helps a lot",
+                    "commented_by": "6625b3de0695a6e0237d6848",
+                    "comment_date_time": "2023-11-23T13:24:00.000Z",
+                    "vote_count": 0,
+                    "upvoted_by": [],
+                    "downvoted_by": [],
+                    "flag": false,
+                    "__v": 0
+                }
+            ],
+            "vote_count": 2,
+            "upvoted_by": [
+                {
+                    "_id": "6625b3de0695a6e0237d6846",
+                    "username": "hamkalo",
+                    "password": "$2b$10$Qh0ley3bNVclNsNkoERkU.5t9PiUrous9lZMei0dRt78eRxK/vUpO",
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "profilePic": null,
+                    "userRole": "general",
+                    "technologies": [
+                        "Java",
+                        "Python"
+                    ],
+                    "location": "Stony Brook, NY",
+                    "reputation": 0,
+                    "joiningDate": "2024-04-22T00:48:30.639Z",
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3de0695a6e0237d6848",
+                    "username": "shawn",
+                    "password": "$2b$10$Ir6oXo/jJDVQeppWclnar.0kZFPqd6ehaX3UKHebC6QBHSO1W/lAK",
+                    "firstname": "Shiu",
+                    "lastname": "Chen",
+                    "profilePic": "https://media.licdn.com/dms/image/D5635AQF6RnnnfLnHKg/profile-framedphoto-shrink_800_800/0/1704817671459?e=1714165200&v=beta&t=STJUAJEaYCvHKYJuD9TuopdJyv5duHQyBcRSFnan3Ck",
+                    "userRole": "general",
+                    "technologies": [
+                        "Angular",
+                        "Android",
+                        "Swift"
+                    ],
+                    "location": "Boston, MA",
+                    "reputation": 0,
+                    "joiningDate": "2024-04-22T00:48:30.712Z",
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3de0695a6e0237d684a",
+                    "username": "vedant",
+                    "password": "$2b$10$EoXoMZKxIX72sAbyCFDl5ugcZfff.VFCgGh4STyLGUTurVFO1bO6K",
+                    "firstname": "Vedant Rishi",
+                    "lastname": "Das",
+                    "profilePic": "https://media.licdn.com/dms/image/D4E35AQG8Yfomd408IA/profile-framedphoto-shrink_800_800/0/1704981593017?e=1714165200&v=beta&t=W8J-02hAfyb8l0z1khNtJerEefjOo2Ytuq2Q7YLbZrc",
+                    "userRole": "general",
+                    "technologies": [
+                        "Machine Learning",
+                        "Python"
+                    ],
+                    "location": "Boston, MA",
+                    "reputation": 0,
+                    "joiningDate": "2024-04-22T00:48:30.782Z",
+                    "__v": 0
+                },
+                {
+                    "_id": "6625b3de0695a6e0237d684c",
+                    "username": "sam",
+                    "password": "$2b$10$xIwViUiVNnCIVzKXNfuJNOvdilRg.mRYfi447aYXsQ6LRAWvTDE.q",
+                    "firstname": "Sameer",
+                    "lastname": "Ahire",
+                    "profilePic": "https://media.licdn.com/dms/image/D4D03AQEuWmah1ZwmqQ/profile-displayphoto-shrink_800_800/0/1702163845668?e=1718236800&v=beta&t=jmnYmqQXxwOt9CJxdDIL-Br8yPt_fk67M64XT2Q9mTo",
+                    "userRole": "general",
+                    "technologies": [
+                        "SQL",
+                        "Flutter"
+                    ],
+                    "location": "San Francisco, CA",
+                    "reputation": 0,
+                    "joiningDate": "2024-04-22T00:48:30.846Z",
+                    "__v": 0
+                }
+            ],
+            "downvoted_by": [
+                {
+                    "_id": "6625b3de0695a6e0237d684c",
+                    "username": "sam",
+                    "password": "$2b$10$xIwViUiVNnCIVzKXNfuJNOvdilRg.mRYfi447aYXsQ6LRAWvTDE.q",
+                    "firstname": "Sameer",
+                    "lastname": "Ahire",
+                    "profilePic": "https://media.licdn.com/dms/image/D4D03AQEuWmah1ZwmqQ/profile-displayphoto-shrink_800_800/0/1702163845668?e=1718236800&v=beta&t=jmnYmqQXxwOt9CJxdDIL-Br8yPt_fk67M64XT2Q9mTo",
+                    "userRole": "general",
+                    "technologies": [
+                        "SQL",
+                        "Flutter"
+                    ],
+                    "location": "San Francisco, CA",
+                    "reputation": 0,
+                    "joiningDate": "2024-04-22T00:48:30.846Z",
+                    "__v": 0
+                }
+            ],
+            "flag": false,
+            "__v": 0
+        },
+        {
+            "_id": "6625b3df0695a6e0237d686e",
+            "description": "Store data in a SQLLite database.",
+            "ans_by": {
+                "username": "akshay"
+            },
+            "ans_date_time": "2023-11-25T16:24:00.000Z",
+            "comments": [],
+            "vote_count": 0,
+            "upvoted_by": [],
+            "downvoted_by": [],
+            "flag": false,
+            "__v": 0
+        }
+    ],
+    "comments": [
+        {
+            "_id": "6625b3df0695a6e0237d6858",
+            "description": "Nice!",
+            "commented_by": {
+                "username": "akshay"
+            },
+            "comment_date_time": "2023-11-23T13:24:00.000Z",
+            "vote_count": 0,
+            "upvoted_by": [],
+            "downvoted_by": [],
+            "flag": false,
+            "__v": 0
+        }
+    ]
+}

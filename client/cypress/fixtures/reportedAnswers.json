@@ -1,23 +1,93 @@
 [
-    {
-      "_id": "answer1",
-      "description": "This is a reported answer 1",
+  {
+      "_id": "66259216f3ec42cd2b463959",
+      "description": "React Router is mostly a wrapper around the history library. history handles interaction with the browser's window.history for you with its browser and hash histories. It also provides a memory history which is useful for environments that don't have a global history. This is particularly useful in mobile app development (react-native) and unit testing with Node.",
       "ans_by": {
-        "firstname": "Bob",
-        "lastname": "Johnson",
-        "profilePic": "https://example.com/profile3.jpg"
+          "_id": "66259215f3ec42cd2b46393c",
+          "username": "akshay",
+          "firstname": "Akshay",
+          "lastname": "Chavan",
+          "profilePic": "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI"
       },
-      "ans_date_time": "2024-04-18T08:00:00Z"
-    },
-    {
-      "_id": "answer2",
-      "description": "This is a reported answer 2",
+      "ans_date_time": "2023-11-23T06:02:00.000Z",
+      "comments": [
+          "66259216f3ec42cd2b463953",
+          "66259216f3ec42cd2b463955"
+      ],
+      "vote_count": 2,
+      "upvoted_by": [
+          "66259215f3ec42cd2b46393f",
+          "66259216f3ec42cd2b463941",
+          "66259216f3ec42cd2b463943",
+          "66259216f3ec42cd2b463945"
+      ],
+      "downvoted_by": [
+          "66259216f3ec42cd2b463945"
+      ],
+      "flag": true,
+      "__v": 0
+  },
+  {
+      "_id": "66259216f3ec42cd2b46395b",
+      "description": "On my end, I like to have a single history object that I can carry even outside components. I like to have a single history.js file that I import on demand, and just manipulate it. You just have to change BrowserRouter to Router, and specify the history prop. This doesn't change anything for you, except that you have your own history object that you can manipulate as you want. You need to install history, the library used by react-router.",
       "ans_by": {
-        "firstname": "Emma",
-        "lastname": "Davis",
-        "profilePic": "https://example.com/profile4.jpg"
+          "_id": "66259215f3ec42cd2b46393f",
+          "username": "hamkalo",
+          "firstname": "John",
+          "lastname": "Doe",
+          "profilePic": null
       },
-      "ans_date_time": "2024-04-17T06:00:00Z"
-    }
-  ]
-  
+      "ans_date_time": "2023-11-23T06:02:00.000Z",
+      "comments": [
+          "66259216f3ec42cd2b463951"
+      ],
+      "vote_count": 3,
+      "upvoted_by": [
+          "66259215f3ec42cd2b46393c",
+          "66259216f3ec42cd2b463941",
+          "66259216f3ec42cd2b463943",
+          "66259216f3ec42cd2b463947"
+      ],
+      "downvoted_by": [],
+      "flag": true,
+      "__v": 0
+  },
+  {
+      "_id": "66259216f3ec42cd2b463963",
+      "description": "Storing content as BLOBs in databases.",
+      "ans_by": {
+          "_id": "66259216f3ec42cd2b463941",
+          "username": "shawn",
+          "firstname": "Shiu",
+          "lastname": "Chen",
+          "profilePic": "https://media.licdn.com/dms/image/D5635AQF6RnnnfLnHKg/profile-framedphoto-shrink_800_800/0/1704817671459?e=1714165200&v=beta&t=STJUAJEaYCvHKYJuD9TuopdJyv5duHQyBcRSFnan3Ck"
+      },
+      "ans_date_time": "2023-11-24T13:50:00.000Z",
+      "comments": [],
+      "vote_count": -1,
+      "upvoted_by": [],
+      "downvoted_by": [
+          "66259215f3ec42cd2b46393c"
+      ],
+      "flag": true,
+      "__v": 0
+  },
+  {
+      "_id": "66259216f3ec42cd2b463965",
+      "description": "Using GridFS to chunk and store content.",
+      "ans_by": {
+          "_id": "66259215f3ec42cd2b46393f",
+          "username": "hamkalo",
+          "firstname": "John",
+          "lastname": "Doe",
+          "profilePic": null
+      },
+      "ans_date_time": "2023-11-25T13:24:00.000Z",
+      "comments": [],
+      "vote_count": 0,
+      "upvoted_by": [],
+      "downvoted_by": [],
+      "flag": true,
+      "__v": 0
+  }
+]

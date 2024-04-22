@@ -1,60 +1,65 @@
 [
-  {
-      "_id": "66258fdc238bdfa59c006b26",
-      "title": "Object storage for a web application",
-      "description": "I am currently working on a website where, roughly 40 million documents and images should be served to its users. I need suggestions on which method is the most suitable for storing content with subject to these requirements.",
-      "asked_by": {
-          "_id": "66258fdc238bdfa59c006af5",
-          "username": "akshay",
-          "firstname": "Akshay",
-          "lastname": "Chavan",
-          "profilePic": "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI"
-      },
-      "ask_date_time": "2023-02-18T06:02:15.000Z",
-      "views": 201,
-      "tags": [
-          "66258fdc238bdfa59c006af1",
-          "66258fdc238bdfa59c006af3"
-      ],
-      "answers": [
-          "66258fdc238bdfa59c006b1c",
-          "66258fdc238bdfa59c006b1e"
-      ],
-      "comments": [],
-      "vote_count": -1,
-      "upvoted_by": [],
-      "downvoted_by": [
-          "66258fdc238bdfa59c006afe"
-      ],
-      "flag": true,
-      "__v": 0
-  },
-  {
-      "_id": "66258fdc238bdfa59c006b28",
-      "title": "Quick question about storage on android",
-      "description": "I would like to know the best way to go about storing an array on an android phone so that even when the app/activity ended the data remains",
-      "asked_by": {
-          "_id": "66258fdc238bdfa59c006af8",
-          "username": "hamkalo",
-          "firstname": "John",
-          "lastname": "Doe",
-          "profilePic": null
-      },
-      "ask_date_time": "2023-03-10T19:28:01.000Z",
-      "views": 105,
-      "tags": [
-          "66258fdc238bdfa59c006aed",
-          "66258fdc238bdfa59c006aef",
-          "66258fdc238bdfa59c006af1"
-      ],
-      "answers": [
-          "66258fdc238bdfa59c006b20"
-      ],
-      "comments": [],
-      "vote_count": 0,
-      "upvoted_by": [],
-      "downvoted_by": [],
-      "flag": true,
-      "__v": 0
-  }
+    {
+        "_id": "66259216f3ec42cd2b46396b",
+        "title": "android studio save string shared preference, start activity and load the saved string",
+        "description": "I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.",
+        "asked_by": {
+            "_id": "66259215f3ec42cd2b46393c",
+            "username": "akshay",
+            "firstname": "Akshay",
+            "lastname": "Chavan",
+            "profilePic": "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI"
+        },
+        "ask_date_time": "2023-01-10T16:24:30.000Z",
+        "views": 56,
+        "tags": [
+            "66259215f3ec42cd2b463934",
+            "66259215f3ec42cd2b463936",
+            "66259215f3ec42cd2b463932"
+        ],
+        "answers": [
+            "66259216f3ec42cd2b46395d",
+            "66259216f3ec42cd2b46395f",
+            "66259216f3ec42cd2b463961"
+        ],
+        "comments": [],
+        "vote_count": 2,
+        "upvoted_by": [
+            "66259215f3ec42cd2b46393c",
+            "66259215f3ec42cd2b46393f"
+        ],
+        "downvoted_by": [],
+        "flag": true,
+        "__v": 0
+    },
+    {
+        "_id": "66259216f3ec42cd2b46396d",
+        "title": "Object storage for a web application",
+        "description": "I am currently working on a website where, roughly 40 million documents and images should be served to its users. I need suggestions on which method is the most suitable for storing content with subject to these requirements.",
+        "asked_by": {
+            "_id": "66259215f3ec42cd2b46393c",
+            "username": "akshay",
+            "firstname": "Akshay",
+            "lastname": "Chavan",
+            "profilePic": "https://media.licdn.com/dms/image/D4D03AQF9WmGdmqrJMQ/profile-displayphoto-shrink_800_800/0/1692618347676?e=1718236800&v=beta&t=hVfMg8BIwFp429SB8_fKtBGMsw4pppqNpoJQRPnUBVI"
+        },
+        "ask_date_time": "2023-02-18T06:02:15.000Z",
+        "views": 201,
+        "tags": [
+            "66259215f3ec42cd2b463938",
+            "66259215f3ec42cd2b46393a"
+        ],
+        "answers": [
+            "66259216f3ec42cd2b463963",
+            "66259216f3ec42cd2b463965"
+        ],
+        "comments": [],
+        "vote_count": -1,
+        "upvoted_by": [],
+        "downvoted_by": [
+            "66259216f3ec42cd2b463945"
+        ],
+        "flag": true,
+        "__v": 0
+    }
 ]
