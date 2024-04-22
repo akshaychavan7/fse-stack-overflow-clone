@@ -195,7 +195,6 @@ const deleteAnswer = async (req, res) => {
     let response = await ansDelete(question._id.toString(), aid);
     return res.status(response.status).send(response.message);
   } catch (error) {
-    console.log(error);
     return res.status(500).send("Internal Server Error");
   }
 };
