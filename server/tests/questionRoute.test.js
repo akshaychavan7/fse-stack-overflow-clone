@@ -180,7 +180,6 @@ describe("GET /getQuestionById/:qid", () => {
       `/question/getQuestionById/${mockReqParams.qid}`
     );
 
-    console.log(response.body);
     // Asserting the response
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockQuestion);
