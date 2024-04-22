@@ -34,39 +34,43 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer, clickTag }) => {
       />
       <div id="answers-section" className="pl-30 pr-30">
         <h3 className="answers-count">{question?.answers?.length} Answers</h3>
-
-        {question.answers?.map((answer, idx) => {
-          return (
-            <div key={idx}>
-              <UserResponse
-                description={answer.description}
-                profilePic={answer?.ans_by?.profilePic}
-                author={answer.ans_by.firstname + " " + answer.ans_by.lastname}
-                date={answer.ans_date_time}
-                voteCount={answer.vote_count}
-                isUpvoted={answer.upvote}
-                isDownvoted={answer.downvote}
-                postType={"answer"}
-                isFlagged={answer.flag}
-                id={answer._id}
-              />
-              <div id="question-comments">
-                <Comments
-                  commentsList={answer?.comments}
-                  parentId={answer?._id}
-                  parentType={"answer"}
-                  setUpdateState={setUpdateState}
+        <div className="answerText">
+          {question.answers?.map((answer, idx) => {
+            return (
+              <div key={idx}>
+                <UserResponse
+                  description={answer.description}
+                  profilePic={answer?.ans_by?.profilePic}
+                  author={
+                    answer.ans_by.firstname + " " + answer.ans_by.lastname
+                  }
+                  date={answer.ans_date_time}
+                  voteCount={answer.vote_count}
+                  isUpvoted={answer.upvote}
+                  isDownvoted={answer.downvote}
+                  postType={"answer"}
+                  isFlagged={answer.flag}
+                  id={answer._id}
                 />
+                <div id="question-comments">
+                  <Comments
+                    commentsList={answer?.comments}
+                    parentId={answer?._id}
+                    parentType={"answer"}
+                    setUpdateState={setUpdateState}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
       <div className="answer-question-btn">
         <Button
           variant="contained"
           startIcon={<SendIcon />}
           onClick={handleNewAnswer}
+          id="answerQuestionBtn"
         >
           Answer Question
         </Button>

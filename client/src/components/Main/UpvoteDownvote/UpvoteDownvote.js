@@ -113,9 +113,11 @@ const UpvoteDownvote = ({
         }
         placement="top"
       >
-        <IconButton size="small" onClick={handleFlag}>
-          <FlagRounded color={flagged ? "primary" : "default"} />
-        </IconButton>
+        <div id={`reportBtn-${postType}`}>
+          <IconButton size="small" onClick={handleFlag}>
+            <FlagRounded color={flagged ? "primary" : "default"} />
+          </IconButton>
+        </div>
       </Tooltip>
     </div>
   );
