@@ -77,7 +77,7 @@ describe("Comments Component", () => {
 
   it("allows posting a new comment", () => {
     const newCommentText = "This is a new comment";
-    cy.get("#comment-input").type(newCommentText);
+    cy.get(".comment-input").type(newCommentText);
     cy.get("button").contains("Post Comment").click();
     cy.wait(1000); // Wait for postComment promise to resolve
     cy.get("@setUpdateState").should("have.been.calledOnce");
@@ -88,7 +88,7 @@ describe("Comments Component", () => {
   });
 
   it("displays success message on successful comment post", () => {
-    cy.get("#comment-input").type("This is a new comment");
+    cy.get(".comment-input").type("This is a new comment");
     cy.get("button").contains("Post Comment").click();
     cy.wait(1000); // Wait for postComment promise to resolve
     cy.get(".MuiAlert-message").should(
@@ -105,7 +105,7 @@ describe("Comments Component", () => {
       },
       { status: 500 }
     ).as("postComment");
-    cy.get("#comment-input").type("This is a new comment");
+    cy.get(".comment-input").type("This is a new comment");
     cy.get("button").contains("Post Comment").click();
     cy.wait(1000); // Wait for postComment promise to resolve
     cy.get(".MuiAlert-message").should("have.text", "Failed to post comment");
