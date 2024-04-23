@@ -10,8 +10,9 @@ const {
   authorization,
   adminAuthorization,
 } = require("./middleware/authorization"); // custom middleware defined for user authorization
+const session = require("express-session");
 
-const { MONGO_URL, port, CLIENT_URL } = require("./config");
+const { SECRET_KEY, MONGO_URL, port, CLIENT_URL } = require("./config");
 
 mongoose.connect(MONGO_URL);
 
@@ -28,6 +29,17 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(cookieParser());
+app.use(
+  session({
+    secret: `${SECRET_KEY}`,
+    cookie: {
+        httpOnly: true,
+        sameSite: true,
+    },
+    resave: false,
+    saveUninitialized: false
+  })
+)
 
 app.use(
   cors({

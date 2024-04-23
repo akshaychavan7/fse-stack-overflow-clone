@@ -115,3 +115,5 @@ Include/
 
 #ignore pytest cache
 .pytest_cache
+
+trialDatabase/
