@@ -38,15 +38,20 @@ jest --coverage --runInBand
 2. Implemented a separate Python server to run the auto-generated tags feature.
 3. Profanity check for user input for posts. Uses javascript's BadWords package.
 
-# Workflow Details
-
-### Akshay's Macbook
-
-- Token: AJO2AYIBEDCHS4Q32HW2U4DGELWSU
-- Command: ./run.sh
 
 ### Note
 - eslint on the server will report issues for init.js and server.js. We are ignoring init.js as it is a database setup file. For server.js the 'process' is same as previous soa assignment.
 - Cypress E2E test cases, although working well in local scenario, seems to be facing issue on github workflow. So we are omitting the cypress test cases from github workflows. Jest cases still exist.
 - For all the components, there are util functions whose test cases are also defined. We have decided not to list them on the feature table as the requirement was for test for routes.
+- server/models/schema user.js has a low coverage due to most of its functionality being mocked for user routes.
+- sanitizeParams branch coverage is below 80 due to no coverage on the error case.
+
+### Application run note -
+- Moderator credentials:
+username: moderator
+password: test
+
+- General credentials -
+username: akshay
+password: password
 
