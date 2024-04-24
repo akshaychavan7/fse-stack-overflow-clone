@@ -105,6 +105,10 @@ jobs:
         run: npx cypress run --spec cypress/e2e/
         working-directory: client/
 
+      - name: Run component tests
+        run: npx cypress run --component
+        working-directory: client/
+
       - name: Kill the node server process
         run: kill $(lsof -t -i:8000) || true
 
