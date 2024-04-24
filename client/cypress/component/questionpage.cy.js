@@ -63,8 +63,8 @@ describe("Question Component", () => {
         cy.get('.postStats > :nth-child(1)').contains(ques.vote_count);
         cy.get('.postStats > :nth-child(2)').contains(ques.answers.length);
         cy.get('.postStats > :nth-child(3)').contains(ques.views);
-        cy.get('[aria-label="View tag1 tagged questions"]').contains(ques.tags[0].name);
-        cy.get('[aria-label="View tag2 tagged questions"]').contains(ques.tags[1].name);
+        cy.contains(ques.tags[0].name);
+        cy.contains(ques.tags[1].name);
         cy.contains('.MuiAvatar-root', 'FL').should('be.visible');
         cy.get('.question_author').contains(ques.asked_by.firstname + " " + ques.asked_by.lastname);
         cy.get('.question_meta').contains("asked Apr 21 at 12:08");

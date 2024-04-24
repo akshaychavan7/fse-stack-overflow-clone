@@ -10,14 +10,33 @@ All the features you have implemented.
 
 | Feature   | Description        | E2E Tests     | Component Tests | Jest Tests   |
 | --------- | ------------------ | ------------- | --------------- | ------------ |
-| Feature 1 | This is feature 1. | /path/to/test | path/to/test    | path/to/test |
-| Feature 2 | This is feature 2. | /path/to/test | path/to/test    | path/to/test |
+| View Posts | This feature enables us to view the posts available on the application | client\cypress\e2e\questionSequence.cy.js | client\cypress\component\homepage.cy.js <br> client\cypress\component\answerPage.cy.js <br> client\cypress\component\questionpage.cy.js <br> client\cypress\component\comments.cy.js <br> client\cypress\component\sidebar.cy.js   | /question/getQuestion - server\tests\questionRoute.test.js <br><br> /question/getQuestionById/:qid - server\tests\questionRoute.test.js |
+| Create new posts | This feature allows us to create new Question and Answers. | client\cypress\e2e\askQuestion.cy.js <br> client\cypress\e2e\answerQuestion.cy.js | client\cypress\component\newquestion.cy.js <br>  client\cypress\component\newanswer.cy.js | /question/addQuestion - server\tests\questionRoute.test.js <br><br> /answer/addAnswer - server\tests\answerRoute.test.js |
+| Commenting on post | This feature enables us to comment on a Question or an Answer. | client\cypress\e2e\comment.cy.js | client\cypress\component\comments.cy.js    | /comment/addComment - server\tests\commentRoute.test.js |
+| Search for existing post | This feature allows us to search for existing posts such as questions/answers/comments. | client\cypress\e2e\search.cy.js | client\cypress\component\tag.cy.js    | /question/getQuestion?order=someOrder&search=someSearch - server\tests\questionRoute.test.js |
+| Vote on a post | This feature allows us to upvote or downvote on a post. | client\cypress\e2e\upvoteDownvote.cy.js | client\cypress\component\upvotedownvote.cy.js    | /vote/upvote - server\tests\voteRoute.test.js <br><br> /vote/downvote - server\tests\voteRoute.test.js|
+|  Tagging Posts  | This feature allows us to view and assign tags to post. | client\cypress\e2e\tags.cy.js | client\cypress\component\tag.cy.js    | /getTagsWithQuestionNumber - server\tests\tagsRoute.test.js <br><br> /question/addQuestion - server\tests\questionRoute.test.js <br><br> python server autosuggest /tag/generateTags/ - server\python utils\testpyserver.py |
+|  User Profiles | This is feature allows user to login/register and see own profile. | client\cypress\e2e\signIn.cy.js <br> client\cypress\e2e\signUp.cy.js <br> client\cypress\e2e\userProfile.cy.js | client\cypress\component\login.cy.js <br> client\cypress\component\signup.cy.js <br>  client\cypress\component\profilepage.cy.js <br> client\cypress\component\userprofile.cy.js <br> client\cypress\component\avatar.cy.js   | /login/authenticate - server\tests\loginRoute.test.js <br><br> /login/register - server\tests\loginRoute.test.js <br><br> /user/getUsersList - server\tests\userRoute.test.js <br><br> /user/getUserDetails/:userId - server\tests\userRoute.test.js <br><br> /user/getUserPosts - server\tests\userRoute.test.js|
+|  Post Moderation | This feature allows moderators to resolve or delete a flagged post. | client\cypress\e2e\moderatorIgnore.cy.js <br> client\cypress\e2e\moderatorDelete.cy.js | client\cypress\component\moderator.cy.js    | /isUserModeratorAuthenticated - server\tests\serverRoute.test.js <br><br> /question/resolveQuestion server\tests\questionRoute.test.js <br><br> /question/deleteQuestion - server\tests\questionRoute.test.js <br><br> /question/getReportedQuestions - server\tests\questionRoute.test.js <br><br> /answer/resolveAnswer server\tests\answerRoute.test.js <br><br> /answer/deleteResolve - server\tests\answerRoute.test.js <br><br> /answer/getReportedAnswers - server\tests\answerRoute.test.js <br><br> /comment/resolveComment server\tests\commentRoute.test.js <br><br> /comment/deleteComment - server\tests\commentRoute.test.js <br><br> /comment/getReportedComments - server\tests\commentRoute.test.js |
+
 
 . . .
 
 ## Instructions to generate and view coverage report
+```console
+cd server
+```
+```console
+npm install jest
+```
+```console
+jest --coverage --runInBand
+```
 
 ## Extra Credit Section (if applicable)
+1. Implemented auto-generated tags using YAKE, an unsupervised keyword extractor model.
+2. Implemented a separate Python server to run the auto-generated tags feature.
+3. Profanity check for user input for posts. Uses javascript's BadWords package.
 
 # Workflow Details
 
