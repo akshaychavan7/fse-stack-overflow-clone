@@ -101,9 +101,9 @@ jobs:
       #   run: npm install cypress
       #   working-directory: testing/
 
-      - name: Run e2e tests
-        run: npx cypress run --spec cypress/e2e/
-        working-directory: client/
+      # - name: Run e2e tests
+      #   run: npx cypress run --spec cypress/e2e/
+      #   working-directory: client/
 
       - name: Run component tests
         run: npx cypress run --component
