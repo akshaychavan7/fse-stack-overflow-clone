@@ -155,6 +155,51 @@ describe("Flag answer", () => {
     expect(response.body).toEqual(mockResponse);
   });
 
+  it("should remove flag of an answer", async () => {
+    const mockReqBody = {
+      aid: "dummyAnswerId"
+    };
+
+    const mockResponse = {
+      status: 200,
+      message: "Successfully removed report from answer.",
+      reportBool: false
+    }
+
+    userutil.reportPost.mockResolvedValue(false);
+
+    Answer.exists = jest.fn().mockResolvedValue(true);
+
+    const response = await supertest(server)
+      .post("/answer/reportAnswer")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+  });
+
+  it("if answer don't exist", async () => {
+    const mockReqBody = {
+      aid: "dummyAnswerId"
+    };
+
+    const mockResponse = {
+      status: 404,
+      message: "Answer not found",
+    }
+
+    userutil.reportPost.mockResolvedValue(false);
+
+    Answer.exists = jest.fn().mockResolvedValue(false);
+
+    const response = await supertest(server)
+      .post("/answer/reportAnswer")
+      .send(mockReqBody);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual(mockResponse);
+  });
+
   it("throw error on flagging answer", async () => {
     const mockReqBody = {
       aid: "dummyAnswerId"
@@ -262,6 +307,46 @@ describe("Delete flagged answers", () => {
 
   });
 
+  it("Delete answer question not exist", async () => {
+
+    const mockResponse = {status: 404, message:"Question of the answer not found"};
+    let question = {_id: "dummyQuesId", answers: ["dummyAnsId"]};
+    Question.exists = jest.fn().mockResolvedValueOnce(false);
+    Question.findOne = jest.fn().mockResolvedValueOnce(question);
+    Answer.exists = jest.fn().mockResolvedValue(true);
+    answerUtil.ansDelete.mockResolvedValueOnce(mockResponse);
+    
+
+    const response = await supertest(server)
+      .delete("/answer/deleteAnswer/dummyAnswerId")
+      .send({qid: "dummyQuestionId"});
+
+
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
+
+  });
+
+  it("Delete answer, answer not exist", async () => {
+
+    const mockResponse = {status: 404, message:"Answer not found"};
+    let question = {_id: "dummyQuesId", answers: ["dummyAnsId"]};
+    Question.exists = jest.fn().mockResolvedValueOnce(true);
+    Question.findOne = jest.fn().mockResolvedValueOnce(question);
+    Answer.exists = jest.fn().mockResolvedValue(false);
+    answerUtil.ansDelete.mockResolvedValueOnce(mockResponse);
+    
+
+    const response = await supertest(server)
+      .delete("/answer/deleteAnswer/dummyAnswerId")
+      .send({qid: "dummyQuestionId"});
+
+
+    expect(response.status).toBe(mockResponse.status);
+    expect(response.text).toEqual(mockResponse.message);
+
+  });
+
   it("Error in deleting answer", async () => {
 
     const mockResponse = "Internal Server Error";
@@ -307,7 +392,22 @@ describe("Resolve flagged answers", () => {
 
   });
 
-  it("Resolve answer", async () => {
+  it("Resolve answer, answer not exist", async () => {
+
+    const mockResponse = "Answer not found";
+
+    Answer.exists = jest.fn().mockResolvedValue(false);
+    Answer.findByIdAndUpdate = jest.fn()
+
+    const response = await supertest(server)
+      .post("/answer/resolveAnswer/dummyAnswerId");
+
+    expect(response.status).toBe(404);
+    expect(response.text).toEqual(mockResponse);
+
+  });
+
+  it("Resolve answer error", async () => {
 
     const mockResponse = "Internal Server Error";
 
