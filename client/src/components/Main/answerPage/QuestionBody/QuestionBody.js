@@ -24,7 +24,8 @@ const QuestionBody = ({ question, clickTag, setUpdateState }) => {
       />
       <div id="question-tags">
         {question?.tags?.map((tag, idx) => {
-          return <TagChip key={idx} tag={tag} clickTag={clickTag} />;
+          return <div key={idx} id={`tag-${idx}`}>
+            <TagChip  tag={tag} clickTag={clickTag} /></div>;
         })}
       </div>
       <div id="question-comments" className="mt-30">

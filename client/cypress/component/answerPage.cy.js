@@ -16,7 +16,7 @@ describe("AnswerHeader Component", () => {
         askDateTime = {"2024-04-21T16:08:22.613Z"}
         />);
         cy.get('.MuiTypography-root').contains("title trial");
-        cy.get('.question-meta > :nth-child(1)').contains("1 days ago");
+        cy.get('.question-meta > :nth-child(1)').contains(getDurationPassed("2024-04-21T16:08:22.613Z"));
         cy.get('.question-meta > :nth-child(2)').contains("10");
         cy.get('.question-meta > :nth-child(3)').contains("3");
         cy.get('#askQuestionButton').click();
@@ -66,46 +66,49 @@ describe("QuestionBody Component", () => {
 });
 
 describe("AnswerPage Component", () => {
+    
     it('Rendering the Answer Page component', () => {
+        const ques = {
+            description: "trial desc",
+        asked_by: {
+            profilePic: "",
+            firstname: "fn1",
+            lastname:"ln1",
+        },
+        ask_date_time: "2024-04-20T16:08:22.613Z",
+        vote_count: 10,
+        upvote: true,
+        downvote: false,
+        flag: false,
+        id: "dummyQuesId",
+        tags: [{name: "tag1"}, {name: "tag2"},],
+        answers: [{
+            description: "desc trial",
+            ans_by: {
+                profilePic: "",
+                firstname: "a1",
+                lastname: "l1",  
+            },
+            ans_date_time: "2024-04-21T16:08:22.613Z",
+                vote_count: 1,
+                upvote: false,
+                downvote: false,
+                flag: false,
+                _id: "dummyAnsId",
+                comments: []
+            
+        }],
+        views: 10,
+        title: "ques title",
+        comments: []
+        }
         cy.intercept(
             {
                 method: "GET",
                 url: "/question/getQuestionById/dummyQID",
             },
-            {
-                description: "trial desc",
-            asked_by: {
-                profilePic: "",
-                firstname: "fn1",
-                lastname:"ln1",
-            },
-            ask_date_time: "2024-04-20T16:08:22.613Z",
-            vote_count: 10,
-            upvote: true,
-            downvote: false,
-            flag: false,
-            id: "dummyQuesId",
-            tags: [{name: "tag1"}, {name: "tag2"},],
-            answers: [{
-                description: "desc trial",
-                ans_by: {
-                    profilePic: "",
-                    firstname: "a1",
-                    lastname: "l1",  
-                },
-                ans_date_time: "2024-04-21T16:08:22.613Z",
-                    vote_count: 1,
-                    upvote: false,
-                    downvote: false,
-                    flag: false,
-                    _id: "dummyAnsId",
-                    comments: []
-                
-            }],
-            views: 10,
-            title: "ques title",
-            comments: []
-            }
+            ques
+            
         ).as("getQuesById");
         const handleNewQuestion = cy.stub();
         const handleNewAnswer = cy.stub();
@@ -117,8 +120,8 @@ describe("AnswerPage Component", () => {
             clickTag={clickTag}
             />);
         cy.wait('@getQuesById');
-        cy.get('#answersHeader > .MuiTypography-root').contains("ques title");
-        cy.get('.question-meta > :nth-child(1)').contains("2 days ago");
+        cy.get('#answersHeader > .MuiTypography-root').contains(ques.title);
+        cy.get('.question-meta > :nth-child(1)').contains(getDurationPassed(ques.ask_date_time));
         cy.get('.question-meta > :nth-child(2)').contains("10");
         cy.get('.question-meta > :nth-child(3)').contains("1");
         cy.get(':nth-child(2) > .user-response-body > .response-description > div').contains("trial desc")
@@ -135,8 +138,8 @@ describe("AnswerPage Component", () => {
         '.user-response-meta > .css-jfdv4h-MuiStack-root > .MuiStack-root > .question_author').contains("a1 l1");
         cy.get(':nth-child(1) > .user-response-body > .user-response-meta > .css-jfdv4h-MuiStack-root'+
         ' > .answer_question_meta').contains("Apr 21 at 12:08");
-        cy.get('[aria-label="View tag1 tagged questions"]').contains("tag1");
-        cy.get('[aria-label="View tag2 tagged questions"]').contains("tag2");
+        cy.get('#tag-0').contains("tag1");
+        cy.get('#tag-1').contains("tag2");
 
     });
 });

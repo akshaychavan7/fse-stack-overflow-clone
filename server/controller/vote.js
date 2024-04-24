@@ -42,12 +42,7 @@ const upvote = async (req, res) => {
 
     let result = await updateUpvote(voteObject, obj, req.userId, id);
     let post_by = assignPostBy(voteType, obj);
-    await updateReputation(
-      result["upvote"],
-      result["downvote"],
-      post_by,
-      "upvote"
-    );
+    await updateReputation(result["upvote"], result["downvote"], post_by, "upvote");
     res.status(200).send({
       status: 200,
       upvote: result["upvote"],
@@ -99,12 +94,7 @@ const downvote = async (req, res) => {
 
     let post_by = assignPostBy(voteType, obj);
 
-    await updateReputation(
-      result["upvote"],
-      result["downvote"],
-      post_by,
-      "downvote"
-    );
+    await updateReputation(result["upvote"], result["downvote"], post_by, "downvote");
 
     res.status(200).send({
       status: 200,

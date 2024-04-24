@@ -34,11 +34,7 @@ const { validateId } = require("../utils/validator");
  */
 const addComment = async (req, res) => {
   try {
-    let flag = false;
-
-    if (textfiltering(req.body.description)) {
-      flag = true;
-    }
+    let flag = textfiltering(req.body.description);;
     let comment = await Comment.create({
       description: req.body.description,
       commented_by: req.userId,
@@ -49,9 +45,7 @@ const addComment = async (req, res) => {
     let parentType = req.body.parentType;
 
     if (!validateId(parentId)) {
-      return res
-        .status(400)
-        .send({ status: 400, message: "Invalid parent id" });
+      return res.status(400).send({ status: 400, message: "Invalid parent id" });
     }
 
     let parentModel;

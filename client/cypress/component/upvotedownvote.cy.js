@@ -167,7 +167,7 @@ describe("Report flag of the UpvoteDownvote Component", () => {
             </AlertContextProvider>
         );
 
-        cy.get('[aria-label="Flag this post/comment"]').click();
+        cy.get('.flag').click();
         cy.wait("@reportQuestion");
         cy.get(".MuiAlert-message").should("contain", "Post has been flagged for review");
     });
@@ -186,7 +186,7 @@ describe("Report flag of the UpvoteDownvote Component", () => {
             </AlertContextProvider>
         );
 
-        cy.get('[aria-label="This post/comment has been flagged for a review"]').click();
+        cy.get('.flag').click();
         cy.get(".MuiAlert-message").should("contain", "This post/comment has already been flagged");
     });
 });
