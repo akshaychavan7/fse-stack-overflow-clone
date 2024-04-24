@@ -93,17 +93,17 @@ jobs:
         run: npm test
         working-directory: server/
 
-      # - name: Start the Client
-      #   run: npm start &
-      #   working-directory: client/
+      - name: Start the Client
+        run: npm start &
+        working-directory: client/
 
       # - name: Install testing dependencies
       #   run: npm install cypress
       #   working-directory: testing/
 
-      # - name: Run e2e tests
-      #   run: npx cypress run --spec cypress/e2e/
-      #   working-directory: testing/
+      - name: Run e2e tests
+        run: npx cypress run --spec cypress/e2e/
+        working-directory: client/
 
       - name: Kill the node server process
         run: kill $(lsof -t -i:8000) || true
