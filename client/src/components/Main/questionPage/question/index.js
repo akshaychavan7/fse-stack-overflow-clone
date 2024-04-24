@@ -45,7 +45,7 @@ const Question = ({
         <div className="postTitle">{q.title}</div>
         <div className="question_tags">
           {q.tags.map((tag, idx) => {
-            return <TagChip key={idx} tag={tag} clickTag={clickTag} />;
+            return <div key={idx} id={`tag-${idx}`}><TagChip  tag={tag} clickTag={clickTag} /></div>;
           })}
         </div>
       </div>

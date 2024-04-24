@@ -117,7 +117,7 @@ const UpvoteDownvote = ({
         placement="top"
       >
         <div id={`reportBtn-${postType}`}>
-          <IconButton size="small" onClick={handleFlag}>
+          <IconButton size="small" onClick={handleFlag} className="flag">
             <FlagRounded color={flagged ? "primary" : "default"} />
           </IconButton>
         </div>

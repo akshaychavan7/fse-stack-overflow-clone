@@ -11,7 +11,6 @@ const mockingoose = require("mockingoose");
 
 const {_questions, _answers, _comments, _users, _tags} = require('./constantdb')
 
-
 User.prototype.save = jest.fn().mockImplementation(function() {
     return Promise.resolve(this);
   });
@@ -82,10 +81,18 @@ describe('test on reportPost of user utils', () => {
         mockingoose.resetAll();
     });
 
+    afterEach(() => {
+      jest.clearAllMocks();
+
+  });
+
+
     test('should toggle the flag of a question to true', async () => {
 
         const mockQuestion = _questions[1];
-        mockingoose(Question).toReturn(mockQuestion, 'findOne');
+        const newMock = {...mockQuestion, save: jest.fn()}
+        jest.mock('../models/questions');
+        Question.findOne = jest.fn().mockResolvedValueOnce(newMock);
     
         const result = await reportPost(mockQuestion._id, "question");
     
@@ -94,45 +101,55 @@ describe('test on reportPost of user utils', () => {
 
       test('should toggle the flag of a question to false', async () => {
         const mockQuestion = _questions[0];
-        mockingoose(Question).toReturn(mockQuestion, 'findOne');
+        const newMock = {...mockQuestion, save: jest.fn()}
+        jest.mock('../models/questions');
+        Question.findOne = jest.fn().mockResolvedValueOnce(newMock);;
     
-        const result = await reportPost(mockQuestion._id, "question");
+        const result = await reportPost(newMock._id, "question");
     
         expect(result).toBe(false);
       });
 
       test('should toggle the flag of answer to true', async () => {
         const mockAnswer = _answers[1];
-        mockingoose(Answer).toReturn(mockAnswer, 'findOne');
+        const newMock = {...mockAnswer, save: jest.fn()}
+        jest.mock('../models/answers');
+        Answer.findOne = jest.fn().mockResolvedValueOnce(newMock);
     
-        const result = await reportPost(mockAnswer._id, "answer");
+        const result = await reportPost(newMock._id, "answer");
     
         expect(result).toBe(true);
       });
 
       test('should toggle the flag of answer to false', async () => {
         const mockAnswer = _answers[0];
-        mockingoose(Answer).toReturn(mockAnswer, 'findOne');
+        const newMock = {...mockAnswer, save: jest.fn()}
+        jest.mock('../models/answers');
+        Answer.findOne = jest.fn().mockResolvedValueOnce(newMock);
     
-        const result = await reportPost(mockAnswer._id, "answer");
+        const result = await reportPost(newMock._id, "answer");
     
         expect(result).toBe(false);
       });
 
       test('should toggle the flag of comment to true', async () => {
         const mockComment = _comments[0];
-        mockingoose(Comment).toReturn(mockComment, 'findOne');
+        const newMock = {...mockComment, save: jest.fn()}
+        jest.mock('../models/comments');
+        Comment.findOne = jest.fn().mockResolvedValueOnce(newMock);
     
-        const result = await reportPost(mockComment._id, "comment");
+        const result = await reportPost(newMock._id, "comment");
     
         expect(result).toBe(true);
       });
 
       test('should toggle the flag of comment to false', async () => {
         const mockComment = _comments[1];
-        mockingoose(Comment).toReturn(mockComment, 'findOne');
+        const newMock = {...mockComment, save: jest.fn()}
+        jest.mock('../models/comments');
+        Comment.findOne = jest.fn().mockResolvedValueOnce(newMock);
     
-        const result = await reportPost(mockComment._id, "comment");
+        const result = await reportPost(newMock._id, "comment");
     
         expect(result).toBe(false);
       });
@@ -158,6 +175,9 @@ describe('test on getQuestionsByUser of user utils', () => {
     beforeEach(() => {
         mockingoose.resetAll();
     });
+    afterEach(() => {
+      jest.clearAllMocks();
+  });
 
     test('should return questions asked by a user', async () => {
         const uid = _users[2]._id;
@@ -179,7 +199,7 @@ describe('test on getQuestionsByUser of user utils', () => {
     
         const result = await getQuestionsByUser(uid);
     
-        expect(result).toEqual(mockQuestions); // Verify if the function returns the expected questions
+        expect(result).toEqual(mockQuestions); 
       });
 
       test('should throw error', async () => {
@@ -212,6 +232,9 @@ describe('test on getAnswersByUser of user utils', () => {
     beforeEach(() => {
         mockingoose.resetAll();
     });
+    afterEach(() => {
+      jest.clearAllMocks();
+  });
 
     test('should return questions asked by a user', async () => {
         const uid = _users[2]._id;
@@ -227,11 +250,10 @@ describe('test on getAnswersByUser of user utils', () => {
             populate: jest.fn().mockReturnThis(),
             exec: jest.fn().mockResolvedValueOnce(mockAnswers)
         }));
-        // mockingoose(Question).toReturn(mockQuestions, 'find');
     
         const result = await getAnswersByUser(uid);
     
-        expect(result).toEqual(mockAnswers); // Verify if the function returns the expected questions
+        expect(result).toEqual(mockAnswers); 
       });
 
       test('should throw error', async () => {
@@ -250,7 +272,6 @@ describe('test on getAnswersByUser of user utils', () => {
                 throw new Error("Random!");
               })
         }));
-        // mockingoose(Question).toReturn(mockQuestions, 'find');
     
         const result = await getAnswersByUser(uid);
     
@@ -263,6 +284,9 @@ describe('test on getCommentsByUser of user utils', () => {
     beforeEach(() => {
         mockingoose.resetAll();
     });
+    afterEach(() => {
+      jest.clearAllMocks();
+  });
 
     test('should return questions asked by a user', async () => {
         const uid = _users[0]._id;
@@ -276,11 +300,10 @@ describe('test on getCommentsByUser of user utils', () => {
             populate: jest.fn().mockReturnThis(),
             exec: jest.fn().mockResolvedValueOnce(mockComments)
         }));
-        // mockingoose(Question).toReturn(mockQuestions, 'find');
     
         const result = await getCommentsByUser(uid);
     
-        expect(result).toEqual(mockComments); // Verify if the function returns the expected questions
+        expect(result).toEqual(mockComments);
       });
 
       test('should throw error', async () => {

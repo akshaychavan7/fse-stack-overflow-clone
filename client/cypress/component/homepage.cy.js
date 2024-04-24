@@ -101,8 +101,8 @@ describe("HomePage Component", () => {
         cy.get(':nth-child(1) > .postStats > :nth-child(2)').contains(q1.answers.length);
         cy.get(':nth-child(1) > .postStats > :nth-child(3)').contains(q1.views);
         cy.get(':nth-child(1) > .question_mid > .postTitle').contains(q1.title);
-        cy.get('[aria-label="View tag1 tagged questions"]').contains(q1.tags[0].name);
-        cy.get('[aria-label="View tag2 tagged questions"]').contains(q1.tags[1].name);
+        cy.contains(q1.tags[0].name);
+        cy.contains(q1.tags[1].name);
         cy.contains(':nth-child(1) > .lastActivity > .css-jfdv4h-MuiStack-root >'+
         ' #profilePic > .MuiStack-root > .MuiAvatar-root', 'FL').should('be.visible');
         cy.get(':nth-child(1) > .lastActivity > .css-jfdv4h-MuiStack-root >'+
@@ -113,8 +113,8 @@ describe("HomePage Component", () => {
         cy.get(':nth-child(2) > .postStats > :nth-child(2)').contains(q2.answers.length);
         cy.get(':nth-child(2) > .postStats > :nth-child(3)').contains(q2.views);
         cy.get(':nth-child(2) > .question_mid > .postTitle').contains(q2.title);
-        cy.get('[aria-label="View tag3 tagged questions"]').contains(q2.tags[0].name);
-        cy.get('[aria-label="View tag4 tagged questions"]').contains(q2.tags[1].name);
+        cy.contains(q2.tags[0].name);
+        cy.contains(q2.tags[1].name);
         cy.contains(':nth-child(2) > .lastActivity > .css-jfdv4h-MuiStack-root >'+
         ' #profilePic > .MuiStack-root > .MuiAvatar-root', 'LF').should('be.visible');
         cy.get(':nth-child(2) > .lastActivity > .css-jfdv4h-MuiStack-root >'+

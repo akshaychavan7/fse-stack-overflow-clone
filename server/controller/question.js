@@ -68,19 +68,12 @@ const getQuestionById = async (req, res) => {
       { _id: qid },
       { $inc: { views: 1 } },
       { new: true }
-    )
-      .populate([{
+    ).populate([{
         path: "answers",
-        populate: [{
-          path: "ans_by",
-          select: "username firstname lastname profilePic",
-        },
+        populate: [{ path: "ans_by", select: "username firstname lastname profilePic", },
         {
           path: "comments",
-          populate: {
-            path: "commented_by",
-            select: "username firstname lastname profilePic",
-          },
+          populate: { path: "commented_by", select: "username firstname lastname profilePic", },
         },
         ],
         options: { sort: { vote_count: -1 } },
@@ -89,15 +82,11 @@ const getQuestionById = async (req, res) => {
       { path: "tags" },
       {
         path: "comments",
-        populate: {
-          path: "commented_by",
-          select: "username firstname lastname profilePic",
-        },
+        populate: { path: "commented_by", select: "username firstname lastname profilePic", },
         //sort by votes
         options: { sort: { vote_count: -1 } },
       }
-      ])
-      .exec();
+      ]).exec();
     let jsonQuestion = question.toJSON();
     jsonQuestion = await showQuesUpDown(req.userId, jsonQuestion);
     return res.status(200).json(jsonQuestion);
