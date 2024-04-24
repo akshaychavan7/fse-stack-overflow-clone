@@ -25,10 +25,10 @@ const UnauthorizedAccess = () => {
           <Grid container justifyContent="center">
             <Grid item>
               <Button
+                id="login-btn"
                 variant="contained"
                 color="primary"
                 href="/login"
-                id="signInLink"
               >
                 Log In
               </Button>

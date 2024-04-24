@@ -87,6 +87,7 @@ export default function Comments({
         {getCommentsList()}
         <div className="add-comment-container">
           <TextField
+            className="comment-input"
             id={`comment-input-${parentType}`}
             label="Add a comment"
             variant="outlined"
