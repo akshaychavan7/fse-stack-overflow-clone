@@ -34,7 +34,7 @@ const { validateId } = require("../utils/validator");
  */
 const addComment = async (req, res) => {
   try {
-    let flag = textfiltering(req.body.description);;
+    let flag = textfiltering(req.body.description);
     let comment = await Comment.create({
       description: req.body.description,
       commented_by: req.userId,
