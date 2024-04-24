@@ -74,7 +74,7 @@ const mockQuestions = [
   {
     _id: "65e9b58910afe6e94fc6e6dc",
     title: "Question 1 Title",
-    description: "Question 1 Text",
+    description: "Question 1 Text someSearch",
     tags: [tag1],
     answers: [ans1],
     views: 21,
@@ -83,7 +83,7 @@ const mockQuestions = [
   {
     _id: "65e9b5a995b6c7045a30d823",
     title: "Question 2 Title",
-    description: "Question 2 Text",
+    description: "Question 2 Text someSearch",
     tags: [tag2],
     answers: [ans2],
     views: 99,
